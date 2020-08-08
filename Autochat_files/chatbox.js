@@ -292,7 +292,7 @@ function makeSettings()
     scaredSpam.append("Scared");	
     var bobRossSpam = $('<option></option>');
     bobRossSpam.attr("value", "bobross");
-    bobRossSpam.append("Bob Ross");
+    bobRossSpam.append("Weird");
     
     selectSpam.append(positiveSpam);
     selectSpam.append(negativeSpam);
