@@ -1,4 +1,4 @@
 # jaroddkitchen.github.io
 Project Website
 
-TEST TEXT
+This is the new website read-me text.
