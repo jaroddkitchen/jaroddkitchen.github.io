@@ -391,10 +391,10 @@ function onYouTubeIframeAPIReady() {
         // height: 400,
 		
 		
-        videoId: 'GJaAxD6JRsw',
+        videoId: 'y08Fk5cLTRw',
         playerVars: {
             color: 'white',
-            playlist: 'taJ60kskkns,FG0fTKAqZ5g',
+            playlist: 'ADDekHANNY8,GJaAxD6JRsw,FG0fTKAqZ5g',
 			enablejsapi: 1,
 			autoplay: 1,
             loop: 0,
