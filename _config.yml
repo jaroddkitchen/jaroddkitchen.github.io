@@ -33,6 +33,7 @@ github_username:  jaroddkitchen
 theme: minima
 plugins:
   - jekyll-feed
+  - category-gen
 
 # Exclude from processing.
 # The following items will not be processed, by default.
