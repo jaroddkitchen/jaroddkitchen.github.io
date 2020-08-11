@@ -1,0 +1,5 @@
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+<ShortName>Pics</ShortName>
+<Description>Search for a recipe.</Description>
+<Url type="text/html" method="get" template="https://jaroddkitchen.github.io/pics/?{searchTerms}"/>
+</OpenSearchDescription>
