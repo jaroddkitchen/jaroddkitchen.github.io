@@ -231,7 +231,8 @@ function darkmode()
         darkMode = false;
         chat.css("color", "white");
         chat.css("background-color", "black");
-        $("#textfield").css("background-color", "#black");
+        // $("#textfield").css("background-color", "#141414");
+        $("#textfield").css("background-color", "black");		
         $("#textfield").css("color", "white");
         $("#chattext").removeAttr("class");
     }
