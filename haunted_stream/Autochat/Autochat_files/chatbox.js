@@ -40,6 +40,8 @@ function init()
 {
     makeSettings();
     toggleSettings();
+    makeVideoctrl();
+	toggleVideoctrl();
     spam();
 }
 
@@ -230,20 +232,19 @@ function darkmode()
     {
         darkMode = false;
         chat.css("color", "white");
-        chat.css("background-color", "black");
-        // $("#textfield").css("background-color", "#141414");
-        $("#textfield").css("background-color", "black");		
+        chat.css("background-color", "#1e1e1e");
+        $("#textfield").css("background-color", "#141414");
         $("#textfield").css("color", "white");
-        $("#chattext").removeAttr("class");
+        $("#chattext").attr("class", "dark");		
     }
     else
     {
         darkMode = true;
         chat.css("color", "white");
-        chat.css("background-color", "#1e1e1e");
+        chat.css("background-color", "black");
         $("#textfield").css("background-color", "black");
         $("#textfield").css("color", "white");
-        $("#chattext").attr("class", "dark");
+        $("#chattext").removeAttr("class");		
     }
 }
 
@@ -293,7 +294,7 @@ function makeSettings()
     scaredSpam.append("Scared");	
     var bobRossSpam = $('<option></option>');
     bobRossSpam.attr("value", "bobross");
-    bobRossSpam.append("Weird");
+    bobRossSpam.append("Bob Ross");
     
     selectSpam.append(positiveSpam);
     selectSpam.append(negativeSpam);
@@ -322,7 +323,7 @@ function makeSettings()
     chat.append(settings);
 }
 
-//shows or hides the chat
+//shows or hides the settings
 function toggleSettings()
 {
     $("#settings").toggle();
@@ -338,6 +339,59 @@ function toggleSettings()
 		$("#settingsButton").css("color", "black");
     }
 }
+
+
+	const timeButtons = [];
+	const timeStamps = [0, 100, 150, 200, 250, 300, 350];
+
+//makes a "videoctrl" box
+function makeVideoctrl()
+{
+    $("#videoctrlButton").css("background-color", "#4b2f7f");
+        
+    var videoctrl = $('<div></div>');
+    videoctrl.attr("id", "videoctrl");
+	
+	var i;
+	for (i = 1; i < timeStamps.length; i++) {
+		var timeButton = $('<button></button>');
+		timeButton.append("time:" + timeStamps[i] + " secs");
+		var landTime = timeStamps[i]
+		timeButton.attr("onClick", "jumpToTime(" + landTime + ")");
+		timeButtons.push("time " + timeStamps[i])
+		videoctrl.append(timeButton);
+		videoctrl.append("<br>");
+	}
+    
+    var chat = $("#chat");
+    chat.append(videoctrl);
+}
+
+
+//clears the chat of messages
+function jumpToTime(landTime)
+{
+	player.seekTo(landTime);
+}
+
+
+//shows or hides the videoctrls
+function toggleVideoctrl()
+{
+    $("#videoctrl").toggle();
+    
+    if($("#videoctrl").css('display') == 'none')
+    {
+        $("#videoctrlButton").css("background-color", "gray");
+		$("#videoctrlButton").css("color", "white");
+    }
+    else
+    {
+        $("#videoctrlButton").css("background-color", "white");
+		$("#videoctrlButton").css("color", "black");
+    }
+}
+
 
 //sets the type of spam from the input in the settings
 function chooseSpam()
@@ -392,7 +446,7 @@ function onYouTubeIframeAPIReady() {
         // height: 400,
 		
 		
-        videoId: 'y08Fk5cLTRw',
+        videoId: 'GJaAxD6JRsw',
         playerVars: {
             color: 'white',
             playlist: 'ADDekHANNY8,GJaAxD6JRsw,FG0fTKAqZ5g',
@@ -435,8 +489,15 @@ function initialize(){
 
 }
 
+	
+//generic seekTo function taking a player element and seconds as parameters    
+function playerSeekTo(player, seconds) {
+    player.seekTo(seconds);
+}
+
+
 function onPlayerStateChange(event) {
-	player.playVideo();
+	// player.playVideo();
 /*     switch(event.data) {
           case 0:
             record('video ended');

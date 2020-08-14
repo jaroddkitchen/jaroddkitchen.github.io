@@ -76,6 +76,24 @@
     border-radius: 2px;
 }
 
+#control-panel
+{
+    position: absolute;
+    right: 100%;
+    top: 0%;
+}
+
+#parent {
+    width:400px;
+    position:absolute;
+}
+
+/* #div1 {position:absolute;bottom:0;right:0;background:green;width:80px;height:80px;}
+#div2 {width:80px;height:80px;position:absolute;bottom:0;left:0;background:red;}
+#div3 {width:80px;height:80px;position:absolute;top:0;right:0;background:yellow;}
+#div4 {width:80px;height:80px;position:absolute;top:0;left:0;background:gray;}
+ */
+
 #aboveinput
 {
     height: 90%;
@@ -123,26 +141,6 @@
 }
 
 
-#settingsButton
-{
-    position: absolute;
-    height: 30%;
-    width: 65%;
-    
-    left: -68.0%;
-    top: 10%;
-    
-    background-color: white;
-    color: black;
-	
-	border: solid;
-    border: 1px;
-}
-
-
-
-
-
 
 /* text shit */
 p
@@ -157,6 +155,24 @@ p
 }
 
 
+/* chat settings */
+
+#settingsButton
+{
+    position: relative;
+    height: 40px;
+    width: 250px;
+    
+    left: -250px;
+	top: 100%;
+    
+    background-color: white;
+    color: black;
+	
+	border: solid;
+    border: 1px;
+}
+
 
 
 #settings
@@ -165,14 +181,16 @@ p
     position: absolute;
     z-index: 1000000;
     background-color: white;
-    width: 65%;
+
+	width: 250px;	
+    left: -250px;
+	top: 40px;
+	
+/*     width: 65%;
     height: 380px;
     
-    bottom: 12.25%;
-    left: -68.0%;
-    
-/*     border: solid;
-    border-width: 1px; */
+    bottom: 40.25%;
+    left: -68.0%; */
 }
 
 #settings h3
@@ -192,7 +210,6 @@ p
     border-bottom: solid;
     border-bottom-color: white;
 }
-
 
 
 #settings button
@@ -222,6 +239,100 @@ p
     border: solid;
     border-width: 1px;	
 }
+
+
+
+/* videoctrl stuff */
+
+#videoctrlButton
+{
+/*     position: absolute;
+    height: 100%;
+    width: 65%;
+    
+    left: -138.0%;
+    top: 10%;
+    
+    background-color: white;
+    color: black;
+	
+	border: solid;
+    border: 1px; */
+	
+	position: relative;
+    height: 40px;
+    width: 250px;
+    
+    left: -505px;
+	top: 0%;
+    
+    background-color: white;
+    color: black;
+	
+	border: solid;
+    border: 1px;
+}
+
+
+#videoctrl
+{
+    color: black;
+    position: absolute;
+    z-index: 1000000;
+    background-color: white;
+
+	width: 250px;
+    left: -505px;
+	top: 40px;
+}
+
+#videoctrl h3
+{
+    position: relative;
+    
+    text-align: center;
+    font-weight: bold;
+    
+    margin-top: 6%;
+    margin-bottom: 0px;
+    font-size: 18px;
+    
+    padding-left: 0px;
+    padding-right: 0px;
+    
+    border-bottom: solid;
+    border-bottom-color: white;
+}
+
+
+#videoctrl button
+{
+    position: relative;
+    padding: 0px;
+    margin: 2px;
+    
+    width: 90%;
+    left: 5%;
+    height: 15%;
+	
+	background-color: white;
+	
+    border: solid;
+    border-width: 1px;	
+}
+
+#videoctrl select
+{
+    position: relative;
+    width: 90%;
+    left: 5%;
+	
+	background-color: white;
+	
+    border: solid;
+    border-width: 1px;	
+}
+
 
 
 
