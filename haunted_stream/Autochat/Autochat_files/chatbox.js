@@ -254,7 +254,7 @@ function makeSettings()
 {
     $("#settingsButton").css("background-color", "#4b2f7f");
         
-    var settings = $('<div></div>');
+    var settings = $('<div class="dirmenu" name="settingsButton"></div>');
     settings.attr("id", "settings");
         
         
@@ -323,33 +323,17 @@ function makeSettings()
     chat.append(settings);
 }
 
-//shows or hides the settings
-function toggleSettings()
-{
-    $("#settings").toggle();
-    
-    if($("#settings").css('display') == 'none')
-    {
-        $("#settingsButton").css("background-color", "gray");
-		$("#settingsButton").css("color", "white");
-    }
-    else
-    {
-        $("#settingsButton").css("background-color", "white");
-		$("#settingsButton").css("color", "black");
-    }
-}
 
 
 	const timeButtons = [];
 	const timeStamps = [0, 100, 150, 200, 250, 300, 350];
 
-//makes a "videoctrl" box
+//makes a video controller box
 function makeVideoctrl()
 {
     $("#videoctrlButton").css("background-color", "#4b2f7f");
         
-    var videoctrl = $('<div></div>');
+    var videoctrl = $('<div class="dirmenu" name="videoctrlButton"></div>');
     videoctrl.attr("id", "videoctrl");
 	
 	var i;
@@ -368,11 +352,64 @@ function makeVideoctrl()
 }
 
 
-//clears the chat of messages
-function jumpToTime(landTime)
+function toggleMenu()
 {
-	player.seekTo(landTime);
-	player.playVideo();
+	
+	var curButton = "#" + event.srcElement.id;
+	var curMenu = "#" + event.srcElement.name;
+
+	$('.dirButton').css("background-color", "gray");	
+	$('.dirButton').css("color", "white");	
+    $(curMenu).toggle();
+	$('div.dirmenu:not(' + curMenu + ')').hide();
+    
+    if($(curMenu).css('display') == 'none')
+    {
+        $(curButton).css("background-color", "gray");
+		$(curButton).css("color", "white");
+    }
+    else
+    {
+        $(curButton).css("background-color", "white");
+		$(curButton).css("color", "black");
+    }
+}
+
+function hideMenu(hidingMenu, hidingButton)
+{
+	
+	if($(hidingMenu).css('display') == 'none')
+    {
+        $(hidingButton).css("background-color", "gray");
+		$(hidingButton).css("color", "white");
+    }
+    else
+    {
+        $(hidingButton).css("background-color", "white");
+		$(hidingButton).css("color", "black");
+    }
+}
+
+
+
+//shows or hides the settings
+function toggleSettings()
+{
+    $("#settings").toggle();
+	// $('div.dirmenu:not(#settings)').hide();
+	$('div.dirmenu:not(#settings)').hide();	
+	// document.getElementById('videoctrl').css.display = "none";	
+    
+    if($("#settings").css('display') == 'none')
+    {
+        $("#settingsButton").css("background-color", "gray");
+		$("#settingsButton").css("color", "white");
+    }
+    else
+    {
+        $("#settingsButton").css("background-color", "white");
+		$("#settingsButton").css("color", "black");
+    }
 }
 
 
@@ -380,6 +417,9 @@ function jumpToTime(landTime)
 function toggleVideoctrl()
 {
     $("#videoctrl").toggle();
+	// $('div.dirmenu:not(#videoctrl)').hide();
+	$('div.dirmenu:not(#videoctrl)').hide();
+	// document.getElementById('settings').css.display = "none";
     
     if($("#videoctrl").css('display') == 'none')
     {
@@ -391,6 +431,15 @@ function toggleVideoctrl()
         $("#videoctrlButton").css("background-color", "white");
 		$("#videoctrlButton").css("color", "black");
     }
+}
+
+
+
+//clears the chat of messages
+function jumpToTime(landTime)
+{
+	player.seekTo(landTime);
+	player.playVideo();
 }
 
 
@@ -407,6 +456,9 @@ function chooseSpeed()
     spamSpeed = 2200 - (20 * val);
 }
 
+
+
+//Video functions
 
 function getVideo()
 {
@@ -490,8 +542,9 @@ function initialize(){
 
 }
 
-function onPlayerReady(event) {
-	event.player.playVideo();
+function onPlayerReady() {
+	player.seekTo(50);
+	player.playVideo();
 }
 
 	
