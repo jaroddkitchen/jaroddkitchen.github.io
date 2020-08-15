@@ -372,6 +372,7 @@ function makeVideoctrl()
 function jumpToTime(landTime)
 {
 	player.seekTo(landTime);
+	player.playVideo();
 }
 
 
@@ -487,6 +488,10 @@ function initialize(){
         updateProgressBar();
     }, 1000)
 
+}
+
+function onPlayerReady(event) {
+	event.player.playVideo();
 }
 
 	
