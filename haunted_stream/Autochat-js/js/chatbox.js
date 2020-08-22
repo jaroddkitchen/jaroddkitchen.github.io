@@ -14,14 +14,14 @@ var negativeMessages = ["BOT", "WTF LMAO", "Stop moving your head! gettin dizzy"
 
 var scaredMessages = ["OMG WTF is was that?", "GET OUTTA THERE!", "Run, Forrest, Run!", "dizzy", "Noooooooo", "OMFG", "just crapped my pantaloons", "WTF", "this is my worst nightmare", "OMG run", "OMG", "LMAO", "so bad omg", "xD", "FAKE", "fake", "can't take this", "please jesus god no more jump scares", "", "NotLikeThis", "...", "<=== IS SCARED", "heart palpittashuns"];
 
-var bobRossMessage = ["The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top", "RUINED", "SAVED", "RUINED", "CoolStoryBob"];
+var weirdMessages = ["The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top", "RUINED", "SAVED", "RUINED", "CoolStoryMan"];
 
 
 var emotes = [
     ["Kappa", "kappa.png"],
     ["WutFace", "wutface.png"],
     ["4Head", "4head.png"],
-    ["CoolStoryBob", "bobross.png"],
+    ["CoolStoryMan", "bobross.png"],
     ["DansGame", "dansgame.png"],
     ["NotLikeThis", "notlikethis.png"],
     ["PogChamp", "pogchamp.png"]
@@ -58,8 +58,8 @@ function getMessage()
         msgBody = (negativeMessages[Math.floor(Math.random()*negativeMessages.length)]);
     else if(spamType=="scared")
         msgBody = (scaredMessages[Math.floor(Math.random()*scaredMessages.length)]);
-	else if(spamType=="bobross")
-        msgBody = (bobRossMessage[Math.floor(Math.random()*bobRossMessage.length)]);
+	else if(spamType=="weird")
+        msgBody = (weirdMessages[Math.floor(Math.random()*weirdRossMessages.length)]);
 
     msgBody = replace_emotes(msgBody);
 
@@ -381,14 +381,14 @@ function makeSettings()
     var scaredSpam = $('<option></option>');
     scaredSpam.attr("value", "scared");
     scaredSpam.append("Scared");	
-    var bobRossSpam = $('<option></option>');
-    bobRossSpam.attr("value", "bobross");
-    bobRossSpam.append("Bob Ross");
+    var weirdSpam = $('<option></option>');
+    weirdSpam.attr("value", "weird");
+    weirdSpam.append("Weird");
     
     selectSpam.append(positiveSpam);
     selectSpam.append(negativeSpam);
     selectSpam.append(scaredSpam);	
-    selectSpam.append(bobRossSpam);
+    selectSpam.append(weirdSpam);
     
     
     var selectSpeed = $('<input></input>');
