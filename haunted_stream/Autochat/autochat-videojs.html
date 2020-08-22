@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    
+    <meta name="description" content="A chatbox that automatically generates comments.">
+    
+    
+    <!-- importing the jQuery library  -->
+    <script src="./Autochat_files/jquery.min.js"></script>
+    <!-- importing my own javascript file -->
+    <script src="./Autochat_files/chatbox.js"></script>
+    
+    <!-- importing the styling -->
+    <link rel="stylesheet" type="text/css" href="./Autochat_files/chatbox.css">
+
+<title>Autochat</title>
+<link rel="stylesheet" href="./Autochat_files/css" media="all"><link rel="stylesheet" href="./Autochat_files/css" media="all"><style data-styled="" data-styled-version="4.4.1"></style></head>
+
+<!-- <div id="video-placeholder"></div> -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<body onload="init()">
+   
+    <div id="notchat">
+		  <video
+			id="my-video"
+			class="video-js"
+			width="640"
+			height="264"
+			controls
+			preload="auto"
+			autoplay="true" 
+			poster="MY_VIDEO_POSTER.jpg"
+			data-setup='{}'
+		  >
+			<source autoplay src="Vicious-360p.mp4" type="video/mp4" />
+			<source autoplay src="MY_VIDEO.webm" type="video/webm" />
+			<p class="vjs-no-js">
+			  To view this video please enable JavaScript, and consider upgrading to a
+			  web browser that
+			  <a href="https://videojs.com/html5-video-support/" target="_blank"
+				>supports HTML5 video</a
+			  >
+			</p>
+		  </video>
+
+		  <script src="https://vjs.zencdn.net/7.8.4/video.js"></script>
+    </div>
+    
+    <div id="chat" style="color: white; background-color: rgb(0, 0, 0);">
+        
+        <div id="aboveinput">
+            <div id="abovechat">
+                <p id="channelname" onclick="changeChannel()">BooTooB</p>
+            </div>
+        
+            <div id="chattext" class="dark"></div>
+        </div>
+        <div id="input">
+            <form onsubmit="return false">
+                <input type="text" id="textfield" placeholder="send a message" style="background-color: rgb(20, 20, 20); color: white;">
+                <input type="submit" id="chatButton" onclick="chat()" value="Chat" onkeypress="checkForEnter(event)">
+            </form>
+		</div>
+		<div id="control-panel">
+			<div id="parent">
+				<div id="input">			
+					<button id="settingsButton" onclick="toggleMenu()" style="background-color: rgb(100, 65, 164);" name="settings" class="dirButton">settings</button>
+					<button id="videoctrlButton" onclick="toggleMenu()" style="background-color: rgb(100, 65, 164);" name="videoctrl" class="dirButton">video control</button>
+				</div>
+			</div>
+		</div>			
+	</div>
+	
+<!-- 	<div id="control-panel">
+	<br/>
+		<a href="#" onclick="playerSeekTo(player, 100); return false;">Time 1</a>
+		<br/>
+		<a href="#" onclick="playerSeekTo(player, 200); return false;">Time 2</a>
+		<br/>
+		<a href="#" onclick="playerSeekTo(player, 300); return false;">Time 3</a>
+		<br/>
+	</div> -->
+	
+</body><div class="notranslate" style="position: absolute; top: 0; right:0;" id="vd-root-d19608294"></div></html>

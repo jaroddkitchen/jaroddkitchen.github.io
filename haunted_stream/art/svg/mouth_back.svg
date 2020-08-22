@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="121.21mm"
+   height="146.07001mm"
+   viewBox="0 0 121.21 146.07001"
+   version="1.1"
+   id="svg20722"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="mouth_back.svg">
+  <defs
+     id="defs20716" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.45669063"
+     inkscape:cx="106.25358"
+     inkscape:cy="430.36906"
+     inkscape:document-units="mm"
+     inkscape:current-layer="g852"
+     showgrid="false"
+     inkscape:window-width="1600"
+     inkscape:window-height="837"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:snap-intersection-paths="true" />
+  <metadata
+     id="metadata20719">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-150.93)">
+    <g
+       id="g22078"
+       transform="translate(0,-32.4345)">
+      <g
+         id="g849"
+         transform="matrix(1.3107209,0,0,1.3107209,67.80317,9.5553503)"
+         style="stroke-width:0.76293892">
+        <g
+           id="g852"
+           transform="matrix(1.5052286,0,0,1,2.8355349,0)"
+           style="stroke-width:0.62185413">
+          <g
+             transform="matrix(0.26458333,0,0,0.26458333,-60.909616,133.59078)"
+             id="g98"
+             style="stroke-width:0.62185413">
+            <path
+               id="path96"
+               style="fill:#ffffff;stroke-width:0.62185413"
+               d="m 209.4,33.3 v 0 c -64.2,0 -116.2,52 -116.2,116.2 v 214.8 l 38.7,-38.7 38.7,38.7 38.7,-38.7 38.7,38.7 38.7,-38.7 38.7,38.7 V 149.5 C 325.6,85.3 273.6,33.3 209.4,33.3 Z"
+               class="st6"
+               inkscape:connector-curvature="0" />
+          </g>
+          <path
+             sodipodi:nodetypes="cscc"
+             style="stroke-width:0.12552804"
+             id="path164"
+             d="m 22.345006,187.19323 c 0,13.7034 -12.4966994,24.8374 -27.8772552,24.8374 -15.3805528,0 -27.8772538,-11.134 -27.8772538,-24.8374 z"
+             inkscape:connector-curvature="0" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
