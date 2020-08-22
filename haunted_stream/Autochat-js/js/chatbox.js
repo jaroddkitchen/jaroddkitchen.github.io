@@ -59,7 +59,7 @@ function getMessage()
     else if(spamType=="scared")
         msgBody = (scaredMessages[Math.floor(Math.random()*scaredMessages.length)]);
 	else if(spamType=="weird")
-        msgBody = (weirdMessages[Math.floor(Math.random()*weirdRossMessages.length)]);
+        msgBody = (weirdMessages[Math.floor(Math.random()*weirdMessages.length)]);
 
     msgBody = replace_emotes(msgBody);
 
