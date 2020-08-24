@@ -35,12 +35,6 @@ var videoplaylist = [
 ["ashes", "https://video.wixstatic.com/video/bde2cd_eb8911679a6c4970ab1d70435897433b/1080p/mp4/file.mp4"]
 ];
 
-var videocues = [
-	[0,15, "entrance"],
-	[15,30, "ladder"],
-	[30,40, "graffiti"],
-	[40,57, "chapel"]
-];
 
 
 var spamSpeed = 1200;
@@ -145,12 +139,106 @@ function chat()
 		message.css("background", "black");			
    
         textfield.val("");
+		
+		msgCommand = "the " + msgBody
     
         element.append(message);
-		jumpToTime(msgBody);
+		searchForCommand(msgCommand);
         scrollToBottom();
         cutTopOfChat();
     }
+}
+
+var videocues = [
+	["start", 0],
+	["road", 50],
+	["pentagram", 101],
+	["door", 142],
+	["face", 170],
+	["date", 181],
+	["window", 248],
+	["eric", 285],
+	["penis", 294],
+	["anne", 309],
+	["stairs", 312]		
+	
+];
+
+var commandwords = [
+	"start", 
+	"road",
+	"pentagram",
+	"door",
+	"face",
+	"date",
+	"window",
+	"eric",
+	"penis",
+	"anne",
+	"stairs"
+];
+
+var commandtimes = [
+	0,
+	50,
+	101,
+	142,
+	170,
+	181,
+	248,
+	285,
+	294,
+	309,
+	312	
+	
+];
+
+function searchForCommand(msgBody){
+	
+	let msgBodyRaw = msgBody.toLowerCase();
+	var commandWord = "";	
+	
+	const result = commandwords.some(word => {
+	const commandwords = word.split(',');
+
+	  return commandwords.some(r => {
+		if (~msgBodyRaw.indexOf( " " )) {
+			msgBodyRaw = msgBodyRaw.substring(msgBodyRaw.indexOf( " " ) );			
+			commandWord = r;
+		// only check the first word if there are multiple
+		// msgBodyRaw = msgBodyRaw.substring( 0, msgBodyRaw.indexOf( " " ) );
+			commandWord = r;
+		}
+		
+		return r.toLowerCase().includes(msgBodyRaw) || msgBodyRaw.includes(r.toLowerCase());
+	  });
+	});
+
+	console.log('result = ', result);
+	
+	if (result)
+	{
+		console.log('success ' + commandWord);
+		var pos = commandwords.indexOf(commandWord);
+		jumpToTime(commandtimes[pos]);		
+    }
+    else
+    {
+		console.log('failed');
+	}
+	
+	
+/* 	var el = commandcues.find(a =>a.includes(msgBody));
+	console.log(el);
+	
+	var pos = commandcues.indexOf(el);
+	jumpToTime(commandtimes[pos]); */
+	
+/*     console.log(commandcues.filter(function(item){
+        var finder = msgCommand;
+        return eval('/'+finder+'/').test(item);
+		var pos = commandcues.indexOf(el);
+    }));	 */
 }
 
 
