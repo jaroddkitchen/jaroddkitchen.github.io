@@ -2,8 +2,7 @@ var spamming = false;
 var darkMode = true;
 var spamType = "positive";
 
-var usernamePrefixes = ["scary", "spooky", "sick", "insane", "cool", "revenge_of_", "mad", "generic", "Cpt", "nice", "xxx", "Dan", "VAC", "SWE", "Wizard", "faceless", "olof",
-                        "best_", "daddy", "boo", "mister_", "davai", "Nick", "da_", "the_", "iAm", "Loungin", "extra", "BOT", "dirty", "shoutout_to_", "devil", "Only"];
+var usernamePrefixes = ["scary", "spooky", "sick", "insane", "cool", "revenge_of_", "mad", "generic", "Cpt", "nice", "xxx", "Dan", "VAC", "SWE", "Wizard", "faceless", "olof","best_", "daddy", "boo", "mister_", "davai", "Nick", "da_", "the_", "iAm", "Loungin", "extra", "BOT", "dirty", "shoutout_to_", "devil", "Only"];
 
 var usernameSuffixes = ["Kappa", "Sniper", "maniac", "shipwreck", "M", "LULZ", "Games", "Radley101", "lolo", "_yolo", "QQ", "stone", "Trumpster", "xD", "meister", "eric", "jenna", "loser", "haha", "noob", "dude", "Bro", "shotgun", "DADDY", "OneTaps", "winner", "jarod", "pepe", "explosion", "easy", "Nut", "000", "Biceps", "gamer", "Majestic", "zzzzz", "vortex", "sound", "tv"];
 
@@ -15,14 +14,14 @@ var negativeMessages = ["BOT", "WTF LMAO", "Stop moving your head! gettin dizzy"
 
 var scaredMessages = ["OMG WTF is was that?", "GET OUTTA THERE!", "Run, Forrest, Run!", "dizzy", "Noooooooo", "OMFG", "just crapped my pantaloons", "WTF", "this is my worst nightmare", "OMG run", "OMG", "LMAO", "so bad omg", "xD", "FAKE", "fake", "can't take this", "please jesus god no more jump scares", "", "NotLikeThis", "...", "<=== IS SCARED", "heart palpittashuns"];
 
-var bobRossMessage = ["The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top", "RUINED", "SAVED", "RUINED", "CoolStoryBob"];
+var weirdMessages = ["The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top", "RUINED", "SAVED", "RUINED", "CoolStoryMan"];
 
 
 var emotes = [
     ["Kappa", "kappa.png"],
     ["WutFace", "wutface.png"],
     ["4Head", "4head.png"],
-    ["CoolStoryBob", "bobross.png"],
+    ["CoolStoryMan", "bobross.png"],
     ["DansGame", "dansgame.png"],
     ["NotLikeThis", "notlikethis.png"],
     ["PogChamp", "pogchamp.png"]
@@ -59,8 +58,8 @@ function getMessage()
         msgBody = (negativeMessages[Math.floor(Math.random()*negativeMessages.length)]);
     else if(spamType=="scared")
         msgBody = (scaredMessages[Math.floor(Math.random()*scaredMessages.length)]);
-	else if(spamType=="bobross")
-        msgBody = (bobRossMessage[Math.floor(Math.random()*bobRossMessage.length)]);
+	else if(spamType=="weird")
+        msgBody = (weirdMessages[Math.floor(Math.random()*weirdMessages.length)]);
 
     msgBody = replace_emotes(msgBody);
 
@@ -76,7 +75,7 @@ function getMessage()
 function replace_emotes(message)
 {
     for(var i=0;i<emotes.length;i++){
-        message = message.replace(new RegExp(emotes[i][0], 'g'), "<img src='pics/emotes/"+emotes[i][1]+"' alt='"+emotes[i][0]+"'>");
+        message = message.replace(new RegExp(emotes[i][0], 'g'), "<img src='img/emotes/"+emotes[i][1]+"' alt='"+emotes[i][0]+"'>");
     }
 
     return message;
@@ -222,12 +221,12 @@ function cleanUpScroll()
 	  var topOfScroll = chattext.getBoundingClientRect().top;	 
 	  
 	  
-      if (positionFromTop < (topOfScroll + messageHeight)) {
-		element.classList.remove('fade-in-element');
+      if (positionFromTop < (topOfScroll + messageHeight + 12)) {
+		//element.classList.remove('fade-in-element');
 		//$(element).fadeOut();
         //element.classList.add('fade-out-element');
 		//console.log("message height: " + messageHeight);
-		//scrollToBottom();
+		scrollToBottom();
         //element.classList.remove('hidden');
       }
     }	
@@ -284,7 +283,7 @@ function cutTopOfChat()
 	chattext.scrollTop = chattext.scrollHeight;
 	
 	
-    if(element.children().length > 170)
+    if(element.children().length > 270)
     {
         var chatMessages = element.children();
         for(i = 0; i<30; i++)
@@ -306,7 +305,7 @@ function init()
 	toggleVideoctrl();
     spam();
 	darkmode();
-	// addListeners();
+	addListeners();
 	// jumpToTime(1);
 }
 
@@ -343,8 +342,9 @@ function makeSettings()
 {
     $("#settingsButton").css("background-color", "#4b2f7f");
         
-    var settings = $('<div class="dirmenu" name="settingsButton"></div>');
+    var settings = $('<div class="dirmenu" name="settingsButton" align="center"></div>');
     settings.attr("id", "settings");
+	//settings.attr("class", "settingsMenu");
         
         
     var clearButton = $('<button></button>');
@@ -381,14 +381,14 @@ function makeSettings()
     var scaredSpam = $('<option></option>');
     scaredSpam.attr("value", "scared");
     scaredSpam.append("Scared");	
-    var bobRossSpam = $('<option></option>');
-    bobRossSpam.attr("value", "bobross");
-    bobRossSpam.append("Bob Ross");
+    var weirdSpam = $('<option></option>');
+    weirdSpam.attr("value", "weird");
+    weirdSpam.append("Weird");
     
     selectSpam.append(positiveSpam);
     selectSpam.append(negativeSpam);
     selectSpam.append(scaredSpam);	
-    selectSpam.append(bobRossSpam);
+    selectSpam.append(weirdSpam);
     
     
     var selectSpeed = $('<input></input>');
@@ -408,10 +408,26 @@ function makeSettings()
     settings.append(darkModeButton);
     settings.append("<br><br>");	
     
-/*     var settingsMenu = $("#settingsButton");
+/*     var settingsButton = $("#settingsButton");
     settingsButton.append(settings); */
-    var controlpanel = $("#control-panel");
-    controlpanel.append(settings);	
+	
+    var settingsMenu= $("body");
+    settingsMenu.append(settings);
+
+	var el = document.getElementById('settings');
+	el.style.position = 'absolute';
+	el.style.left = '260px';
+	el.style.top = '40px';
+	el.style.width = '250px';
+
+/* 	var x = $("p").position();
+	alert("Top: " + x.top + " Left: " + x.left); */
+	
+	
+/* 	var parentButton = $("#settingsButton");
+	var bodyRect = document.parentButton.getBoundingClientRect();
+	console.log(bodyRect); */
+	
 }
 
 
@@ -424,7 +440,7 @@ function makeVideoctrl()
 {
     $("#videoctrlButton").css("background-color", "#4b2f7f");
         
-    var videoctrl = $('<div class="dirmenu" name="videoctrlButton"></div>');
+    var videoctrl = $('<div class="dirmenu" name="videoctrlButton" align="center"></div>');
     videoctrl.attr("id", "videoctrl");
 	videoctrl.append("<br>");
 	
@@ -439,25 +455,28 @@ function makeVideoctrl()
 		videoctrl.append("<br><br>");
 	}
     
-/*     var videoctrlButton = $("#videoctrlButton");
-	videoctrlButton.append(videoctrl); */
-
-    var controlpanel = $("#control-panel");
-    controlpanel.append(videoctrl);	
+    var videoctrlMenu = $("body");
+	videoctrlMenu.append(videoctrl);
+	
+	var el = document.getElementById('videoctrl');
+	el.style.position = 'absolute';
+	el.style.left = '5px';
+	el.style.top = '40px';
+	el.style.width = '250px';
 	
 }
 
 
 function addListeners(){
-	// var video = document.getElementsByTagName('video')[0];
+	// var video = document.getElementsByTagName('my-video')[0];
 
-	var video = this._vplayer;
+	var video = document.getElementById('my-video');
 	
 	video.addEventListener('waiting', function () {log('waiting');});
 
 	video.addEventListener('playing', function () {log('playing');});
 
-	video.addEventListener('pause', function () {log('pause');});
+	video.addEventListener('pause', function () {alert("pause");});
 
 	video.addEventListener('play', function () {log('play');});
 
@@ -475,12 +494,9 @@ function addListeners(){
 	var i;
 	for (i = 1; i < timeStamps.length; i++) {
 		document.getElementById('timebtn' + i).addEventListener('click', function () {
-			alert(this.getAttribute('id'));
+			//alert(this.getAttribute('id'));
 			var value = (this.getAttribute('seekPoint'));
-			// video.currentTime = value;
-			this.ytPlayer.seekTo(value, true);
-			console.log(10);
-			//jumpToTime(currentTime);
+			video.currentTime = value;
 		});
 	}
 	
@@ -591,6 +607,7 @@ function chooseSpeed()
 
 //Video functions
 
+
 function log(msg) {
   document.getElementById('events').innerHTML = '';
 }
@@ -604,10 +621,69 @@ function log(msg) {
 //jump to time
 function jumpToTime(landTime)
 {
-	
-/* 	videojs('#my-video').play();
-	videojs('#my-video').currentTime(landTime); */
-/* 	_vplayer = videojs('my-video')	
-    _vplayer.seekTo(landTime); */	
+	// var player = VideoJS.setup("current_video");
+	videojs('#my-video').play();
+	videojs('#my-video').currentTime(landTime);
+	// $("video").prop('muted', false);
 }
 
+
+/* function getVideo()
+{
+} */
+
+
+/* var player = videojs('player');
+
+player.ready(function() {
+	player.pause(true);
+	player.play();
+	player.currentTime(200)	
+}) */
+
+/* VideoJS.DOMReady(function() {
+	var player = VideoJS.setup("current_video");
+	player.play();
+	player.currentTime(200);
+}); */
+
+
+
+
+/* function initialize()
+{
+}
+
+function onPlayerReady() {
+} */
+
+	
+//generic seekTo function taking a player element and seconds as parameters    
+/* function playerSeekTo(player, seconds) {
+}
+
+
+function onPlayerStateChange(event) {
+} */
+
+
+// This function is called by initialize()
+/* function updateTimerDisplay(){
+}
+
+function formatTime(time){
+} */
+
+// This function is called by initialize()
+/* function updateProgressBar(){
+} */
+
+
+//gives the user an input field to change the name of the channel
+/* function changeChannel()
+{
+}
+
+function setChannelName()
+{
+} */

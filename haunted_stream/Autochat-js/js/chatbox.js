@@ -28,6 +28,21 @@ var emotes = [
 ];
 
 
+var videoplaylist = [
+["chapel", "https://video.wixstatic.com/video/bde2cd_f5edd6eb29f64d689a3c9cbaae834870/1080p/mp4/file.mp4"],
+["dontgiveup", "https://video.wixstatic.com/video/bde2cd_00273d71cb9b4edbb78e6231d8f6b103/1080p/mp4/file.mp4"],
+["enter", "https://video.wixstatic.com/video/bde2cd_ad92ea67fee5433b9396b7b1ca61dd05/720p/mp4/file.mp4"],
+["ashes", "https://video.wixstatic.com/video/bde2cd_eb8911679a6c4970ab1d70435897433b/1080p/mp4/file.mp4"]
+];
+
+var videocues = [
+	[0,15, "entrance"],
+	[15,30, "ladder"],
+	[30,40, "graffiti"],
+	[40,57, "chapel"]
+];
+
+
 var spamSpeed = 1200;
 
 
@@ -108,6 +123,50 @@ function getUsernameColor()
 }
 
 
+
+//writes the text of the input field into the chat with a random username
+function chat()
+{    
+    var textfield = $("#textfield");
+    var element = $("#chattext");
+    
+    if(textfield.val()!="")
+    {
+        var message = $('<div id="chatbubble" name="bubble"></div>');
+        // var message = $('<p></p>');		
+        message.attr("class", "chatMessage fade-in-element");		
+        message.append(getPlayerName());
+        message.append(": ");
+
+        var msgBody = textfield.val();
+        msgBody = replace_emotes(msgBody);
+
+        message.append(msgBody);
+		message.css("background", "black");			
+   
+        textfield.val("");
+    
+        element.append(message);
+		jumpToTime(msgBody);
+        scrollToBottom();
+        cutTopOfChat();
+    }
+}
+
+
+//returns a set player rname
+function getPlayerName()
+{
+	var playername = $('<span></span>');
+	playername.attr("class", "username");
+	playername.append("ChosenOne");
+	playername.css("color", "red");
+	
+	return playername;
+	
+}
+
+
 //hides the chat text
 function hideChatText()
 {
@@ -135,33 +194,6 @@ function clearChat()
     element.empty();
 }
 
-//writes the text of the input field into the chat with a random username
-function chat()
-{    
-    var textfield = $("#textfield");
-    var element = $("#chattext");
-    
-    if(textfield.val()!="")
-    {
-        var message = $('<div id="chatbubble" name="bubble"></div>');
-        // var message = $('<p></p>');		
-        message.attr("class", "chatMessage fade-in-element");		
-        message.append(getUserName());
-        message.append(": ");
-
-        var msgBody = textfield.val();
-        msgBody = replace_emotes(msgBody);
-
-        message.append(msgBody);
-		message.css("background", "black");			
-   
-        textfield.val("");
-    
-        element.append(message);
-        scrollToBottom();
-        cutTopOfChat();
-    }
-}
 
 
 //starts spamming, calls keepSpamming()
@@ -233,49 +265,6 @@ function cleanUpScroll()
 }
 
 
-/* $("#chattext").scroll(function(){
-
-	elements = document.querySelectorAll('.fade-in-element');
-	
-    for (var i = 0; i < elements.length; i++) {
-      var element = elements[i];
-      var positionFromTop = elements[i].getBoundingClientRect().top;
-	  var topOfScroll = chattext.getBoundingClientRect().top;
-	  //element.addEventListener("animationend", listener, false);
-	  
-      if (positionFromTop <= topOfScroll + 100) {
-		element.classList.remove('fade-in-element');
-		$(element).fadeOut();
-        //element.classList.add('fade-out-element');
-        //element.classList.remove('hidden');
-      }
-    }
-}); */
-
-	// $("#chattext").scroll(function(){
-
-		// var el = document.querySelector('#chattext');
-		// console.log("scrollheight: " + el.scrollHeight, "  ,  scroll top: " + el.scrollTop);	
-		
-		// var element = $("#chattext");
-		// var chatMessages = element.children();
-		
-/* 			for(i=chatMessages.length; i>0; i--)
-			{	
-				if (screenPosition < 100){
-					chatMessages[i].remove();
-				}
-				
-				// $("#chatMessages"[i]).css("opacity", 1 - $("#chattext").scrollTop() / 250);
-				if(i < 2){
-					chatMessages[i].remove();
-				}
-			} */		
-		
-		// $("#chattext").css("opacity", 1 - $("#chattext").scrollTop() / 250);
-	//});
-
-
 //checks to see if the chat is too long and cuts the top elements if it is
 function cutTopOfChat()
 {
@@ -306,7 +295,8 @@ function init()
     spam();
 	darkmode();
 	addListeners();
-	// jumpToTime(1);
+	// VideoJS.setupAllWhenReady();
+	// jumpToTime(50);
 }
 
 
@@ -415,7 +405,7 @@ function makeSettings()
     settingsMenu.append(settings);
 
 	var el = document.getElementById('settings');
-	el.style.position = 'absolute';
+	el.style.position = 'fixed';
 	el.style.left = '260px';
 	el.style.top = '40px';
 	el.style.width = '250px';
@@ -459,7 +449,7 @@ function makeVideoctrl()
 	videoctrlMenu.append(videoctrl);
 	
 	var el = document.getElementById('videoctrl');
-	el.style.position = 'absolute';
+	el.style.position = 'fixed';
 	el.style.left = '5px';
 	el.style.top = '40px';
 	el.style.width = '250px';
@@ -472,7 +462,9 @@ function addListeners(){
 
 	video.addEventListener('waiting', function () {log('waiting');});
 
-	video.addEventListener('playing', function () {log('playing');});
+	video.addEventListener('playing', function () {log('playing');
+		this.muted = false;
+	});
 
 	video.addEventListener('pause', function () {log('pause');});
 
@@ -495,12 +487,19 @@ function addListeners(){
 			//alert(this.getAttribute('id'));
 			var value = (this.getAttribute('seekPoint'));
 			video.currentTime = value;
+			video.play();
 		});
 	}
 	
-/* 	var myPlayer = videojs.getPlayer('my-video');
-	myPlayer.controlBar.hide(); */
 }
+
+
+/* videojs("my-video").ready(function(){
+	console.log("video ready");
+	var video = document.getElementsByTagName('video')[0];
+	video.jumpToTime(50);
+
+}); */
 
 
 
@@ -606,7 +605,8 @@ function chooseSpeed()
 //Video functions
 
 function log(msg) {
-  document.getElementById('events').innerHTML = '';
+  // document.getElementById('events').innerHTML = '';
+  console.log(msg);
 }
 
 /* var player = videojs('my-video', {
@@ -619,9 +619,20 @@ function log(msg) {
 function jumpToTime(landTime)
 {
 	// var player = VideoJS.setup("current_video");
-	videojs('#my-video').play();
-	videojs('#my-video').currentTime(landTime);
-	// $("video").prop('muted', false);
+	var video = document.getElementsByTagName('video')[0];	
+	
+	video.currentTime = landTime;
+	video.play();
+	
+/* 	var isVolumeMuted =  videojs('my-video').muted();
+	console.log(isVolumeMuted); */
+	
+	//video.play();
+	//video.muted(false);
+	//playbackRate(0.5);
+	
+/* 	videojs('#my-video').play();
+	videojs('#my-video').prop('muted', false); */
 }
 
 
@@ -638,12 +649,14 @@ player.ready(function() {
 	player.currentTime(200)	
 }) */
 
-/* VideoJS.DOMReady(function() {
-	var player = VideoJS.setup("current_video");
-	player.play();
-	player.currentTime(200);
-}); */
 
+/* VideoJS.DOMReady(function() {
+	var player = document.getElementById("my-video");
+	player.pause();
+	player.play();
+	player.currentTime(40);
+});
+ */
 
 
 
