@@ -143,14 +143,13 @@ function chat()
 		msgCommand = "the " + msgBody
     
         element.append(message);
-		//searchForCommand(msgCommand);
-		searchCommandWords(msgCommand);
+		searchForCommand(msgCommand);
         scrollToBottom();
         cutTopOfChat();
     }
 }
 
-var commandwords = [
+var videocues = [
 	["start"	, 	0],
 	["ayesha"	, 	15],
 	["road"		, 	50],
@@ -176,7 +175,7 @@ var commandwords = [
 	
 ];
 
-/* var commandcues = [
+var commandwords = [
 	"start",	
 	"ayesha",
 	"road",	
@@ -224,52 +223,9 @@ var commandtimes = [
 	300,	
 	309,
 	312	
-]; */
+];
 
-
-function searchCommandWords(msgBody){
-	let msgBodyRaw = msgBody.toLowerCase();
-	var commandWord = "";
-	var keywords = [];
-	var keytimes = [];
-	
-	for (var i = 0; i < commandwords.length; i++)
-	{
-		keywords.push(commandwords[i][0]);
-		keytimes.push(commandwords[i][1]);		
-	}
-
-	// console.log(keywords);
-	
-	const result = keywords.some(word => {
-	const keywords = word.split(',');
-
-	  return keywords.some(r => {
-		if (~msgBodyRaw.indexOf( " " )) {
-			msgBodyRaw = msgBodyRaw.substring(msgBodyRaw.indexOf( " " ) );			
-			commandWord = r;
-		}
-		
-		return r.toLowerCase().includes(msgBodyRaw) || msgBodyRaw.includes(r.toLowerCase());
-	  });
-	});
-
-	console.log('result = ', result);
-	
-	if (result)
-	{
-		console.log('success ' + commandWord);
-		var pos = keywords.indexOf(commandWord);
-		jumpToTime(keytimes[pos]);		
-    }
-    else
-    {
-		console.log('failed');
-	}
-	
-}
-
-/* function searchForCommand(msgBody){
+function searchForCommand(msgBody){
 	
 	let msgBodyRaw = msgBody.toLowerCase();
 	var commandWord = "";	
@@ -302,7 +258,20 @@ function searchCommandWords(msgBody){
     {
 		console.log('failed');
 	}
-} */
+	
+	
+/* 	var el = commandcues.find(a =>a.includes(msgBody));
+	console.log(el);
+	
+	var pos = commandcues.indexOf(el);
+	jumpToTime(commandtimes[pos]); */
+	
+/*     console.log(commandcues.filter(function(item){
+        var finder = msgCommand;
+        return eval('/'+finder+'/').test(item);
+		var pos = commandcues.indexOf(el);
+    }));	 */
+}
 
 
 //returns a set player rname
