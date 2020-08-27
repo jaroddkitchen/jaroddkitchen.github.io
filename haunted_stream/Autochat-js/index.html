@@ -11,10 +11,14 @@
     
     <!-- importing the styling -->
 	<link rel="stylesheet" href="https://vjs.zencdn.net/7.8.4/video-js.css" />	
+
+	<!-- importing responsive voice -->	
+	<!-- <script src="https://code.responsivevoice.org/responsivevoice.js?key=lxcndNc5"></script> -->
 	
 	 <!-- importing the jQuery library  -->
     <script src="./js/jquery.min.js"></script>
-    <!-- importing my own javascript file -->
+    
+	<!-- importing my own javascript files -->
     <script src="./js/chatbox.js"></script>
 	
 	<!-- importing my own style -->
@@ -54,10 +58,12 @@
 		id="my-video"
 		class="video-js vjs-default-skin video-js-responsive-container vjs-hd";	
 		preload="auto";
+		autoplay="true";
+		muted
 		controls
 		loop
 	>
-    <source autoplay src="https://video.wixstatic.com/video/bde2cd_f5edd6eb29f64d689a3c9cbaae834870/1080p/mp4/file.mp4" type="video/mp4" />
+    <source autoplay src="https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4" type="video/mp4" />
     <!-- <source autoplay src="MY_VIDEO.webm" type="video/webm" /> -->
     <p class="vjs-no-js">
       To view this video please enable JavaScript, and consider upgrading to a
@@ -66,7 +72,7 @@
         >supports HTML5 video</a
       >
     </p>
-	</video>
+	</video>	
     </div>
 
 	<div id="control-row">
@@ -76,7 +82,7 @@
 				<button id="videoctrlButton" onclick="toggleMenu();" style="background-color: rgb(100, 65, 164);" name="videoctrl" class="dirButton">video control</button>
 				<div id="timer-text">
 					<div id="timer"></div>
-				</div>			
+				</div>				
 			</div>
 		</div>		
     </div>
@@ -95,13 +101,18 @@
 		<div id="belowchat">
 			<div id="input">
 				<form onsubmit="return false">
-					<input type="text" id="textfield" placeholder="send a message" style="background-color: rgb(20, 20, 20); color: white;">
+					<input type="text" id="textfield" autocomplete="off" placeholder="send a message" style="background-color: rgb(20, 20, 20); color: white;">
 					<input type="submit" id="chatButton" onclick="chat()" value="Chat" onkeypress="checkForEnter(event)">
-					<!-- <button id="change">change video</button> -->
-					<!-- <script src="./js/video_controls.js"></script>						 -->
 				</form>
 			</div>
 		</div>
+		<div id="camerabox">
+			<!-- <button id="reverseButton" onclick="rev();" style="background-color: rgb(100, 65, 164);" name="reverse">Reverse</button> -->
+			<button id="cameraButton1" value="0" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera1" class="cameraButton">CAM 1</button>
+			<button id="cameraButton2" value="1" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera2" class="cameraButton">CAM 2</button>
+			<button id="cameraButton3" value="2" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera3" class="cameraButton">CAM 3</button>
+<!-- 			<button id="cameraButton4" value="3" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera4" class="cameraButton">CAM 4</button>	 -->			
+		</div>		
 	</div>
 </body>
 </html>

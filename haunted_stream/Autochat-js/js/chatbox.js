@@ -29,10 +29,9 @@ var emotes = [
 
 
 var videoplaylist = [
-["chapel", "https://video.wixstatic.com/video/bde2cd_f5edd6eb29f64d689a3c9cbaae834870/1080p/mp4/file.mp4"],
-["dontgiveup", "https://video.wixstatic.com/video/bde2cd_00273d71cb9b4edbb78e6231d8f6b103/1080p/mp4/file.mp4"],
-["enter", "https://video.wixstatic.com/video/bde2cd_ad92ea67fee5433b9396b7b1ca61dd05/720p/mp4/file.mp4"],
-["ashes", "https://video.wixstatic.com/video/bde2cd_eb8911679a6c4970ab1d70435897433b/1080p/mp4/file.mp4"]
+["chapel", "https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4"],
+["dontgiveup", "https://video.wixstatic.com/video/bde2cd_29fc09fb61cd469fa5e1de604ddd8be6/720p/mp4/file.mp4"],
+["enter", "https://video.wixstatic.com/video/bde2cd_0b465ccc294f4786bd45df5fa6edee4d/720p/mp4/file.mp4"]
 ];
 
 
@@ -74,17 +73,15 @@ function getMessage()
 
     message.append(msgBody);
 	
-	
-	// message.css("background-color", "rgb(20, 20, 20, 0.5)");
-	
     return message;
 }
 
 
+//replace text with img
 function replace_emotes(message)
 {
     for(var i=0;i<emotes.length;i++){
-        message = message.replace(new RegExp(emotes[i][0], 'g'), "<img src='img/emotes/"+emotes[i][1]+"' alt='"+emotes[i][0]+"'>");
+        message = message.replace(new RegExp(emotes[i][0], 'g'), "<img src='../img/emotes/"+emotes[i][1]+"' alt='"+emotes[i][0]+"'>");
     }
 
     return message;
@@ -116,7 +113,7 @@ function getUsernameColor()
     return usernameColors[Math.floor(Math.random()*usernameColors.length)];
 }
 
-
+		
 
 //writes the text of the input field into the chat with a random username
 function chat()
@@ -150,7 +147,7 @@ function chat()
     }
 }
 
-var commandwords = [
+var commandnouns = [
 	["start"	, 	0],
 	["ayesha"	, 	15],
 	["road"		, 	50],
@@ -176,78 +173,28 @@ var commandwords = [
 	
 ];
 
-/* var commandcues = [
-	"start",	
-	"ayesha",
-	"road",	
-	"tree",		
-	"pentagram",
-	"church",	
-	"door",
-	"steeple",
-	"field",	
-	"face",
-	"date",
-	"founding",	
-	"engraving",		
-	"jenna"	,	
-	"window",
-	"graffiti",
-	"vandalism",		
-	"eric",
-	"penis",
-	"jason",	
-	"anne",
-	"stairs"	
-];
-
-var commandtimes = [
-	0,
-	15,
-	50,
-	68,	
-	101,
-	127,	
-	142,
-	151,
-	161,	
-	170,
-	181,
-	181,	
-	181,		
-	224,	
-	248,
-	248,
-	248,		
-	285,
-	294,
-	300,	
-	309,
-	312	
-]; */
-
 
 function searchCommandWords(msgBody){
 	let msgBodyRaw = msgBody.toLowerCase();
-	var commandWord = "";
-	var keywords = [];
+	var commandNoun = "";
+	var keynouns = [];
 	var keytimes = [];
 	
-	for (var i = 0; i < commandwords.length; i++)
+	for (var i = 0; i < commandnouns.length; i++)
 	{
-		keywords.push(commandwords[i][0]);
-		keytimes.push(commandwords[i][1]);		
+		keynouns.push(commandnouns[i][0]);
+		keytimes.push(commandnouns[i][1]);		
 	}
 
 	// console.log(keywords);
 	
-	const result = keywords.some(word => {
-	const keywords = word.split(',');
+	const result = keynouns.some(word => {
+	const keynouns = word.split(',');
 
-	  return keywords.some(r => {
+	  return keynouns.some(r => {
 		if (~msgBodyRaw.indexOf( " " )) {
 			msgBodyRaw = msgBodyRaw.substring(msgBodyRaw.indexOf( " " ) );			
-			commandWord = r;
+			commandNoun = r;
 		}
 		
 		return r.toLowerCase().includes(msgBodyRaw) || msgBodyRaw.includes(r.toLowerCase());
@@ -258,9 +205,10 @@ function searchCommandWords(msgBody){
 	
 	if (result)
 	{
-		console.log('success ' + commandWord);
-		var pos = keywords.indexOf(commandWord);
-		jumpToTime(keytimes[pos]);		
+		console.log('success ' + commandNoun);
+		var pos = keynouns.indexOf(commandNoun);
+		jumpToTime(keytimes[pos]);
+		//responsiveVoice.speak("Okay, let's look at the " + commandNoun,$('#voiceselection').val());
     }
     else
     {
@@ -268,41 +216,6 @@ function searchCommandWords(msgBody){
 	}
 	
 }
-
-/* function searchForCommand(msgBody){
-	
-	let msgBodyRaw = msgBody.toLowerCase();
-	var commandWord = "";	
-	
-	const result = commandwords.some(word => {
-	const commandwords = word.split(',');
-
-	  return commandwords.some(r => {
-		if (~msgBodyRaw.indexOf( " " )) {
-			msgBodyRaw = msgBodyRaw.substring(msgBodyRaw.indexOf( " " ) );			
-			commandWord = r;
-		// only check the first word if there are multiple
-		// msgBodyRaw = msgBodyRaw.substring( 0, msgBodyRaw.indexOf( " " ) );
-			commandWord = r;
-		}
-		
-		return r.toLowerCase().includes(msgBodyRaw) || msgBodyRaw.includes(r.toLowerCase());
-	  });
-	});
-
-	console.log('result = ', result);
-	
-	if (result)
-	{
-		console.log('success ' + commandWord);
-		var pos = commandwords.indexOf(commandWord);
-		jumpToTime(commandtimes[pos]);		
-    }
-    else
-    {
-		console.log('failed');
-	}
-} */
 
 
 //returns a set player rname
@@ -443,13 +356,62 @@ function init()
 	toggleSettings();
     makeVideoctrl();
 	toggleVideoctrl();
+	toggleCamera(0);
     spam();
 	darkmode();
 	addListeners();
+	
 	// VideoJS.setupAllWhenReady();
 	// jumpToTime(50);
 }
 
+function addListeners(){
+	var video = document.getElementsByTagName('video')[0];
+	var videostart = false;
+
+	video.addEventListener('waiting', function () {log('waiting');});
+
+	video.addEventListener('playing', function () {log('playing');
+		this.muted = false;
+	});
+
+	video.addEventListener('pause', function () {log('pause');});
+
+	video.addEventListener('play', function () {
+/* 		log('play');
+		if (!videostart){
+			introSpeech();
+			videostart = true;
+		} */
+	});
+	
+
+	video.addEventListener('stalled', function () {log('stalled');});
+
+	video.addEventListener('seeking', function () {log('seeking');});
+
+	video.addEventListener('seeked', function () {log('seeked');});
+	
+	video.addEventListener('timeupdate', function() {
+		document.getElementById("timer").innerHTML = ('<p>' + this.currentTime + '</p>');
+		currentTime = this.currentTime;
+	});
+	
+	var i;
+	for (i = 1; i < timeStamps.length; i++) {
+		document.getElementById('timebtn' + i).addEventListener('click', function () {
+			//alert(this.getAttribute('id'));
+			var value = (this.getAttribute('seekPoint'));
+			video.currentTime = value;
+			video.play();
+		});
+	}
+}
+
+function introSpeech()
+{
+	responsiveVoice.speak("Welcome to the Haunted Stream project's interactive demo. Uncle Jarod's latest innovations include an interface that allows you to interact with the video through the chat box, and me, a soulless automaton, programmed to respond to your asinine comments. f you would like to switch to a different perspective, click the labeled camera buttons on the bottom of the screen. If you see anything in the footage you'd like to take a closer look at, try typing about it in the text message field, located in the lower right corner of your screen, then click the chat button or press the return key to see if the video changes. For example, if you see a fallen tree by a roadside, you might type, hey, check out that creepy tree!" ,$('#voiceselection').val());
+}
 
 //toggles between dark mode and normal mode
 function darkmode()
@@ -531,6 +493,13 @@ function makeSettings()
     selectSpam.append(scaredSpam);	
     selectSpam.append(weirdSpam);
     
+	var selectSpeaker = $('<select><select>');
+	selectSpeaker.attr("id", "voiceselection");
+/* 	var voicelist = responsiveVoice.getVoices();
+	var vselect = $('#voiceselection');
+		$.each(voicelist, function() {
+				selectSpeaker.append($("<option />").val(this.name).text(this.name));
+		}); */
     
     var selectSpeed = $('<input></input>');
     selectSpeed.attr("type", "range");
@@ -547,7 +516,12 @@ function makeSettings()
     settings.append(clearButton);
     settings.append("<br><br>");
     settings.append(darkModeButton);
-    settings.append("<br><br>");	
+    settings.append("<br>");
+    settings.append($('<h3></h3>').append("voice"));
+	settings.append(selectSpeaker);
+	settings.append("<br><br>");
+	
+	
     
 /*     var settingsButton = $("#settingsButton");
     settingsButton.append(settings); */
@@ -560,16 +534,8 @@ function makeSettings()
 	el.style.left = '260px';
 	el.style.top = '40px';
 	el.style.width = '250px';
-
-/* 	var x = $("p").position();
-	alert("Top: " + x.top + " Left: " + x.left); */
-	
-	
-/* 	var parentButton = $("#settingsButton");
-	var bodyRect = document.parentButton.getBoundingClientRect();
-	console.log(bodyRect); */
-	
 }
+
 
 
 // makes a video controller box
@@ -608,39 +574,57 @@ function makeVideoctrl()
 }
 
 
-function addListeners(){
-	var video = document.getElementsByTagName('video')[0];
-
-	video.addEventListener('waiting', function () {log('waiting');});
-
-	video.addEventListener('playing', function () {log('playing');
-		this.muted = false;
-	});
-
-	video.addEventListener('pause', function () {log('pause');});
-
-	video.addEventListener('play', function () {log('play');});
-
-	video.addEventListener('stalled', function () {log('stalled');});
-
-	video.addEventListener('seeking', function () {log('seeking');});
-
-	video.addEventListener('seeked', function () {log('seeked');});
+function toggleCamera(n){
+	var camera = n;
+	console.log("camera " + camera);
 	
-	video.addEventListener('timeupdate', function() {
-		document.getElementById("timer").innerHTML = ('<p>' + this.currentTime + '</p>');
-		currentTime = this.currentTime;
-	});
+	var myPlayer = document.getElementsByTagName('video')[0];
+	var curtime = myPlayer.currentTime;
+	//console.log(curtime);
+
+	myPlayer.setAttribute("src", videoplaylist[n][1]);
+	myPlayer.setAttribute("type", "video/mp4");
+	myPlayer.currentTime = curtime;
+	//myPlayer.load();
 	
-	var i;
-	for (i = 1; i < timeStamps.length; i++) {
-		document.getElementById('timebtn' + i).addEventListener('click', function () {
-			//alert(this.getAttribute('id'));
-			var value = (this.getAttribute('seekPoint'));
-			video.currentTime = value;
-			video.play();
-		});
-	}
+	var curButton = "#" + event.srcElement.id;
+	var curName = "#" + event.srcElement.name;
+
+	if (!camera){
+		camera = 0;
+		curButton = "#" + "cameraButton1";		
+	}	
+	
+	$('.cameraButton').css("background-color", "gray");	
+	$('.cameraButton').css("color", "white");
+
+        $(curButton).css("background-color", "gray");
+		$(curButton).css("color", "white");
+    
+    if($(curButton).css('display') == 'none')
+    {
+        $(curButton).css("background-color", "gray");
+		$(curButton).css("color", "white");
+    }
+    else
+    {
+        $(curButton).css("background-color", "white");
+		$(curButton).css("color", "black");
+    }	
+
+/* 	var curButton = "#" + event.srcElement.id;
+	var curValue = event.srcElement.value;
+    
+    if($('.cameraButton').value != curValue)
+    {
+        $('.cameraButton').css("background-color", "gray");
+		$('.cameraButton').css("color", "white");
+    }
+    else
+    {
+        $('.cameraButton').css("background-color", "white");
+		$('.cameraButton').css("color", "black");
+    } */		
 	
 }
 
@@ -742,6 +726,11 @@ function toggleVideoctrl()
 function chooseSpam()
 {
     spamType = $("#selectspamtype").val();
+}
+
+//sets the type of voice from the input in the settings
+function chooseVoice()
+{
 }
 
 //sets the speed from the input in the settings
