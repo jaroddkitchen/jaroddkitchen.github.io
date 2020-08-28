@@ -36,7 +36,7 @@ var videoplaylist = [
 
 
 
-var spamSpeed = 1200;
+var spamSpeed = 3200;
 
 
 
@@ -56,7 +56,9 @@ function getMessage()
     var message = $('<div id="chatbubble"></div>');
     message.attr("class", "fade-in-element");
     message.append(getUserName());
-    message.append(" : ");
+	
+	message.append("&nbsp;&#58;&nbsp;"); 	
+    // message.append(" : ");
 
     var msgBody = "";
     
@@ -81,8 +83,8 @@ function getMessage()
 function replace_emotes(message)
 {
     for(var i=0;i<emotes.length;i++){
-        message = message.replace(new RegExp(emotes[i][0], 'g'), "<img src='../img/emotes/"+emotes[i][1]+"' alt='"+emotes[i][0]+"'>");
-    }
+        message = message.replace(new RegExp(emotes[i][0], 'g'), "<img src='../img/emotes/"+emotes[i][1]+"' class='emoticon' alt='"+emotes[i][0]+"' vertical-align='bottom'>");
+    } 
 
     return message;
 }
@@ -97,7 +99,6 @@ function getUserName()
     username.css("color", usercolor);
     username.append(usernamePrefixes[Math.floor(Math.random()*usernamePrefixes.length)]);   //gets a random username from the array
     username.append(usernameSuffixes[Math.floor(Math.random()*usernameSuffixes.length)]);   //gets a random username from the array
-/* 	username.append(" : "); */ 
     
     if(Math.random() > 0.5)
     {
@@ -123,27 +124,30 @@ function chat()
     
     if(textfield.val()!="")
     {
-        var message = $('<div id="chatbubble" name="bubble"></div>');
-        // var message = $('<p></p>');		
+        var message = $('<div id="playerbubble" name="bubble"></div>');	
         message.attr("class", "chatMessage fade-in-element");		
         message.append(getPlayerName());
-        message.append(": ");
+        message.append(" ");
 
         var msgBody = textfield.val();
         msgBody = replace_emotes(msgBody);
 
         message.append(msgBody);
-		message.css("background", "black");			
+/* 		message.css("color", "black");
+		message.css("text-shadow", "1px 1px #666666");
+		message.css("background", "linear-gradient(to top, rgba(255, 255, 255, 0.85) 0%, rgba(128, 128, 128, 0.85) 100%)");	 */	
    
         textfield.val("");
 		
 		msgCommand = "the " + msgBody
     
         element.append(message);
-		//searchForCommand(msgCommand);
+
 		searchCommandWords(msgCommand);
-        scrollToBottom();
-        cutTopOfChat();
+        
+		scrollToBottom();
+        
+		cutTopOfChat();
     }
 }
 
@@ -221,10 +225,10 @@ function searchCommandWords(msgBody){
 //returns a set player rname
 function getPlayerName()
 {
-	var playername = $('<span></span>');
-	playername.attr("class", "username");
-	playername.append("ChosenOne");
-	playername.css("color", "red");
+	var playername = $('<div text-align = "center"></div>');
+	playername.attr("class", "playername");
+	playername.append("&#9733;&nbsp;The Chosen One");
+	playername.append("<br>");
 	
 	return playername;
 	
@@ -249,6 +253,7 @@ function hideChatText()
         hideButton.append("show");
     }
 }
+
 
 //clears the chat of messages
 function clearChat()
@@ -354,16 +359,12 @@ function init()
 {
     makeSettings();
 	toggleSettings();
-    makeVideoctrl();
-	toggleVideoctrl();
 	toggleCamera(0);
     spam();
 	darkmode();
 	addListeners();
-	
-	// VideoJS.setupAllWhenReady();
-	// jumpToTime(50);
 }
+
 
 function addListeners(){
 	var video = document.getElementsByTagName('video')[0];
@@ -393,24 +394,14 @@ function addListeners(){
 	video.addEventListener('seeked', function () {log('seeked');});
 	
 	video.addEventListener('timeupdate', function() {
-		document.getElementById("timer").innerHTML = ('<p>' + this.currentTime + '</p>');
+		document.getElementById("timer").innerHTML = (this.currentTime);
 		currentTime = this.currentTime;
 	});
-	
-	var i;
-	for (i = 1; i < timeStamps.length; i++) {
-		document.getElementById('timebtn' + i).addEventListener('click', function () {
-			//alert(this.getAttribute('id'));
-			var value = (this.getAttribute('seekPoint'));
-			video.currentTime = value;
-			video.play();
-		});
-	}
 }
 
 function introSpeech()
 {
-	responsiveVoice.speak("Welcome to the Haunted Stream project's interactive demo. Uncle Jarod's latest innovations include an interface that allows you to interact with the video through the chat box, and me, a soulless automaton, programmed to respond to your asinine comments. f you would like to switch to a different perspective, click the labeled camera buttons on the bottom of the screen. If you see anything in the footage you'd like to take a closer look at, try typing about it in the text message field, located in the lower right corner of your screen, then click the chat button or press the return key to see if the video changes. For example, if you see a fallen tree by a roadside, you might type, hey, check out that creepy tree!" ,$('#voiceselection').val());
+/* 	responsiveVoice.speak("Welcome to the Haunted Stream project's interactive demo. Uncle Jarod's latest innovations include an interface that allows you to interact with the video through the chat box, and me, a soulless automaton, programmed to respond to your asinine comments. f you would like to switch to a different perspective, click the labeled camera buttons on the bottom of the screen. If you see anything in the footage you'd like to take a closer look at, try typing about it in the text message field, located in the lower right corner of your screen, then click the chat button or press the return key to see if the video changes. For example, if you see a fallen tree by a roadside, you might type, hey, check out that creepy tree!" ,$('#voiceselection').val()); */
 }
 
 //toggles between dark mode and normal mode
@@ -431,7 +422,6 @@ function darkmode()
         darkMode = true;
         chat.css("color", "white");
         chat.css("background-color", "rgb(20, 20, 20, 0.5");
-		// chat.css("opacity", "0.5");
         $("#textfield").css("background-color", "rgb(20, 20, 20, 0.5)");
         $("#textfield").css("color", "white");
         $("#chattext").removeAttr("class");			
@@ -475,23 +465,63 @@ function makeSettings()
     selectSpam.attr("id", "selectspamtype");
     selectSpam.attr("onChange", "chooseSpam()");
     
+// spam types	
+	
+    var loveSpam = $('<option></option>');
+    loveSpam.attr("value", "positive");
+    loveSpam.append("&#128525;&nbsp;&nbsp;&nbsp;Adoring");
+	
     var positiveSpam = $('<option></option>');
     positiveSpam.attr("value", "positive");
-    positiveSpam.append("Positive");
-    var negativeSpam = $('<option></option>');
+    positiveSpam.append("&#128512;&nbsp;&nbsp;&nbsp;Happy");
+	
+    var snarkySpam = $('<option></option>');
+    snarkySpam.attr("value", "positive");
+    snarkySpam.append("&#128527;&nbsp;&nbsp;&nbsp;Snarky");	
+	
+    var neutralSpam = $('<option></option>');
+    neutralSpam.attr("value", "positive");
+    neutralSpam.append("&#128528;&nbsp;&nbsp;&nbsp;Neutral");
+ 
+	var negativeSpam = $('<option></option>');
     negativeSpam.attr("value", "negative");
-    negativeSpam.append("Negative");
-    var scaredSpam = $('<option></option>');
-    scaredSpam.attr("value", "scared");
-    scaredSpam.append("Scared");	
-    var weirdSpam = $('<option></option>');
-    weirdSpam.attr("value", "weird");
-    weirdSpam.append("Weird");
+    negativeSpam.append("&#128577;&nbsp;&nbsp;&nbsp;Unhappy");
+
+	var angrySpam = $('<option></option>');
+    angrySpam.attr("value", "negative");
+    angrySpam.append("&#128544;&nbsp;&nbsp;&nbsp;Angry");
     
+	var scaredSpam = $('<option></option>');
+    scaredSpam.attr("value", "scared");
+    scaredSpam.append("&#128552;&nbsp;&nbsp;&nbsp;Scared");
+	
+	var screamSpam = $('<option></option>');
+    screamSpam.attr("value", "scared");
+    screamSpam.append("&#128561;&nbsp;&nbsp;&nbsp;Terrified");		
+
+    var wackySpam = $('<option></option>');
+    wackySpam.attr("value", "positive");
+    wackySpam.append("&#128540;&nbsp;&nbsp;&nbsp;Wacky");
+    
+	var weirdSpam = $('<option></option>');
+    weirdSpam.attr("value", "weird");
+    weirdSpam.append("&#128565;&nbsp;&nbsp;&nbsp;Weird");
+
+	var demonSpam = $('<option></option>');
+    demonSpam.attr("value", "weird");
+    demonSpam.append("&#128520;&nbsp;&nbsp;&nbsp;Demonic");	
+	
+    selectSpam.append(loveSpam);    
     selectSpam.append(positiveSpam);
+    selectSpam.append(snarkySpam);
+    selectSpam.append(neutralSpam);	
     selectSpam.append(negativeSpam);
+    selectSpam.append(angrySpam);	
     selectSpam.append(scaredSpam);	
+    selectSpam.append(screamSpam);
+    selectSpam.append(wackySpam);	
     selectSpam.append(weirdSpam);
+    selectSpam.append(demonSpam);	
     
 	var selectSpeaker = $('<select><select>');
 	selectSpeaker.attr("id", "voiceselection");
@@ -503,12 +533,13 @@ function makeSettings()
     
     var selectSpeed = $('<input></input>');
     selectSpeed.attr("type", "range");
+	selectSpeed.attr("value", "1");	
     selectSpeed.attr("id", "selectspeed");
     selectSpeed.attr("onchange", "chooseSpeed()");
     
-    settings.append($('<h3></h3>').append("type of spam"));
+    settings.append($('<h3></h3>').append("chat mood"));
     settings.append(selectSpam);
-    settings.append($('<h3></h3>').append("speed"));
+    settings.append($('<h3></h3>').append("chat speed"));
     settings.append(selectSpeed);    
     settings.append("<br><br>");
     settings.append(spamButton);
@@ -531,47 +562,11 @@ function makeSettings()
 
 	var el = document.getElementById('settings');
 	el.style.position = 'fixed';
-	el.style.left = '260px';
-	el.style.top = '40px';
-	el.style.width = '250px';
-}
-
-
-
-// makes a video controller box
-
-	const timeButtons = [];
-	const timeStamps = [0, 10, 20, 30, 40, 50, 60];
-
-function makeVideoctrl()
-{
-    $("#videoctrlButton").css("background-color", "#4b2f7f");
-        
-    var videoctrl = $('<div class="dirmenu" name="videoctrlButton" align="center"></div>');
-    videoctrl.attr("id", "videoctrl");
-	videoctrl.append("<br>");
-	
-	var i;
-	for (i = 1; i < timeStamps.length; i++) {
-		var timeButton = $('<button name="timebtn" id="timebtn' + i + '"></button>');	
-		timeButton.append("time:" + timeStamps[i] + " secs");
-		var landTime = timeStamps[i];
-		timeButton.attr('seekPoint', landTime);
-		timeButtons.push("time " + timeStamps[i])
-		videoctrl.append(timeButton);
-		videoctrl.append("<br><br>");
-	}
-    
-    var videoctrlMenu = $("body");
-	videoctrlMenu.append(videoctrl);
-	
-	var el = document.getElementById('videoctrl');
-	el.style.position = 'fixed';
 	el.style.left = '5px';
 	el.style.top = '40px';
 	el.style.width = '250px';
-	
 }
+
 
 
 function toggleCamera(n){
@@ -700,26 +695,6 @@ function toggleSettings()
     }
 }
 
-
-//shows or hides the videoctrls
-function toggleVideoctrl()
-{
-    $("#videoctrl").toggle();
-	// $('div.dirmenu:not(#videoctrl)').hide();
-	$('div.dirmenu:not(#videoctrl)').hide();
-	// document.getElementById('settings').css.display = "none";
-    
-    if($("#videoctrl").css('display') == 'none')
-    {
-        $("#videoctrlButton").css("background-color", "gray");
-		$("#videoctrlButton").css("color", "white");
-    }
-    else
-    {
-        $("#videoctrlButton").css("background-color", "white");
-		$("#videoctrlButton").css("color", "black");
-    }
-}
 
 
 //sets the type of spam from the input in the settings

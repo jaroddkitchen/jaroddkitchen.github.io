@@ -60,7 +60,6 @@
 		preload="auto";
 		autoplay="true";
 		muted
-		controls
 		loop
 	>
     <source autoplay src="https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4" type="video/mp4" />
@@ -75,14 +74,13 @@
 	</video>	
     </div>
 
+	<div id="timer-text">
+		<div id="timer"></div>
+	</div>		
 	<div id="control-row">
 		<div id="control-panel">
 			<div id="input">		
-				<button id="settingsButton" onclick="toggleMenu();" style="background-color: rgb(100, 65, 164);" name="settings" class="dirButton">settings</button>
-				<button id="videoctrlButton" onclick="toggleMenu();" style="background-color: rgb(100, 65, 164);" name="videoctrl" class="dirButton">video control</button>
-				<div id="timer-text">
-					<div id="timer"></div>
-				</div>				
+				<button id="settingsButton" onclick="toggleMenu();" style="background-color: rgb(100, 65, 164);" name="settings" class="dirButton">settings</button>			
 			</div>
 		</div>		
     </div>
@@ -105,13 +103,12 @@
 					<input type="submit" id="chatButton" onclick="chat()" value="Chat" onkeypress="checkForEnter(event)">
 				</form>
 			</div>
-		</div>
-		<div id="camerabox">
-			<!-- <button id="reverseButton" onclick="rev();" style="background-color: rgb(100, 65, 164);" name="reverse">Reverse</button> -->
-			<button id="cameraButton1" value="0" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera1" class="cameraButton">CAM 1</button>
-			<button id="cameraButton2" value="1" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera2" class="cameraButton">CAM 2</button>
-			<button id="cameraButton3" value="2" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera3" class="cameraButton">CAM 3</button>
-<!-- 			<button id="cameraButton4" value="3" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera4" class="cameraButton">CAM 4</button>	 -->			
+			<div id="camerabox">
+				<!-- <button id="reverseButton" onclick="rev();" style="background-color: rgb(100, 65, 164);" name="reverse">Reverse</button> -->
+				<button id="cameraButton1" value="0" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera1" class="cameraButton">CAM 1</button>
+				<button id="cameraButton2" value="1" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera2" class="cameraButton">CAM 2</button>
+				<button id="cameraButton3" value="2" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera3" class="cameraButton">CAM 3</button>		
+			</div>			
 		</div>		
 	</div>
 </body>
