@@ -1,0 +1,14 @@
+/* Video.js Controls Style Overrides */
+.vjs-default-skin .vjs-progress-control,
+.vjs-default-skin .vjs-time-controls,
+.vjs-default-skin .vjs-time-divider,
+.vjs-default-skin .vjs-captions-button,
+.vjs-default-skin .vjs-mute-control,
+.vjs-default-skin .vjs-volume-control,
+.vjs-default-skin .vjs-fullscreen-control {
+    display: none;  
+}
+
+.vjs-default-skin.vjs-has-started .vjs-control-bar {
+	visibility: hidden;
+}

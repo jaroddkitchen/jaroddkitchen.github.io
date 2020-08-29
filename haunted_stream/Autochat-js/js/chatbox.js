@@ -38,6 +38,8 @@ var videoplaylist = [
 
 var spamSpeed = 3200;
 
+var videostart = false;
+
 
 
 //writes a random message in the chat
@@ -227,7 +229,7 @@ function getPlayerName()
 {
 	var playername = $('<div text-align = "center"></div>');
 	playername.attr("class", "playername");
-	playername.append("&#9733;&nbsp;The Chosen One");
+	playername.append("&#9733;&nbsp;The Chosen One says...");
 	playername.append("<br>");
 	
 	return playername;
@@ -363,27 +365,38 @@ function init()
     spam();
 	darkmode();
 	addListeners();
+	//hideInterface();
 }
 
+function hideInterface()
+{
+	//var chatElement =  document.getElementById('chat');
+	$("#chat").css("display", "none");
+}
+
+function showInterface()
+{
+	$("#chat").css("display", "inline");
+}
 
 function addListeners(){
 	var video = document.getElementsByTagName('video')[0];
-	var videostart = false;
 
 	video.addEventListener('waiting', function () {log('waiting');});
 
 	video.addEventListener('playing', function () {log('playing');
+		showInterface();
 		this.muted = false;
 	});
 
 	video.addEventListener('pause', function () {log('pause');});
 
 	video.addEventListener('play', function () {
-/* 		log('play');
+		log('play');
 		if (!videostart){
-			introSpeech();
+			//introSpeech();
 			videostart = true;
-		} */
+		}
 	});
 	
 
@@ -397,6 +410,16 @@ function addListeners(){
 		document.getElementById("timer").innerHTML = (this.currentTime);
 		currentTime = this.currentTime;
 	});
+	
+	var vplayer = document.getElementsByTagName('video', {
+	  children: {
+		controlBar: {
+		  children: {
+			progressControl: false
+		  }
+		}
+	  }
+	})[0];	
 }
 
 function introSpeech()
@@ -580,6 +603,10 @@ function toggleCamera(n){
 	myPlayer.setAttribute("src", videoplaylist[n][1]);
 	myPlayer.setAttribute("type", "video/mp4");
 	myPlayer.currentTime = curtime;
+	
+	if(videostart){
+		myPlayer.play();
+	}
 	//myPlayer.load();
 	
 	var curButton = "#" + event.srcElement.id;

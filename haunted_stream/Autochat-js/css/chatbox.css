@@ -1,3 +1,18 @@
+video
+{
+	object-fit: cover;
+	object-position: inherit;
+}
+
+
+.vjs-poster
+{
+	background-size: cover;
+	background-position: center;
+	z-index: 10000055;
+}
+
+
 #chat
 {
     position: fixed;
@@ -157,7 +172,7 @@ img.emoticon
 .playername
 {
 	
-    font-size: 12pt;
+    font-size: 11pt;
 	font-weight: bold;
 	text-align: left;
 	/* text-decoration: underline wavy;	 */
@@ -439,11 +454,16 @@ p
 	z-index: 1000001;	
 }
 
+#timer-header
+{
+	font-size: 8pt;	
+}
+
 #timer-text
 {
     position: fixed;
-	padding: 12px;
-	bottom: 10px;
+	padding: 6px;
+	bottom: 2%;
 	left: 10px;
 	
 	width: 120px;
@@ -453,12 +473,11 @@ p
     border: solid;
 	border-radius: 10px;	
     border-width: 2px;
-    border-color: #464646;		
+    border-color: #464646;
 	
-	font-size: 16pt;
+	font-size: 12pt;
 	color: white;
-    margin-bottom: 3px;
-	font-family: Bahnschrift SemiCondensed;
+	font-family: Consolas;
 	text-shadow: 2px 2px #000000;
 	
 	z-index: 1000005;	
@@ -479,8 +498,8 @@ p
     position: relative;
     height: 40px;
     width: 200px;
-	padding: 6px;
-    
+	padding: 0px;
+
     background-color: white;
     color: black;
 

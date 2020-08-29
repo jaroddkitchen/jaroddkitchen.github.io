@@ -2,16 +2,19 @@
 <html>
 <head>
 
-    <meta name="description" content="A chatbox that automatically generates comments.">
+    <meta name="description" content="The Haunted Stream Project">
 	
+	
+
+    <!-- importing videojs -->	
 	<script src="https://vjs.zencdn.net/7.8.4/video.js"></script>	
 	<!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
 	<script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
-	
-    
+
     <!-- importing the styling -->
 	<link rel="stylesheet" href="https://vjs.zencdn.net/7.8.4/video-js.css" />	
-
+	<link rel="stylesheet" type="text/css" href="./css/video_controls.css" />	
+	
 	<!-- importing responsive voice -->	
 	<!-- <script src="https://code.responsivevoice.org/responsivevoice.js?key=lxcndNc5"></script> -->
 	
@@ -19,26 +22,16 @@
     <script src="./js/jquery.min.js"></script>
     
 	<!-- importing my own javascript files -->
-    <script src="./js/chatbox.js"></script>
+    <script src="./js/chatbox.js"></script>	
 	
 	<!-- importing my own style -->
     <link rel="stylesheet" type="text/css" href="./css/chatbox.css">
     <link rel="stylesheet" type="text/css" href="./css/styles.css">
 	
+	<!-- <style data-styled="" data-styled-version="7.8.4">	 -->
+	
 	<style data-styled="" data-styled-version="4.4.1">
-	
-<!-- 	video, #my-video, .video-js, .vjs-default-skin
-	{
-	  position: relative;
-	  left: 0; 
-	  bottom: 0;
-	  min-width: 100%;
-	  width: 100%;
-	  min-height: 100%;
-	  height: 100%;
-	} -->
-	
-	video, #my-video, .video-js, .vjs-default-skin
+	video, #my-video, .video-js, .vjs-default-skin, .vjs-hd
 	{
 	  position: absolute;
 	  left: 0; 
@@ -46,7 +39,7 @@
 	  min-width: 100%; 
 	  min-height: 100%;
 	  width: 100%; 
-	  height: auto;	  
+	  height: 100%;	  
 	}	
 	</style>
 	
@@ -56,13 +49,11 @@
 	<div id="videoframe">
 	<video
 		id="my-video"
-		class="video-js vjs-default-skin video-js-responsive-container vjs-hd";	
-		preload="auto";
-		autoplay="true";
-		muted
-		loop
+		class="video-js vjs-default-skin vjs-hd"
+		poster="../art/svg/bootoob_poster.png"
+		data-setup='{ "controls": true, "loop": true}'
 	>
-    <source autoplay src="https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4" type="video/mp4" />
+    <source src="https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4" type="video/mp4" />
     <!-- <source autoplay src="MY_VIDEO.webm" type="video/webm" /> -->
     <p class="vjs-no-js">
       To view this video please enable JavaScript, and consider upgrading to a
@@ -71,10 +62,11 @@
         >supports HTML5 video</a
       >
     </p>
-	</video>	
+	</video>		
     </div>
 
 	<div id="timer-text">
+		<div id="timer-header">seconds elapsed:</div>
 		<div id="timer"></div>
 	</div>		
 	<div id="control-row">
@@ -84,7 +76,7 @@
 			</div>
 		</div>		
     </div>
-    <div id="chat">
+    <div id="chat" style="display: none;">
 		<div id="abovechat">
 			<div id="channelname">
 			</div>
@@ -105,6 +97,7 @@
 			</div>
 			<div id="camerabox">
 				<!-- <button id="reverseButton" onclick="rev();" style="background-color: rgb(100, 65, 164);" name="reverse">Reverse</button> -->
+				<!-- <img src="../art/svg/camera_blk.svg" height="100%"> -->
 				<button id="cameraButton1" value="0" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera1" class="cameraButton">CAM 1</button>
 				<button id="cameraButton2" value="1" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera2" class="cameraButton">CAM 2</button>
 				<button id="cameraButton3" value="2" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera3" class="cameraButton">CAM 3</button>		
