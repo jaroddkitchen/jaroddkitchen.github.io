@@ -605,6 +605,7 @@ function toggleCamera(n){
 	myPlayer.currentTime = curtime;
 	
 	if(videostart){
+		hideInterface();
 		myPlayer.play();
 	}
 	//myPlayer.load();
