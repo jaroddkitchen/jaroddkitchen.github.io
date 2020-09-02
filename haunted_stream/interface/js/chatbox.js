@@ -1,6 +1,43 @@
+//is called automatically when the html page is loaded
+function init()
+{
+	//document.body.requestFullscreen();
+    makeSettings();
+	toggleSettings();
+	toggleCamera(0);
+    //spam();
+	darkmode();
+	addListeners();
+	//initVideoControlBar();
+	//hideInterface();
+}
+
+function initVideoControlBar()
+{
+/* 	const VolumeBar = videojs.getComponent('VolumeBar');
+	var box = document.getElementById('volume-box');
+	var player = videojs('my-video');
+	var volumeBar = new VolumeBar(player);
+	// player calls dispose on children, but this is not a child
+	player.on('dispose', volumeBar.dispose.bind(volumeBar))
+	box.appendChild(volumeBar.el()); */
+	
+	const ProgessControl = videojs.getComponent('ProgressControl');
+	var box = document.getElementById('progress-box');
+	var player = videojs('my-video');
+/* 	var progressControl = new ProgessControl(player,{
+	  dimensions: ['width=500', 'height=25']
+	}); */
+	var progressControl = new ProgessControl(player);	
+	// player calls dispose on children, but this is not a child
+	player.on('dispose', progressControl.dispose.bind(progressControl))
+	box.appendChild(progressControl.el());	
+}
+
 var spamming = false;
 var darkMode = true;
 var spamType = "positive";
+var spamSpeed = 3200;
 
 var usernamePrefixes = ["scary", "spooky", "sick", "insane", "cool", "revenge_of_", "mad", "generic", "Cpt", "nice", "xxx", "Dan", "VAC", "SWE", "Wizard", "faceless", "olof","best_", "daddy", "boo", "mister_", "davai", "Nick", "da_", "the_", "iAm", "Loungin", "extra", "BOT", "dirty", "shoutout_to_", "devil", "Only"];
 
@@ -28,17 +65,13 @@ var emotes = [
 ];
 
 
-var videoplaylist = [
-["chapel", "https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4"],
-["dontgiveup", "https://video.wixstatic.com/video/bde2cd_29fc09fb61cd469fa5e1de604ddd8be6/720p/mp4/file.mp4"],
-["enter", "https://video.wixstatic.com/video/bde2cd_0b465ccc294f4786bd45df5fa6edee4d/720p/mp4/file.mp4"]
-];
-
-
-
-var spamSpeed = 3200;
-
 var videostart = false;
+
+var videoplaylist = [
+	["chapel", "https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4"],
+	["pennhurst", "https://video.wixstatic.com/video/bde2cd_29fc09fb61cd469fa5e1de604ddd8be6/720p/mp4/file.mp4"],
+	["desert", "https://video.wixstatic.com/video/bde2cd_0b465ccc294f4786bd45df5fa6edee4d/720p/mp4/file.mp4"]
+];
 
 
 
@@ -151,76 +184,6 @@ function chat()
         
 		cutTopOfChat();
     }
-}
-
-var commandnouns = [
-	["start"	, 	0],
-	["ayesha"	, 	15],
-	["road"		, 	50],
-	["tree"		, 	68],	
-	["pentagram", 	101],
-	["church"	, 	127],	
-	["door"		, 	142],
-	["steeple"	, 	151],
-	["field"	, 	161],	
-	["face"		, 	170],
-	["date"		, 	181],
-	["founding"	, 	181],	
-	["engraving", 	181],		
-	["jenna"	, 	224],	
-	["window"	, 	248],
-	["graffiti"	, 	248],
-	["vandalism", 	248],		
-	["eric"		, 	285],
-	["penis"	, 	294],
-	["jason"	, 	300],	
-	["anne"		, 	309],
-	["stairs"	, 	312]	
-	
-];
-
-
-function searchCommandWords(msgBody){
-	let msgBodyRaw = msgBody.toLowerCase();
-	var commandNoun = "";
-	var keynouns = [];
-	var keytimes = [];
-	
-	for (var i = 0; i < commandnouns.length; i++)
-	{
-		keynouns.push(commandnouns[i][0]);
-		keytimes.push(commandnouns[i][1]);		
-	}
-
-	// console.log(keywords);
-	
-	const result = keynouns.some(word => {
-	const keynouns = word.split(',');
-
-	  return keynouns.some(r => {
-		if (~msgBodyRaw.indexOf( " " )) {
-			msgBodyRaw = msgBodyRaw.substring(msgBodyRaw.indexOf( " " ) );			
-			commandNoun = r;
-		}
-		
-		return r.toLowerCase().includes(msgBodyRaw) || msgBodyRaw.includes(r.toLowerCase());
-	  });
-	});
-
-	console.log('result = ', result);
-	
-	if (result)
-	{
-		console.log('success ' + commandNoun);
-		var pos = keynouns.indexOf(commandNoun);
-		jumpToTime(keytimes[pos]);
-		//responsiveVoice.speak("Okay, let's look at the " + commandNoun,$('#voiceselection').val());
-    }
-    else
-    {
-		console.log('failed');
-	}
-	
 }
 
 
@@ -353,80 +316,6 @@ function cutTopOfChat()
     }
 }
 
-
-
-
-//is called automatically when the html page is loaded
-function init()
-{
-    makeSettings();
-	toggleSettings();
-	toggleCamera(0);
-    spam();
-	darkmode();
-	addListeners();
-	//hideInterface();
-}
-
-function hideInterface()
-{
-	//var chatElement =  document.getElementById('chat');
-	$("#chat").css("display", "none");
-}
-
-function showInterface()
-{
-	$("#chat").css("display", "inline");
-}
-
-function addListeners(){
-	var video = document.getElementsByTagName('video')[0];
-
-	video.addEventListener('waiting', function () {log('waiting');});
-
-	video.addEventListener('playing', function () {log('playing');
-		showInterface();
-		this.muted = false;
-	});
-
-	video.addEventListener('pause', function () {log('pause');});
-
-	video.addEventListener('play', function () {
-		log('play');
-		if (!videostart){
-			//introSpeech();
-			videostart = true;
-			video.setAttribute("poster", "../art/svg/blank_poster.png");			
-		}
-	});
-	
-
-	video.addEventListener('stalled', function () {log('stalled');});
-
-	video.addEventListener('seeking', function () {log('seeking');});
-
-	video.addEventListener('seeked', function () {log('seeked');});
-	
-	video.addEventListener('timeupdate', function() {
-		document.getElementById("timer").innerHTML = (this.currentTime);
-		currentTime = this.currentTime;
-	});
-	
-	var vplayer = document.getElementsByTagName('video', {
-	  children: {
-		controlBar: {
-		  children: {
-			progressControl: false
-		  }
-		}
-	  }
-	})[0];	
-}
-
-function introSpeech()
-{
-/* 	responsiveVoice.speak("Welcome to the Haunted Stream project's interactive demo. Uncle Jarod's latest innovations include me, a soulless automaton programmed to respond to your asinine comments. If you would like to switch to a different camera perspective, click on the labeled camera buttons shown along the bottom of the screen. If you see anything in the footage you'd like to take a closer look at, try typing about it in the text message field of the chatbox, located in the lower right corner of your screen, then click the chat button or press the return key to see what transpires. For example, if you see a fallen tree by a roadside, you might type, hey, check out that creepy tree!" ,$('#voiceselection').val()); */
-}
 
 //toggles between dark mode and normal mode
 function darkmode()
@@ -599,58 +488,48 @@ function toggleCamera(n){
 	
 	var myPlayer = document.getElementsByTagName('video')[0];
 	var curtime = myPlayer.currentTime;
-	//console.log(curtime);
 
 	myPlayer.setAttribute("src", videoplaylist[n][1]);
 	myPlayer.setAttribute("type", "video/mp4");
 	myPlayer.currentTime = curtime;
 	
 	if(videostart){
-		//hideInterface();
 		myPlayer.play();
+		//myPlayer.load();
+		//hideInterface();		
 	}
-	//myPlayer.load();
 	
 	var curButton = "#" + event.srcElement.id;
 	var curName = "#" + event.srcElement.name;
 
+	
 	if (!camera){
 		camera = 0;
 		curButton = "#" + "cameraButton1";		
 	}	
 	
-	$('.cameraButton').css("background-color", "gray");	
-	$('.cameraButton').css("color", "white");
-
-        $(curButton).css("background-color", "gray");
-		$(curButton).css("color", "white");
+	$('.cameraIconButton').css("background-color", "transparent");	
+	$('.cameraIconButton').css("color", "white");
+	$('.cameraIconButton').attr("src", "../img/art/svg/camera_off.svg");
+	
+    $(curButton).css("background-color", "transparent");
+	$(curButton).css("color", "white");
+	$(curButton).attr("src", "../img/art/svg/camera_on.svg");		
     
     if($(curButton).css('display') == 'none')
     {
-        $(curButton).css("background-color", "gray");
+        $(curButton).css("background-color", "transparent");
 		$(curButton).css("color", "white");
+		$(curButton).attr("src", "../img/art/svg/camera_off.svg");			
     }
     else
     {
-        $(curButton).css("background-color", "white");
+        $(curButton).css("background-color", "transparent");
 		$(curButton).css("color", "black");
-    }	
-
-/* 	var curButton = "#" + event.srcElement.id;
-	var curValue = event.srcElement.value;
-    
-    if($('.cameraButton').value != curValue)
-    {
-        $('.cameraButton').css("background-color", "gray");
-		$('.cameraButton').css("color", "white");
+		$(curButton).attr("src", "../img/art/svg/camera_on.svg");			
     }
-    else
-    {
-        $('.cameraButton').css("background-color", "white");
-		$('.cameraButton').css("color", "black");
-    } */		
-	
 }
+
 
 
 /* videojs("my-video").ready(function(){
@@ -746,17 +625,250 @@ function chooseSpeed()
 
 
 
+
+//Hide and Show the chat interface
+function hideInterface()
+{
+	//var chatElement =  document.getElementById('chat');
+	$("#chat").css("display", "none");
+}
+
+function showInterface()
+{
+	$("#chat").css("display", "inline");
+}
+
+
+
+// Event listeners
+function addListeners(){
+	var video = document.getElementsByTagName('video')[0];
+
+	video.addEventListener('waiting', function () {log('waiting');});
+
+	video.addEventListener('playing', function () {log('playing');
+		showInterface();
+		// this.muted = false;
+	});
+
+	video.addEventListener('pause', function () {log('pause');});
+
+	video.addEventListener('play', function () {
+		log('play');
+		if (!videostart){
+			videostart = true;
+			video.setAttribute("poster", "../img/art/svg/blank_poster.png");
+			spam();			
+		}
+	});
+	
+
+	video.addEventListener('stalled', function () {log('stalled');});
+
+	video.addEventListener('seeking', function () {log('seeking');});
+
+	video.addEventListener('seeked', function () {log('seeked');});
+	
+	video.addEventListener('timeupdate', function() {
+		timeCheck();
+		//document.getElementById("timer").innerHTML = (this.currentTime);
+		
+	});
+}
+
+
+
+
+// timer objects
+
+/* var sec = 0;
+
+function pad ( val ) { return val > 9 ? val : "0" + val; }
+setInterval( function(){
+	$("#seconds").html(pad(++sec%60));
+	$("#minutes").html(pad(parseInt(sec/60,10)));
+}, 1000); */
+
+setInterval(function() {
+    var myPlayer = videojs('my-video');
+    var whereYouAt = myPlayer.currentTime();
+    var minutes = Math.floor(whereYouAt / 60);   
+    var seconds = Math.floor(whereYouAt - minutes * 60)
+    var x = minutes < 10 ? "0" + minutes : minutes;
+    var y = seconds < 10 ? "0" + seconds : seconds;
+
+    document.getElementById("timer").innerHTML = x + ":" + y;	
+}, 400);
+
+
+
+
+// voice triggers
+
+var speeches = [
+	["Welcome to the Haunted Stream Project's interactive demo. Uncle Jarod's latest innovations include me, a soul-less robot, programmed to respond to your asinine comments.", 2, 4] ,
+	["If you would like to switch to a different camera perspective, click on the labeled camera buttons shown along the bottom of the screen.", 7, 10],
+	["If you see anything in the footage you'd like to take a closer look at, try typing about it in the text message field of the chatbox, located in the lower right corner of your screen, then click the chat button or press the return key to see what transpires. For example, if you see a fallen tree by a roadside, you might type, Hey, check out that creepy tree!", 12, 15]
+]
+
+var curspeech = 0;
+var prevspeech = 0;
+var speechText = "";
+var speechText = speeches[curspeech][0]
+var speechStart = speeches[curspeech][1];
+var speechEnd = speeches[curspeech][2];
+var speechflag = false;
+
+
+function timeCheck()
+{
+	var myPlayer = videojs('my-video');	
+
+	if (curspeech < speeches.length){
+		speechText = speeches[curspeech][0]
+		speechStart = speeches[curspeech][1];	
+		speechEnd = speeches[curspeech][2];		
+		if (myPlayer.currentTime() > speechStart){
+			if (!speechflag)
+			{
+				getSpeech();
+				speechflag = true;
+				console.log(speechEnd);
+			}
+		}
+		
+		if (myPlayer.currentTime() >= speechEnd){
+			if (speechflag)
+			{		
+				removeSpeech();
+			}			
+		}
+	}
+}
+
+function removeSpeech()
+{	
+	prevspeech = curspeech;
+	var _speech = document.getElementById("monologue" + prevspeech);	
+	_speech.classList.remove('fade-in-element');
+	$("#monologue" + prevspeech).fadeOut(1000);
+	curspeech = curspeech + 1;
+	speechflag = false;
+	console.log("fadeout");
+	return;
+}
+
+
+function getResponse()
+{
+}
+
+function getSpeech()
+{
+	var nextspeech = curspeech;
+	var speechBubble = $('<div id="monologue' + nextspeech + '"></div>');
+	speechBubble.attr("class", "fade-in-element monologuebubble");
+	var speechBody = speeches[nextspeech][0];
+	speechBubble.append(speechBody);
+	// responsiveVoice.speak(speechBody ,$('#voiceselection').val());
+	
+	var element = $("#speechbox");
+	element.html(speechBubble);
+	return;
+}
+
+
+var commandnouns = [
+	["start"	, 	0, 0],
+	["ayesha"	, 	15, 0],
+	["road"		, 	50, 0],
+	["tree"		, 	68, 0],	
+	["pentagram", 	101, 0],
+	["church"	, 	127, 0],	
+	["door"		, 	142, 0],
+	["steeple"	, 	151, 0],
+	["field"	, 	161, 0],	
+	["face"		, 	170, 0],
+	["date"		, 	181, 0],
+	["founding"	, 	181, 0],	
+	["engraving", 	181, 0],		
+	["jenna"	, 	224, 0],	
+	["window"	, 	248, 0],
+	["graffiti"	, 	248, 0],
+	["vandalism", 	248, 0],		
+	["eric"		, 	285, 0],
+	["penis"	, 	294, 0],
+	["jason"	, 	300, 0],	
+	["anne"		, 	309, 0],
+	["stairs"	, 	312, 0]	
+	
+];
+
+
+function searchCommandWords(msgBody){
+	let msgBodyRaw = msgBody.toLowerCase();
+	var commandNoun = "";
+	var keynouns = [];
+	var keytimes = [];
+	
+	for (var i = 0; i < commandnouns.length; i++)
+	{
+		keynouns.push(commandnouns[i][0]);
+		keytimes.push(commandnouns[i][1]);		
+	}
+
+	// console.log(keywords);
+	
+	const result = keynouns.some(word => {
+	const keynouns = word.split(',');
+
+	  return keynouns.some(r => {
+		if (~msgBodyRaw.indexOf( " " )) {
+			msgBodyRaw = msgBodyRaw.substring(msgBodyRaw.indexOf( " " ) );			
+			commandNoun = r;
+		}
+		
+		return r.toLowerCase().includes(msgBodyRaw) || msgBodyRaw.includes(r.toLowerCase());
+	  });
+	});
+
+	console.log('result = ', result);
+	
+	if (result)
+	{
+		console.log('success ' + commandNoun);
+		var pos = keynouns.indexOf(commandNoun);
+		
+		var speechBubble = $('<div id="response"></div>');
+		speechBubble.attr("class", "fade-in-element dialoguebubble");
+		var speechBody = "Okay, let's look at the " + commandNoun;
+		speechBubble.append(speechBody);
+		
+		var element = $("#responsebox");
+		element.html(speechBubble);
+		
+		//jumpToTime(keytimes[pos]);
+		//responsiveVoice.speak("Okay, let's look at the " + commandNoun,$('#voiceselection').val());		
+    }
+    else
+    {
+		console.log('failed');
+	}
+	
+}
+
+
+
+
+
+
+
 //Video functions
 
 function log(msg) {
   // document.getElementById('events').innerHTML = '';
   console.log(msg);
 }
-
-/* var player = videojs('my-video', {
-  responsive: true;
-  fill: true;
-}); */
 
 
 //jump to time

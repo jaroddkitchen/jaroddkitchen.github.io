@@ -1,4 +1,4 @@
-/* Video.js Controls Style Overrides */
+Video.js Controls Style Overrides
 .vjs-default-skin .vjs-progress-control,
 .vjs-default-skin .vjs-time-controls,
 .vjs-default-skin .vjs-time-divider,
@@ -12,3 +12,12 @@
 .vjs-default-skin.vjs-has-started .vjs-control-bar {
 	visibility: hidden;
 }
+
+/* .vjs-progress-control {  
+  position: absolute;
+  top: 0px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 30px;
+} */

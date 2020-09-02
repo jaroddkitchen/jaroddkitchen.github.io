@@ -12,11 +12,49 @@ video
 	z-index: 10000055;
 }
 
+#video-js-responsive-container.vjs-hd {
+    padding-top: 56.25%;
+}
+#video-js-responsive-container.vjs-sd {
+    padding-top: 75%;
+}
+#video-js-responsive-container {
+    width: 100%;
+    position: relative;
+}
+#video-js-responsive-container .video-js {
+    height: 100% !important; 
+    width: 100% !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* #video-js .progress-box {
+    height: 100% !important; 
+    width: 600px !important;
+    position: absolute;
+    top: 25px;
+    left: 100px;
+} */
+
+
+#progress-box
+{
+	position: fixed !important;
+	left: 25% !important;
+	top: -18px !important;
+  
+	height: 25px !important;
+	width: 50% !important;
+	background: transparent !important;
+}
+
 
 #chat
 {
     position: fixed;
-    min-width: 300px;
+    min-width: 200px;
     width: 20%;
     height: 100%;
 	right: 0%;
@@ -166,7 +204,7 @@ img.emoticon
 
 	width:80%;
 	
-	z-index: 1000008;	
+	z-index: 1000008;
 }
 
 .playername
@@ -420,7 +458,7 @@ img.emoticon
 }
 
 @keyframes fade-out {
-    from {opacity: 1; transform: scale(.5,.5)}
+    from {opacity: 1; transform: scale(1.0,1.0)}
     to {opacity: 0;}
 }
 
@@ -456,14 +494,14 @@ p
 
 #timer-header
 {
-	font-size: 8pt;	
+	font-size: 10pt;	
 }
 
 #timer-text
 {
     position: fixed;
 	padding: 6px;
-	bottom: 2%;
+	bottom: 4%;
 	left: 10px;
 	
 	width: 120px;
@@ -475,7 +513,7 @@ p
     border-width: 2px;
     border-color: #464646; */
 	
-	font-size: 12pt;
+	font-size: 14pt;
 	color: white;
 	font-family: Consolas;
 	text-shadow: 2px 2px #000000;
@@ -483,15 +521,120 @@ p
 	z-index: 1000005;	
 }
 
-/* #voicebox
+
+#voicebox
 {
     position: fixed;
-	bottom: 80px;
-	left: 10px;
-	z-index: 10000010;	
+	bottom: 20%;
+	right: 25%;
+
+/* 	display: grid;
+	grid-row-gap: 8px; */
+	
+	justify-content: center;
+	align-items: top;
+
+	outline: none;	
+
+	width: 50%;
+	word-wrap: break-word;
+	
+	z-index: 10000005;	
+}
+
+#speechbox
+{
+/* 	box-sizing: border-box;
+	width: 100%;
+	word-wrap: break-word; */
+}
+
+#responsebox
+{
+	width: auto;
+	/* max-width: 50%; */
+}
+
+/* #dialogue:before {
+	content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+	left: 50%;
+	top: -50px;
+
+	border: 25px solid;
+	border-color: transparent transparent rgba(255, 255, 255, 0.75)  rgba(255, 255, 255, 0.75);	 	
+}
+
+#dialogue:after {
+	content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+	right: 50%;
+	top: -50px;
+	border: 25px solid;
+	border-color: transparent rgba(255, 255, 255, 0.75) rgba(255, 255, 255, 0.75) transparent;  
 } */
 
+
+.monologuebubble
+{
+	/* display: flex; */
+	box-sizing: border-box;
+	width: 100%;
+	padding: 20px;
+    color: black;
+	font-family: Roboto;
+	font-size: 12pt;
+	text-shadow: 2px 2px #FFFFFF;
+
+	border-radius: 10px;
+
+	background-color: rgb(255, 255, 255, 0.75);	
+	background: linear-gradient(to top, rgba(192, 192, 192, 0.75) 0%, rgba(255, 255, 255, 0.75) 100%);
+	
+}
+
+.dialoguebubble
+{
+	/* display: flex; */
+	box-sizing: border-box;
+	width: auto;
+	padding: 20px;
+    color: white;
+	font-family: Roboto;
+	font-size: 12pt;
+	text-shadow: 2px 2px #000000;
+
+	border-radius: 10px;
+
+	background-color: rgb(255, 0, 0, 0.75);	
+	background: linear-gradient(to top, rgba(255, 0, 0, 0.75) 0%, rgba(255, 0, 0, 0.75) 100%);
+	
+}
+
+
+
 /* camera controls */
+
+#camerabox
+{
+    position: fixed;
+	bottom: 2%;
+	left: 20%;
+
+	display: flex;
+	justify-content: space-evenly;
+	align-items: bottom;
+	
+	width: 60%;
+	
+	z-index: 1000050;
+}
+
+
 
 .cameraButton
 {
@@ -500,7 +643,7 @@ p
     width: 200px;
 	padding: 0px;
 
-    background-color: white;
+/*     background-color: white;
     color: black;
 
     -moz-box-sizing: border-box;
@@ -509,27 +652,45 @@ p
     border-radius: 10px;
 	border: solid;
 	border-color: #666666;
-	border-width: 4px;
+	border-width: 3px; */
+	
 	outline: none;
 }
 
-#camerabox
+
+#cameraiconbox
 {
     position: fixed;
-	bottom: 0%;
+	bottom: 5%;
 	left: 20%;
 
 	display: flex;
 	justify-content: space-evenly;
-	align-items: center;
+	align-items: bottom;
 	
 	width: 60%;
-	height: 65px;
+	height: 10%;
 	
-	/* background-color: #464646;	 */
-	/* background-color: black;		 */
-	z-index: 1000001;
+	z-index: 1000050;
 }
+
+
+.cameraIconButton
+{
+    position: relative;
+    height: 100%;
+    width: 200px;
+	padding: 0px;
+
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;	
+	
+    background-color: transparent;
+	border: none;
+	
+	outline: none;
+}
+
 
 
 #control-row
@@ -673,7 +834,6 @@ li
     height: 100%;
     margin: 0px;
     padding: 0px;
-    color: white;
 }
 
 /* to the left of chat */
@@ -708,25 +868,6 @@ li
     padding: 5px;
     
     border-radius: 4px;
-}
-
-
-#video-js-responsive-container.vjs-hd {
-    padding-top: 56.25%;
-}
-#video-js-responsive-container.vjs-sd {
-    padding-top: 75%;
-}
-#video-js-responsive-container {
-    width: 100%;
-    position: relative;
-}
-#video-js-responsive-container .video-js {
-    height: 100% !important; 
-    width: 100% !important;
-    position: absolute;
-    top: 0;
-    left: 0;
 }
 
 

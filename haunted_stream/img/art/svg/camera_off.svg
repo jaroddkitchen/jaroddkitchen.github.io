@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="66.860001mm"
+   height="53.949001mm"
+   viewBox="0 0 66.860001 53.949001"
+   version="1.1"
+   id="svg900"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="camera_off.svg">
+  <defs
+     id="defs894" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.8267625"
+     inkscape:cx="169.29336"
+     inkscape:cy="97.441048"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1600"
+     inkscape:window-height="837"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata897">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-243.051)">
+    <g
+       transform="matrix(0.26458333,0,0,0.26458333,-42.360019,176.03227)"
+       id="g6"
+       style="fill:#241c1c">
+      <path
+         inkscape:connector-curvature="0"
+         d="m 287.5,311.1 c -31.3,0 -56.6,25.3 -56.6,56.6 0,31.3 25.3,56.6 56.6,56.6 31.3,0 56.6,-25.3 56.6,-56.6 0,-31.2 -25.3,-56.6 -56.6,-56.6 z m 0.5,81.7 c -14.1,0 -25.6,-11.5 -25.6,-25.6 0,-14.1 11.5,-25.6 25.6,-25.6 14.1,0 25.6,11.5 25.6,25.6 0,14.1 -11.4,25.6 -25.6,25.6 z"
+         id="path2"
+         style="fill:#241c1c" />
+      <path
+         inkscape:connector-curvature="0"
+         d="m 395.2,277.2 h -51.8 l -5.2,-15 c -1.9,-5.4 -6.9,-8.9 -12.6,-8.9 h -78.2 c -5.7,0 -10.7,3.6 -12.6,8.9 l -5.2,15 h -51.8 c -9.7,0 -17.7,8 -17.7,17.7 v 144.6 c 0,9.7 8,17.7 17.7,17.7 h 217.3 c 9.7,0 17.7,-8 17.7,-17.7 V 294.9 c 0.1,-9.7 -7.8,-17.7 -17.6,-17.7 z m -187.8,31.5 c 0,2.4 -2,4.4 -4.4,4.4 h -21.1 c -2.4,0 -4.4,-2 -4.4,-4.4 v -4.9 c 0,-2.4 2,-4.4 4.4,-4.4 H 203 c 2.4,0 4.4,2 4.4,4.4 z M 288,434.6 c -37.2,0 -67.4,-30.2 -67.4,-67.4 0,-37.2 30.2,-67.4 67.4,-67.4 37.2,0 67.4,30.2 67.4,67.4 0,37.2 -30.2,67.4 -67.4,67.4 z"
+         id="path4"
+         style="fill:#241c1c" />
+    </g>
+  </g>
+</svg>
