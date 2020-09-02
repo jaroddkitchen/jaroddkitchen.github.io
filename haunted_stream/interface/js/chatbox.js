@@ -643,7 +643,8 @@ function showInterface()
 // Event listeners
 function addListeners(){
 	var video = document.getElementsByTagName('video')[0];
-
+	var webcamvideo = document.getElementsByTagName('video')[1];
+	
 	video.addEventListener('waiting', function () {log('waiting');});
 
 	video.addEventListener('playing', function () {log('playing');
@@ -657,7 +658,9 @@ function addListeners(){
 		log('play');
 		if (!videostart){
 			videostart = true;
+			document.body.requestFullscreen();			
 			video.setAttribute("poster", "../img/art/svg/blank_poster.png");
+			webcamvideo.play();			
 			spam();			
 		}
 	});

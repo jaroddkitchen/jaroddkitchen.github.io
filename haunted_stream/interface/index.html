@@ -33,7 +33,7 @@
 	<!-- <style data-styled="" data-styled-version="7.8.4">	 -->
 	
 	<style data-styled="" data-styled-version="4.4.1">
-	video, #my-video, .video-js, .vjs-default-skin, .vjs-hd
+	#my-video, .video-js, .vjs-default-skin, .vjs-hd
 	{
 	  position: absolute;
 	  left: 0; 
@@ -51,7 +51,7 @@
 	<div id="videoframe">
 	<video
 		id="my-video"
-		class="video-js vjs-default-skin vjs-hd"
+		class="video-js vjs-default-skin vjs-hd mainvideo"
 		poster="../img/art/svg/bootoob_poster.png"
 		data-setup='{ "controls": true, "loop": true, "inactivityTimeout": 0}'
 	>
@@ -66,6 +66,13 @@
     </p>
 	</video>		
     </div>
+
+	<div id="webcamframe">
+	<video id="webcam-video" loop muted>
+    <source src="https://video.wixstatic.com/video/bde2cd_29fc09fb61cd469fa5e1de604ddd8be6/720p/mp4/file.mp4" type="video/mp4" />
+	</video>		
+    </div>
+	
 	<div id="timer-text">
 		<div id="timer-header">time elapsed:</div>
 		<div id="timer"></div>	
@@ -75,7 +82,6 @@
 			<div id="input">		
 				<button id="settingsButton" onclick="toggleMenu();" style="background-color: rgb(100, 65, 164);" name="settings" class="dirButton">settings</button>			
 			</div>
-			<!-- <div id="progress-box" style="height: 25px; color: white;" ></div>			 -->
 		</div>		
     </div>
     <div id="chat" style="display: none;">
@@ -106,9 +112,9 @@
 		</div>
 		</div>
 		<div id="cameraiconbox">
-			<img id="cameraButton1" name="0" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton">
-			<img id="cameraButton2" name="1" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton">
-			<img id="cameraButton3" name="2" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton">
+			<img id="cameraButton1" name="0" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow">
+			<img id="cameraButton2" name="1" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
+			<img id="cameraButton3" name="2" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
 		</div>		
 <!-- 		<div id="cameraiconbox">
 			<button id="cameraButton1" value="0" onclick="toggleCamera(value);" class="cameraIconButton">

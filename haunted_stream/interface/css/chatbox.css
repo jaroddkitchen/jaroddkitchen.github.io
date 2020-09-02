@@ -661,14 +661,14 @@ p
 #cameraiconbox
 {
     position: fixed;
-	bottom: 5%;
-	left: 20%;
+	bottom: 2%;
+	left: 30%;
 
 	display: flex;
-	justify-content: space-evenly;
+	justify-content: center;
 	align-items: bottom;
 	
-	width: 60%;
+	width: 40%;
 	height: 10%;
 	
 	z-index: 1000050;
@@ -678,8 +678,7 @@ p
 .cameraIconButton
 {
     position: relative;
-    height: 100%;
-    width: 200px;
+    width: 25%;
 	padding: 0px;
 
     -moz-box-sizing: border-box;
@@ -691,6 +690,18 @@ p
 	outline: none;
 }
 
+
+.shadow {
+  -webkit-filter: drop-shadow( 2px 2px 0px rgba(0, 0, 0, 1.0));
+  filter: drop-shadow( 2px 2px 0px rgba(0, 0, 0, 1.0));
+  /* Similar syntax to box-shadow */
+}
+
+.stroked {
+  stroke: black;
+  stroke-width: 3px;
+  stroke-linecap: butt; 
+}
 
 
 #control-row
@@ -839,12 +850,26 @@ li
 /* to the left of chat */
 #videoframe
 {
-/*     position: absolute;
-    width: 100%;
-    height: 100%;
-    margin: 0px;
-    padding: 0px;
-    color: white; */
+}
+
+#webcamframe
+{
+}
+
+
+#webcam-video
+{
+    border:5px solid black;
+    position: absolute;
+	bottom: 15px;
+	left: 15px;
+
+    width: 160px;
+    overflow:hidden;
+    display:block;
+    height: 160px;	
+	
+	z-index: 10000054;
 }
 
 
