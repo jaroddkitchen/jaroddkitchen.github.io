@@ -25,6 +25,8 @@
     
 	<!-- importing my own javascript files -->
     <script src="./js/chatbox.js"></script>	
+
+	<script src="./dict/dictionary.js"></script>
 	
 	<!-- importing my own style -->
     <link rel="stylesheet" type="text/css" href="./css/chatbox.css">
@@ -69,10 +71,20 @@
 
 	<div id="webcamframe">
 	<video id="webcam-video" loop muted>
-    <source src="https://video.wixstatic.com/video/bde2cd_f447f30577a74aba829138597bb3f323/720p/mp4/file.mp4" type="video/mp4" />
-	</video>		
+    <source src="https://video.wixstatic.com/video/bde2cd_f447f30577a74aba829138597bb3f323/720p/mp4/file.mp4 " type="video/mp4" />
+	</video>
+		<div id="cameraiconbox">
+			<div id="cameraIconWrapper">
+				<div id="cameraText0" class="cameraIconText shadow" >1</div><img id="cameraButton1" name="0" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow">
+			</div>
+			<div id="cameraIconWrapper">
+				<div id="cameraText1" class="cameraIconText shadow" >2</div><img id="cameraButton2" name="1" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
+			</div>
+			<div id="cameraIconWrapper">
+				<div id="cameraText2" class="cameraIconText shadow" >3</div><img id="cameraButton3" name="2" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
+			</div>
+		</div>		
     </div>
-	
 	<div id="timer-text">
 		<div id="timer-header">time elapsed:</div>
 		<div id="timer"></div>	
@@ -99,39 +111,18 @@
 		<div id="belowchat">
 			<div id="input">
 				<form onsubmit="return false">
-					<input type="text" id="textfield" autocomplete="off" placeholder="send a message" style="background-color: rgb(20, 20, 20); color: white;">
+					<input type="text" id="textfield" maxlength="200" autocomplete="off" placeholder="send a message" style="background-color: rgb(20, 20, 20); color: white;">
 					<input type="submit" id="chatButton" onclick="chat()" value="Chat" onkeypress="checkForEnter(event)">
 				</form>
 			</div>		
 		</div>		
 	</div>
 	<div id="notchat">
-		<div id="responsebox"></div>
+		<div id="responsebox">
+		</div>
 		<div id="voicebox">
 			<div id="speechbox"></div>
-		</div>
-		</div>
-		<div id="cameraiconbox">
-			<img id="cameraButton1" name="0" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow">
-			<img id="cameraButton2" name="1" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
-			<img id="cameraButton3" name="2" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
 		</div>		
-<!-- 		<div id="cameraiconbox">
-			<button id="cameraButton1" value="0" onclick="toggleCamera(value);" class="cameraIconButton">
-			<img id="cameraButton1" src="../img/art/svg/camera_off.svg" height="100%">
-			</button>
-			<button id="cameraButton2" value="1" onclick="toggleCamera(value);" class="cameraIconButton" height="100%">
-			<img id="cameraButton2" src="../img/art/svg/camera_off.svg" height="100%">
-			</button>
-			<button id="cameraButton3" value="2" onclick="toggleCamera(value);" class="cameraIconButton" height="100%">
-			<img id="cameraButton3" src="../img/art/svg/camera_off.svg" height="100%">
-			</button>
-		</div> -->
-<!-- 		<div id="camerabox">
-			<button id="cameraButton1" value="0" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera1" class="cameraButton">CAM 1</button>
-			<button type=image" id="cameraButton2" value="1" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera2" class="cameraButton">CAM 2</button>
-			<button type=image" id="cameraButton3" value="2" onclick="toggleCamera(value);" style="background-color: rgb(100, 65, 164);" name="camera3" class="cameraButton">CAM 3</button>		
-		</div> -->		
 	</div>
 </body>
 </html>

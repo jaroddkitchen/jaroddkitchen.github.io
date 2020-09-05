@@ -50,7 +50,7 @@ video
 {
 	background-size: cover;
 	background-position: center;
-	z-index: 10000055;
+	z-index: 10000090;
 }
 
 #video-js-responsive-container.vjs-hd {
@@ -357,7 +357,7 @@ img.emoticon
 {
     position: absolute;
 	width: 75%;
-	height: 12.5%;
+	height: 100px;
 	min-height: 100px;
 	bottom: 2%;	
 	margin-left: 12.5%;
@@ -373,11 +373,10 @@ img.emoticon
 	justify-content: center;
 	align-items: center;
 	
+	padding: 12px;
+	
 	background: black;
 
-	text-align: center;
-	padding: 12px;
-	color: white;
 	z-index: 1000002;
 }
 
@@ -385,7 +384,7 @@ img.emoticon
 #textfield
 {
     position: absolute;
-    height: 28px;
+    height: 32px;
     width: 83.5%;
 	top: -100%;
 	left: 5%;
@@ -395,10 +394,13 @@ img.emoticon
     border-width: 2px;
     border-color: #464646;
 	outline: none;	
+
+	color: white;
 	
 	padding-left: 5%;
 	padding-right: -10%;
 }
+
 
 #chatButton
 {
@@ -451,31 +453,32 @@ img.emoticon
 
 #timer-header
 {
-	font-size: 10pt;	
+	font-size: 9pt;	
 }
 
 #timer-text
 {
     position: fixed;
 	padding: 6px;
-	bottom: 4%;
-	left: 10px;
+	bottom: 15px;
+	left: 15px;
 	
-	width: 120px;
+	width: 158px;
 	
-/* 	background-color: black;
+	background-color: black;
+/* 	border:5px solid black; */
 	
-    border: solid;
-	border-radius: 10px;	
+/*     border: solid;
+	border-radius: 0px;	
     border-width: 2px;
     border-color: #464646; */
 	
-	font-size: 14pt;
+	font-size: 12pt;
 	color: white;
 	font-family: Consolas;
 	text-shadow: 2px 2px #000000;
 	
-	z-index: 1000005;	
+	z-index: 10000055;	
 }
 
 
@@ -551,7 +554,7 @@ img.emoticon
 
 	border-radius: 10px;
 
-	background-color: rgb(255, 255, 255, 0.75);	
+	background-color: rgb(255, 255, 255, 0.85);	
 	background: linear-gradient(to top, rgba(192, 192, 192, 0.75) 0%, rgba(255, 255, 255, 0.75) 100%);
 	
 }
@@ -571,7 +574,7 @@ img.emoticon
 	border-radius: 10px;
 
 	background-color: rgb(0, 0, 0, 0.75);	
-	background: linear-gradient(to top, rgba(80, 0, 0, 0.75) 0%, rgba(255, 0, 0, 0.75) 100%);
+	background: linear-gradient(to top, rgba(0, 0, 80, 0.75) 0%, rgba(0, 0, 255, 0.75) 100%);
 	
 }
 
@@ -587,7 +590,7 @@ img.emoticon
 
 	display: flex;
 	justify-content: space-evenly;
-	align-items: bottom;
+	align-items: top;
 	
 	width: 60%;
 	
@@ -608,34 +611,85 @@ img.emoticon
 
 #cameraiconbox
 {
-    position: fixed;
-	bottom: 2%;
-	left: 30%;
+    position: absolute;
+	bottom: 12.5%;
+	
+	width: 30%;
+	height: 10%;
+	
+	display: flex;
+	justify-content: space-between;
+	align-items: top;
+
+	background-color: transparent;
+	
+	z-index: 1000050;
+
+	bottom: 15px;
+	left: 220px;	
+	
+}
+
+#cameraIconWrapper
+{
+	position: relative;
+	background-color: transparent;
 
 	display: flex;
-	justify-content: center;
-	align-items: bottom;
+	justify-content: left;
+	align-items: top;
+	vertical-align: top;
+}
+
+.cameraIconButton
+{
+/*     position: relative;
+    width: 35%;
+	padding: 0px;
+
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;	 */
+
+	position: absolute;
 	
-	width: 40%;
-	height: 10%;
+	border: none;
+	outline: none;
 	
 	z-index: 1000050;
 }
 
-
-.cameraIconButton
+.cameraIconText
 {
-    position: relative;
-    width: 25%;
-	padding: 0px;
-
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;	
+	display: block;
+	position: relative;
+    color: #241c1cff;
+	font-family: Impact;
+	font-size: 2.5vw;
+	
+/* 	text-shadow:
+		0.1vw 0.1vw 0.15vw #000000,
+		-0.1vw -0.1vw 0.15vw #000000,
+		-0.1vw 0.1vw 0.15vw #000000,
+		0.1vw -.01vw 0.15vw #000000; */
+	
+/* 	text-align: left;
+	vertical-align: center; */
+	
+/* 	left: 10%;
+	top: 30%; */
+	
+	left: 35%;
+	top: 25%;
 	
     background-color: transparent;
 	border: none;
-	
 	outline: none;
+	
+	user-select: none;
+	pointer-events: none;
+    cursor: default;	
+	
+	z-index: 1000051;
 }
 
 
@@ -790,7 +844,7 @@ img.emoticon
 {
     border:5px solid black;
     position: absolute;
-	bottom: 15px;
+	bottom: 35px;
 	left: 15px;
 
     width: 160px;
@@ -875,13 +929,30 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 /* Filter effects */
 
 .shadow {
-  -webkit-filter: drop-shadow( 2px 2px 0px rgba(0, 0, 0, 1.0));
-  filter: drop-shadow( 2px 2px 0px rgba(0, 0, 0, 1.0));
+  -webkit-filter: drop-shadow(
+	2px 2px 0px rgba(0, 0, 0, 1.0)
+	);
+  filter: drop-shadow(
+	2px 2px 0px rgba(0, 0, 0, 1.0)
+	);
+  /* Similar syntax to box-shadow */
+  
+  text-shadow: -1px -1px 1px #000000;
+  /* -2px -2px 0px rgba(0, 0, 0, 1.0) */
+}
+
+.rev-shadow {
+	-webkit-filter: drop-shadow(
+	-2px -2px 0px rgba(0, 0, 0, 1.0)
+	);
+	filter: drop-shadow(
+	-2px -2px 0px rgba(0, 0, 0, 1.0)
+	);
   /* Similar syntax to box-shadow */
 }
 
+
 .stroked {
-  stroke: black;
-  stroke-width: 3px;
-  stroke-linecap: butt; 
+	-webkit-text-stroke-width: 2px;
+	-webkit-text-stroke-color: black;
 }

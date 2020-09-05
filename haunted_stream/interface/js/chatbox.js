@@ -5,9 +5,11 @@ function init()
     makeSettings();
 	toggleSettings();
 	toggleCamera(0);
-    //spam();
+    spam();
 	darkmode();
 	addListeners();
+	loadDictionary();
+	
 	//initVideoControlBar();
 	//hideInterface();
 }
@@ -71,6 +73,12 @@ var videoplaylist = [
 	["chapel", "https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4"],
 	["pennhurst", "https://video.wixstatic.com/video/bde2cd_29fc09fb61cd469fa5e1de604ddd8be6/720p/mp4/file.mp4"],
 	["desert", "https://video.wixstatic.com/video/bde2cd_0b465ccc294f4786bd45df5fa6edee4d/720p/mp4/file.mp4"]
+];
+
+var webcamplaylist = [
+		["Ms5K", "https://video.wixstatic.com/video/bde2cd_f447f30577a74aba829138597bb3f323/720p/mp4/file.mp4"],
+		["Wimpy", "https://video.wixstatic.com/video/bde2cd_7935ef80ed5d44e09380e36140265934/720p/mp4/file.mp4"],
+		["Ryan", "https://video.wixstatic.com/video/bde2cd_385539cd85ff4cb0a0eff3967da87bf2/720p/mp4/file.mp4"]
 ];
 
 
@@ -168,20 +176,17 @@ function chat()
         msgBody = replace_emotes(msgBody);
 
         message.append(msgBody);
-/* 		message.css("color", "black");
-		message.css("text-shadow", "1px 1px #666666");
-		message.css("background", "linear-gradient(to top, rgba(255, 255, 255, 0.85) 0%, rgba(128, 128, 128, 0.85) 100%)");	 */	
    
         textfield.val("");
-		
-		msgCommand = "the " + msgBody
     
         element.append(message);
 
-		searchCommandWords(msgCommand);
-        
+		strToArray(msgBody);
+		
+		//msgCommand = "the " + msgBody;
+		//searchCommandWords(msgCommand);
+		
 		scrollToBottom();
-        
 		cutTopOfChat();
     }
 }
@@ -198,6 +203,7 @@ function getPlayerName()
 	return playername;
 	
 }
+
 
 
 //hides the chat text
@@ -488,45 +494,55 @@ function toggleCamera(n){
 	
 	var myPlayer = document.getElementsByTagName('video')[0];
 	var curtime = myPlayer.currentTime;
-
 	myPlayer.setAttribute("src", videoplaylist[n][1]);
 	myPlayer.setAttribute("type", "video/mp4");
 	myPlayer.currentTime = curtime;
+
+	var myWebcam = document.getElementsByTagName('video')[1];
+	myWebcam.setAttribute("src", webcamplaylist[n][1]);
+	myWebcam.setAttribute("type", "video/mp4");
+	myWebcam.currentTime = curtime;
 	
 	if(videostart){
 		myPlayer.play();
 		//myPlayer.load();
+		myWebcam.play();
+		
 		//hideInterface();		
 	}
 	
 	var curButton = "#" + event.srcElement.id;
 	var curName = "#" + event.srcElement.name;
+	var curText = "#" + "cameraText" + event.srcElement.name;
+	console.log(curText);
 
 	
 	if (!camera){
 		camera = 0;
-		curButton = "#" + "cameraButton1";		
+		curButton = "#" + "cameraButton1";
+		curText = "#" + "cameraText0";		
 	}	
 	
-	$('.cameraIconButton').css("background-color", "transparent");	
-	$('.cameraIconButton').css("color", "white");
+	$('.cameraIconButton').css("background-color", "transparent");
 	$('.cameraIconButton').attr("src", "../img/art/svg/camera_off.svg");
+	$('.cameraIconText').css("color", "#3f3131ff");
+
 	
     $(curButton).css("background-color", "transparent");
-	$(curButton).css("color", "white");
-	$(curButton).attr("src", "../img/art/svg/camera_on.svg");		
+	$(curButton).attr("src", "../img/art/svg/camera_on.svg");	
     
     if($(curButton).css('display') == 'none')
     {
         $(curButton).css("background-color", "transparent");
-		$(curButton).css("color", "white");
-		$(curButton).attr("src", "../img/art/svg/camera_off.svg");			
+		$(curButton).attr("src", "../img/art/svg/camera_off.svg");
+		$(curText).css("color", "#3f3131ff");		
+		
     }
     else
     {
         $(curButton).css("background-color", "transparent");
-		$(curButton).css("color", "black");
-		$(curButton).attr("src", "../img/art/svg/camera_on.svg");			
+		$(curButton).attr("src", "../img/art/svg/camera_on.svg");
+		$(curText).css("color", "#866767ff");		
     }
 }
 
@@ -661,7 +677,7 @@ function addListeners(){
 			document.body.requestFullscreen();			
 			video.setAttribute("poster", "../img/art/svg/blank_poster.png");
 			webcamvideo.play();			
-			spam();			
+			//spam();			
 		}
 	});
 	
@@ -834,17 +850,17 @@ function searchCommandWords(msgBody){
 		return r.toLowerCase().includes(msgBodyRaw) || msgBodyRaw.includes(r.toLowerCase());
 	  });
 	});
-
-	console.log('result = ', result);
+	
 	
 	if (result)
 	{
-		console.log('success ' + commandNoun);
+		findWord(msgBodyRaw);
+		console.log('"' + commandNoun + '" will trigger a game action.');
 		var pos = keynouns.indexOf(commandNoun);
 		
 		var speechBubble = $('<div id="response"></div>');
 		speechBubble.attr("class", "fade-in-element dialoguebubble");
-		var speechBody = "Okay, let's look at the " + commandNoun;
+		var speechBody = "Okay, let's look at the " + commandNoun + ".";
 		speechBubble.append(speechBody);
 		
 		var element = $("#responsebox");
@@ -855,12 +871,220 @@ function searchCommandWords(msgBody){
     }
     else
     {
-		console.log('failed');
+		findWord(msgBodyRaw);
+		console.log('This word does not affect the game');
+		var speechBubble = $('<div id="response"></div>');
+		speechBubble.attr("class", "fade-in-element dialoguebubble");
+		var speechBody = "I don't see anything like that around here, Chosen One.";
+		// var speechBody = "Sorry, I don't know what a " + msgBodyRaw + " is.";
+		speechBubble.append(speechBody);
+		
+		var element = $("#responsebox");
+		element.html(speechBubble);		
+		// console.log('failed');
 	}
 	
 }
 
 
+
+
+
+
+/* const cdnHREF = "";
+
+// See if the property that we want is pre-cached in the localStorage
+if ( window.localStorage !== null && window.localStorage.gameDict ) {
+    dictReady( window.localStorage.gameDict );
+ 
+// Load in the dictionary from the server
+} else {
+    jQuery.ajax({
+        url: cdnHREF + "chatbox.js",
+        dataType: "jsonp",
+        jsonp: false,
+        jsonpCallback: "dictLoaded",
+        success: function( txt ) {
+            // Cache the dictionary, if possible
+            if ( window.localStorage !== null ) {
+                window.localStorage.gameDict = txt;
+            }
+ 
+            // Let the rest of the game know
+            // that the dictionary is ready
+            dictReady( txt );
+        }
+        // TODO: Add error/timeout handling
+    });
+} */
+
+// The dictionary lookup object
+// var dict = [];
+ 
+// Do a jQuery Ajax request for the text dictionary
+/* $.get( "dict", function( txt ) {
+    // Get an array of all the words
+    var words = txt.split( "\n" );
+ 
+    // And add them as properties to the dictionary lookup
+    // This will allow for fast lookups later
+    for ( var i = 0; i < words.length; i++ ) {
+        dict[ words [ i ] ] = true;
+    }
+     
+    // The game would start after the dictionary was loaded
+    //init();
+	console.log("ajax get is done");
+}); */
+ 
+
+var words = []; 
+ 
+// Do a jQuery Ajax request for the text dictionary
+function loadDictionary() {
+    // Get an array of all the words
+    words = dict.split( "," );
+ 
+    // And add them as properties to the dictionary lookup
+    // This will allow for fast lookups later
+    for ( var i = 0; i < words.length; i++ ) {
+        dict[ words [ i ] ] = true;
+    }
+     
+	var lastWord = words.length - 1;
+	
+	console.log("dict loaded: " + words[lastWord] );
+    // The game would start after the dictionary was loaded
+    //init();
+}
+
+
+
+
+
+const removeWords = ["A", "AS", "THE", "TO", "OF", ""]; 
+
+function strToArray(str)
+{
+	var newStr = str;
+	var newStr = str.replace(/and|then/gi, ".");
+	newStr = newStr.replace(/move to |move towards |go back to |go to |go towards |go back to |walk to |walk towards| head to |head towards |head  back to |return to |\s+get on /gi, " _GO_TO: ");
+	newStr = newStr.replace(/\s+on |\s+in |\s+at |\s+with /gi, " _INTERACT_WITH: ");
+
+//Walk towards the store and make a balloon animal on their table in the back then walk to the front of the place and get on the stage then vomit andthen make a pass at the waitress!
+	
+    // Convert to uppercase
+	let strUpper = newStr.toUpperCase();
+
+    // Get an array of all the words	
+    words = strUpper.split( " " );
+	
+	// Reduce to first sentence
+/* 	var wordslength = words.length;
+	var sentenceEnd = words.indexOf(".");
+	words.splice(sentenceEnd, wordslength); */
+	
+	// Eliminate removal words
+	words = words.filter( ( el ) => !removeWords.includes( el ) );
+	
+/* 	words.forEach(function(item, i) { if (item == "AND") words[i] = "."; });
+	words.forEach(function(item, i) { if (item == "THEN") words[i] = "."; });	
+	words.forEach(function(item, i) { if (item == "ON") words[i] = "INTERACT WITH"; });
+	words.forEach(function(item, i) { if (item == "IN") words[i] = "INTERACT WITH"; });	 */
+	
+	
+	//for (var i = 0; i < words.length; i++){	
+		//words[words.map((x, i) => [i, x]).filter(x => x[1] == "AND")[0][0]] = ".";
+	//}
+	
+// Walk towards the store and make a balloon animal on their table in the back then walk to the front of the place and get on the stage then vomit andthen make a pass at the waitress!
+//"_GO-TO:", "STORE", ".", "MAKE", "BALLOON", "ANIMAL", "_INTERACT-WITH:", "TABLE", "_INTERACT-WITH:", "BACK", ".", "", "_GO-TO:", "FRONT", ".", "GET", "_INTERACT-WITH:", "STAGE", ".", "VOMIT", "..", "MAKE", "PASS", "_INTERACT-WITH:", "WAITRESS!"]
+	
+	
+/* 	for (var n = 0; n < words.length; n++){
+		words[words.map((x, i) => [i, x]).filter(x => x[1] == "AND")[0][0]] = ".";
+		words[words.map((x, i) => [i, x]).filter(x => x[1] == "ON")[0][0]] = "WITH";
+	} */
+	
+	for (var i = 0; i < words.length; i++){
+		var wordlength = words[i].length;
+		if (wordlength < 2)
+		{
+			//removewords.push(i);
+			words.splice(i, 1);
+			i--;
+		}
+		searchCommands(words[i]);
+	}
+	
+	 //console.log(words[0] + " " + words[0].length);
+	console.log(words);
+}
+
+function searchCommands(word){
+	let wordRaw = word.toLowerCase();
+	var commandNoun = "";
+	var keynouns = [];
+	var keytimes = [];
+	
+	for (var i = 0; i < commandnouns.length; i++)
+	{
+		keynouns.push(commandnouns[i][0]);
+		keytimes.push(commandnouns[i][1]);		
+	}
+	
+	const result = keynouns.includes(wordRaw);
+	console.log("wordRaw=" + wordRaw);
+	
+	if (result)
+	{
+		findWord(wordRaw);
+		console.log('"' + commandNoun + '" will trigger a game action.');
+		var pos = keynouns.indexOf(commandNoun);
+		
+		var speechBubble = $('<div id="response"></div>');
+		speechBubble.attr("class", "fade-in-element dialoguebubble");
+		var speechBody = "Okay, let's look at the " + wordRaw + ".";
+		speechBubble.append(speechBody);
+		
+		var element = $("#responsebox");
+		element.html(speechBubble);
+		
+		//jumpToTime(keytimes[pos]);
+		//responsiveVoice.speak("Okay, let's look at the " + commandNoun,$('#voiceselection').val());		
+    }
+    else
+    {
+		findWord(wordRaw);
+		console.log('This word does not affect the game');
+		var speechBubble = $('<div id="response"></div>');
+		speechBubble.attr("class", "fade-in-element dialoguebubble");
+		var speechBody = "I don't see anything like that around here, Chosen One.";
+		// var speechBody = "Sorry, I don't know what a " + msgBodyRaw + " is.";
+		speechBubble.append(speechBody);
+		
+		var element = $("#responsebox");
+		element.html(speechBubble);		
+		// console.log('failed');
+	}
+}
+
+
+function findWord( letters ) {
+	
+	let searchword = letters.toUpperCase();
+	searchword = searchword.replace(/\s+/g, '');
+
+	var n = words.includes(searchword)
+	
+	if (n == true){
+		console.log("Yes! " + searchword + " is a word!");
+	}
+	else
+	{
+		console.log("No! " + searchword + " is NOT a word!");
+	}
+}
 
 
 
