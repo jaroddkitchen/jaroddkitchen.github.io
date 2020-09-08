@@ -485,8 +485,8 @@ img.emoticon
 #voicebox
 {
     position: fixed;
-	bottom: 15%;
-	right: 30%;
+	bottom: 40%;
+	right: 25%;
 
 /* 	display: grid;
 	grid-row-gap: 8px; */
@@ -496,7 +496,7 @@ img.emoticon
 
 	outline: none;	
 
-	width: 40%;
+	width: 50%;
 	word-wrap: break-word;
 	
 	z-index: 10000005;	
@@ -568,13 +568,14 @@ img.emoticon
 	padding: 20px;
     color: white;
 	font-family: Roboto;
-	font-size: 12pt;
+	font-size: 16pt;
 	text-shadow: 2px 2px #000000;
 
 	border-radius: 10px;
 
 	background-color: rgb(0, 0, 0, 0.75);	
-	background: linear-gradient(to top, rgba(0, 0, 80, 0.75) 0%, rgba(0, 0, 255, 0.75) 100%);
+	background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.75) 100%);
+	//background: transparent;
 	
 }
 
@@ -678,7 +679,7 @@ img.emoticon
 /* 	left: 10%;
 	top: 30%; */
 	
-	left: 35%;
+	left: 75%;
 	top: 25%;
 	
     background-color: transparent;
