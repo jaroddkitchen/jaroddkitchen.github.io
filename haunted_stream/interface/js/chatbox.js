@@ -642,9 +642,11 @@ function addListeners(){
 	
 	video.addEventListener('timeupdate', function() {
 		timeCheck();
-		if (webcamvideo.currentTime >= 40)
+		if (webcamvideo.currentTime >= 43.5)
 		{
-			webcamvideo.currentTime = 36.5;
+			if ($("#response").length === 0) {
+				webcamvideo.currentTime = 36.5;
+			}
 		}
 		//document.getElementById("timer").innerHTML = (this.currentTime);
 		
@@ -990,7 +992,10 @@ function loadResponse(speechBubble)
 		clearTimeout(r_timer);
 	}
 	
-	r_timer =  window.setTimeout(fadeResponse, 3000);
+	var webcamvideo = document.getElementsByTagName('video')[1];
+	webcamvideo.currentTime = 45.5;
+	
+	r_timer =  window.setTimeout(fadeResponse, 15000);
 }
 	
 
