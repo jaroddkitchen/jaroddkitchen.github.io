@@ -17,16 +17,21 @@
 	<link rel="stylesheet" href="https://vjs.zencdn.net/7.8.4/video-js.css" />	
 	<link rel="stylesheet" type="text/css" href="./css/video_controls.css" />	
 	
-	<!-- importing responsive voice -->	
+	<!-- importing text-to-speech files -->	
+	<script src="./js/speechsynth.js"></script>	
 	<!-- <script src="https://code.responsivevoice.org/responsivevoice.js?key=lxcndNc5"></script> -->
 	
 	 <!-- importing the jQuery library  -->
     <script src="./js/jquery.min.js"></script>
     
-	<!-- importing my own javascript files -->
+	<!-- importing chat files -->
     <script src="./js/chatbox.js"></script>	
 
+	<!-- importing dictionary files -->
 	<script src="./dict/dictionary.js"></script>
+	<script src="./dict/verbs.js"></script>
+	<script src="./dict/nouns.js"></script>
+
 	
 	<!-- importing my own style -->
     <link rel="stylesheet" type="text/css" href="./css/chatbox.css">
@@ -108,11 +113,11 @@
 		<div id="chatoverlay-back">
 			<img src="../img/art/svg/vamp_back.png" draggable="false" width="80%"></img> 
 		</div>		
-		<div id="belowchat">
+		<div id="belowchat" class="shadow">
 			<div id="input">
 				<form onsubmit="return false">
-					<input type="text" id="textfield" maxlength="200" autocomplete="off" placeholder="send a message" style="background-color: rgb(20, 20, 20); color: white;">
-					<input type="submit" id="chatButton" onclick="chat()" value="Chat" onkeypress="checkForEnter(event)">
+					<input type="text" id="textfield" maxlength="200" autocomplete="off" placeholder="send a message">
+					<input type="submit" id="chatButton" class="shadow" onclick="chat()" value="Chat" onkeypress="checkForEnter(event)">
 				</form>
 			</div>		
 		</div>		

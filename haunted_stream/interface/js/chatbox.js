@@ -51,18 +51,6 @@ var emotes = [
     ["PogChamp", "pogchamp.png"]
 ];
 
-var videoplaylist = [
-	["chapel", "https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4"],
-	["pennhurst", "https://video.wixstatic.com/video/bde2cd_29fc09fb61cd469fa5e1de604ddd8be6/720p/mp4/file.mp4"],
-	["desert", "https://video.wixstatic.com/video/bde2cd_0b465ccc294f4786bd45df5fa6edee4d/720p/mp4/file.mp4"]
-];
-
-var webcamplaylist = [
-		["Ms5K", "https://video.wixstatic.com/video/bde2cd_f447f30577a74aba829138597bb3f323/720p/mp4/file.mp4"],
-		["Wimpy", "https://video.wixstatic.com/video/bde2cd_7935ef80ed5d44e09380e36140265934/720p/mp4/file.mp4"],
-		["Ryan", "https://video.wixstatic.com/video/bde2cd_385539cd85ff4cb0a0eff3967da87bf2/720p/mp4/file.mp4"]
-];
-
 
 
 //writes a random message in the chat
@@ -107,13 +95,13 @@ function getMessage()
 }
 
 
-var keywords = "scary, demon, evil";
+var keytags = "scary, demon, evil";
 
 function loadRandomImg(message)
 {
         $.getJSON("http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?",
         {
-            tags: keywords,
+            tags: keytags,
             tagmode: "all",
             format: "json"
         },
@@ -184,8 +172,8 @@ function chat()
 
         var msgBody = textfield.val();
         msgBody = replace_emotes(msgBody);
-
-        message.append(msgBody);
+		var msgBodyDiv = $('<div class="playertext">' + msgBody +'</div>');
+		message.append(msgBodyDiv);
    
         textfield.val("");
     
@@ -207,7 +195,7 @@ function getPlayerName()
 {
 	var playername = $('<div text-align = "center"></div>');
 	playername.attr("class", "playername");
-	playername.append("&#9733;&nbsp;The Chosen One says...");
+	playername.append("&#9733;&nbsp;The Chosen One");
 	playername.append("<br>");
 	
 	return playername;
@@ -344,19 +332,19 @@ function darkmode()
     if(darkMode)
     {
         darkMode = false;
-        chat.css("color", "white");
+        // chat.css("color", "white");
         chat.css("background-color", "transparent");
-        $("#textfield").css("background-color", "#141414");
-        $("#textfield").css("color", "white");
+/*         $("#textfield").css("background-color", "#141414");
+        $("#textfield").css("color", "white"); */
         $("#chattext").attr("class", "dark");		
     }
     else
     {
         darkMode = true;
-        chat.css("color", "white");
+        // chat.css("color", "white");
         chat.css("background-color", "rgb(20, 20, 20, 0.5");
-        $("#textfield").css("background-color", "rgb(20, 20, 20, 0.5)");
-        $("#textfield").css("color", "white");
+/*         $("#textfield").css("background-color", "rgb(20, 20, 20, 0.5)");
+        $("#textfield").css("color", "white"); */
         $("#chattext").removeAttr("class");			
 		
 	}
@@ -629,7 +617,7 @@ function addListeners(){
 			document.body.requestFullscreen();			
 			video.setAttribute("poster", "../img/art/svg/blank_poster.png");
 			webcamvideo.play();			
-			//spam();			
+			spam();			
 		}
 	});
 	
@@ -642,13 +630,7 @@ function addListeners(){
 	
 	video.addEventListener('timeupdate', function() {
 		timeCheck();
-		if (webcamvideo.currentTime >= 43.5)
-		{
-			if ($("#response").length === 0) {
-				webcamvideo.currentTime = 36.5;
-			}
-		}
-		//document.getElementById("timer").innerHTML = (this.currentTime);
+		updateFaceCam();
 		
 	});
 }
@@ -680,6 +662,19 @@ setInterval(function() {
 //--------------------------
 // Camera Controls	
 //--------------------------
+
+
+var videoplaylist = [
+	["chapel", "https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4"],
+	["pennhurst", "https://video.wixstatic.com/video/bde2cd_29fc09fb61cd469fa5e1de604ddd8be6/720p/mp4/file.mp4"],
+	["desert", "https://video.wixstatic.com/video/bde2cd_0b465ccc294f4786bd45df5fa6edee4d/720p/mp4/file.mp4"]
+];
+
+var webcamplaylist = [
+		["Ms5K", "https://video.wixstatic.com/video/bde2cd_f447f30577a74aba829138597bb3f323/720p/mp4/file.mp4"],
+		["Wimpy", "https://video.wixstatic.com/video/bde2cd_7935ef80ed5d44e09380e36140265934/720p/mp4/file.mp4"],
+		["Ryan", "https://video.wixstatic.com/video/bde2cd_385539cd85ff4cb0a0eff3967da87bf2/720p/mp4/file.mp4"]
+];
 
 
 var videostart = false;
@@ -769,27 +764,33 @@ var speechflag = false;
 
 function timeCheck()
 {
-	var myPlayer = videojs('my-video');	
-
 	if (curspeech < speeches.length){
-		speechText = speeches[curspeech][0]
-		speechStart = speeches[curspeech][1];	
-		speechEnd = speeches[curspeech][2];		
-		if (myPlayer.currentTime() > speechStart){
-			if (!speechflag)
-			{
-				getSpeech();
-				speechflag = true;
-				console.log(speechEnd);
-			}
+		//RunSpeeches();
+	}
+}
+
+
+function RunSpeeches()
+{
+	var myPlayer = videojs('my-video');	
+	
+	speechText = speeches[curspeech][0]
+	speechStart = speeches[curspeech][1];	
+	speechEnd = speeches[curspeech][2];		
+	if (myPlayer.currentTime() > speechStart){
+		if (!speechflag)
+		{
+			getSpeech();
+			speechflag = true;
+			console.log(speechEnd);
 		}
-		
-		if (myPlayer.currentTime() >= speechEnd){
-			if (speechflag)
-			{		
-				removeSpeech();
-			}			
-		}
+	}
+	
+	if (myPlayer.currentTime() >= speechEnd){
+		if (speechflag)
+		{		
+			removeSpeech();
+		}			
 	}
 }
 
@@ -824,64 +825,77 @@ function getSpeech()
 
 // Chat message validation
 
-var commandnouns = [
-	["START"	, 	0, 0],
-	["AYESHA"	, 	15, 0],
-	["ROAD"		, 	50, 0],
-	["TREE"		, 	68, 0],	
-	["PENTAGRAM", 	101, 0],
-	["CHURCH"	, 	127, 0],	
-	["DOOR"		, 	142, 0],
-	["STEEPLE"	, 	151, 0],
-	["FIELD"	, 	161, 0],	
-	["FACE"		, 	170, 0],
-	["DATE"		, 	181, 0],
-	["FOUNDING"	, 	181, 0],	
-	["ENGRAVING", 	181, 0],		
-	["JENNA"	, 	224, 0],	
-	["WINDOW"	, 	248, 0],
-	["GRAFFITI"	, 	248, 0],
-	["VANDALISM", 	248, 0],		
-	["ERIC"		, 	285, 0],
-	["PENIS"	, 	294, 0],
-	["JASON"	, 	300, 0],	
-	["ANNE"		, 	309, 0],
-	["STAIRS"	, 	312, 0]	
+var chatTriggers = [
+	["_INVALID_", 	0,   0, 138.5],
+	["START"	, 	0,   0, 43.5],
+	["AYESHA"	, 	15,  0, 54.5],
+	["ROAD"		, 	50,  0, 54.5],
+	["TREE"		, 	68,  0, 54.5],	
+	["PENTAGRAM", 	101, 0, 54.5],
+	["CHURCH"	, 	127, 0, 54.5],	
+	["DOOR"		, 	142, 0, 54.5],
+	["STEEPLE"	, 	151, 0, 54.5],
+	["FIELD"	, 	161, 0, 54.5],	
+	["FACE"		, 	170, 0, 54.5],
+	["DATE"		, 	181, 0, 54.5],
+	["FOUNDING"	, 	181, 0, 54.5],	
+	["ENGRAVING", 	181, 0, 54.5],		
+	["JENNA"	, 	224, 0, 54.5],	
+	["WINDOW"	, 	248, 0, 54.5],
+	["GRAFFITI"	, 	248, 0, 54.5],
+	["VANDALISM", 	248, 0, 54.5],		
+	["ERIC"		, 	285, 0, 54.5],
+	["PENIS"	, 	294, 0, 54.5],
+	["JASON"	, 	300, 0, 54.5],	
+	["ANNE"		, 	309, 0, 54.5],
+	["STAIRS"	, 	312, 0, 54.5]	
 ];
 
 
 var words = []; 
+var nouns = []; 
+var verbs = []; 
  
-// Do a jQuery Ajax request for the text dictionary
+
+ // Load all text dictionaries
 function loadDictionary() {
     // Get an array of all the words
     words = dict.split( "," );
- 
+	nouns = dict_nouns.split( "," );
+	verbs = dict_verbs.split( "," );
+	
     // And add them as properties to the dictionary lookup
     // This will allow for fast lookups later
     for ( var i = 0; i < words.length; i++ ) {
         dict[ words [ i ] ] = true;
-    }
-     
-	var lastWord = words.length - 1;
-	console.log("dict loaded: " + words[lastWord] );
+	}
 	
-    // The game would start after the dictionary was loaded
-    //init();
+    for ( var i = 0; i < nouns.length; i++ ) {
+		dict_nouns[ nouns [ i ] ] = true;
+	}
+	
+    for ( var i = 0; i < verbs.length; i++ ) {
+		dict_verbs[ verbs [ i ] ] = true;
+	}
+	
+	//nouns = nouns.filter( ( el ) => !verbs.includes( el ) );	
+
+	var lastVerb = verbs.length - 1;
+	console.log(verbs.length + " verbs loaded: " + verbs[0] + " to " + verbs[lastVerb] );	
+
+	var lastNoun = nouns.length - 1;
+	console.log(nouns.length + " nouns loaded: " + nouns[0] + " to " + nouns[lastNoun] );		
 }
 
 
 
-
-
-const removeWords = ["A", "AS", "THE", "TO", "OF", ""]; 
-
 function strToArray(str)
 {
 	var newStr = str;
-	var newStr = str.replace(/and|then/gi, ".");
+	
+/* 	var newStr = str.replace(/and|then/gi, ".");
 	newStr = newStr.replace(/go to |go towards |go back to |travel to |travel towards |move to |move towards |go back to |walk to |walk towards| head to |head towards |head back to |return to |\s+get to /gi, " _GO_TO: ");
-	newStr = newStr.replace(/\s+on |\s+in |\s+at |\s+with /gi, " _INTERACT_WITH: ");
+	newStr = newStr.replace(/\s+on |\s+in |\s+at |\s+with /gi, " _INTERACT_WITH: "); */
 
 //Walk towards the store and make a balloon animal on their table in the back then walk to the front of the place and get on the stage then vomit andthen make a pass at the waitress!
 	
@@ -892,113 +906,168 @@ function strToArray(str)
     playerwords = strUpper.split( " " );
 	
 	// Eliminate removal words
+	const removeWords = ["A", "AS", "THE", "TO", "OF"]; 
 	playerwords = playerwords.filter( ( el ) => !removeWords.includes( el ) );	
 
 	validWords = [];
 	
-	for (var i = 0; i < playerwords.length; i++){
-		//if (!commandFound){		
-			searchCommands(playerwords[i]);
-		//}
+	for (var i = 0; i < playerwords.length; i++){	
+		searchCommands(playerwords[i]);
 	}
 	
-	commandFound = false;
+	var lastValidWord = validWords.length - 1;	
 	
-	 //console.log(words[0] + " " + words[0].length);
+	assembleResponse(validWords[lastValidWord]);
 	console.log(playerwords);
 }
 
 
-
-var curresponse = 0;
+var curResponse = 0;
 var r_timer = null;
-var commandFound = false;
 var validWords = [];
+var keynouns = [];
+var keytimes = [];
+var pos;
 
-function searchCommands(word){
-	let wordRaw = word;
-	var keynouns = [];
-	var keytimes = [];
+// Search for keyword triggers
+function searchCommands(word)
+{
+	let wordRaw = word
+	keynouns = [];
+	keytimes = [];
 	
-	for (var i = 0; i < commandnouns.length; i++)
+	for (var i = 0; i < chatTriggers.length; i++)
 	{
-		keynouns.push(commandnouns[i][0]);
-		keytimes.push(commandnouns[i][1]);		
+		keynouns.push(chatTriggers[i][0]);
+		keytimes.push(chatTriggers[i][1]);		
 	}
 	
 	const result = keynouns.includes(wordRaw);
-	console.log("wordRaw=" + wordRaw);
+	pos = keynouns.indexOf(wordRaw);
+	//console.log("wordRaw=" + wordRaw + pos);
 	
-	var pos = keynouns.indexOf(wordRaw);
+	findWord(wordRaw);
 	
 	if (result)
 	{
-		//findWord(wordRaw);
-		validWords.push(wordRaw);
-		//addToResponse(wordRaw);	
+		curResponse = pos;
+		validWords.push(wordRaw);		
     }
+	
+	// a creepy tree is over there
+}
 
+
+// Conduct a dictionary search
+function findWord(letters) {
+	
+	let searchword = letters.toLowerCase();
+	//searchword = searchword.replace(/\s+/g, '');
+
+	// search for verbs
+	var v = verbs.includes(searchword);
+	
+	if (v==true){
+		console.log(searchword + " is a verb!");
+		var lastWord = verbs.length - 1;
+	}
+	else
+	{
+		//console.log("No! " + searchword + " is NOT a word!");
+		var lastWord = verbs.length - 1;
+	}
+
+	
+	// search for nouns	
+	var n = nouns.includes(searchword);
+	
+	if (n==true){
+		console.log(searchword + " is a noun!");
+		var lastWord = nouns.length - 1;
+	}
+	else
+	{
+		//console.log("No! " + searchword + " is NOT a word!");
+		var lastWord = nouns.length - 1;	
+	}
+	
+	if (!v){
+		if(!n){
+			console.log(searchword + " is not a noun or a verb!");
+		}
+	}
+}
+
+
+function assembleResponse(word)
+{	
 	if (validWords.length > 0) {
 		var speechBubble = $('<div id="response"></div>');
-		speechBubble.attr("class", "fade-in-element dialoguebubble");
-		var lastValidWord = validWords.length - 1;		
-		speechBubble.append(addToResponse(validWords[lastValidWord]));
+		speechBubble.attr("class", "fade-in-element dialoguebubble");	
 		
-		//validWords.push(wordRaw);		
+		var speechBody = "Okay, let's look at the " + word + ".";
+		speechBubble.append(speechBody);	
+		
+		console.log('"' + word + '" will trigger a game action.');		
+		//console.log("keywords=" + validWords.length);
+		
+		//invalidWords.push(wordRaw);		
 		//jumpToTime(keytimes[pos]);
 		//responsiveVoice.speak("Okay, let's look at the " + commandNoun,$('#voiceselection').val());
 	}
 	else
 	{
-		findWord(wordRaw);
+		//findWord(word);
+		curResponse = 0;
 		console.log('This word does not affect the game');
+		
 		var speechBubble = $('<div id="response"></div>');
 		speechBubble.attr("class", "fade-in-element dialoguebubble");			
-		var speechBody = "I don't see anything like that around here, Chosen One.";
-		// var speechBody = "Sorry, I don't know what a " + msgBodyRaw + " is.";
+		
+		var speechBody = "I don't see anything like that around here.";
 		speechBubble.append(speechBody);
 	}
 	
 	loadResponse(speechBubble);
+	speak(speechBody);
 }
 
 
-function addToResponse(word)
-{
-	console.log('"' + word + '" will trigger a game action.');		
-	console.log("keywords=" + validWords.length);
-		
-	var speechBody = "Okay, let's look at the " + word + ".";
-	
-	return speechBody;
-	//commandFound = true;
-}
 
-
+// Load a response from the webcam
 function loadResponse(speechBubble)
 {
 	var element = $("#responsebox");
 	
 	if ($("#response").length === 0) {
-	element.append(speechBubble);
-	console.log("no response found");
-	clearTimeout(r_timer);
+		
+		element.append(speechBubble);
+		
+		clearTimeout(r_timer);
+		r_timer =  window.setTimeout(fadeResponse, 3800);	
+		
+		var webcamvideo = document.getElementsByTagName('video')[1];
+		webcamvideo.currentTime = chatTriggers[curResponse][3];
 	}	
 	else
 	{
-		$("#response").remove();
-		element.append(speechBubble);
-		console.log("response found");
-		clearTimeout(r_timer);
+		console.log("last response is still playing");
 	}
-	
+}
+
+
+// Return webcam to a waiting loop
+function updateFaceCam()
+{
 	var webcamvideo = document.getElementsByTagName('video')[1];
-	webcamvideo.currentTime = 45.5;
-	
-	r_timer =  window.setTimeout(fadeResponse, 15000);
+	if (webcamvideo.currentTime >= 43.5)
+	{
+		if ($("#response").length === 0) {
+			webcamvideo.currentTime = 36.5;
+		}
+	}
 }
 	
-
 
 function fadeResponse()
 {
@@ -1012,36 +1081,12 @@ function fadeResponse()
 }
 
 
-function findWord( letters ) {
-	
-	let searchword = letters.toUpperCase();
-	//searchword = searchword.replace(/\s+/g, '');
-
-	var n = words.includes(searchword);
-	
-	if (n==true){
-		console.log("Yes! " + searchword + " is a word!");
-		var lastWord = words.length - 1;
-		console.log("dict loaded: " + words[lastWord] );
-	}
-	else
-	{
-		console.log("No! " + searchword + " is NOT a word!");
-		var lastWord = words.length - 1;
-		console.log("dict loaded: " + words[lastWord] );		
-	}
-}
-
-
-
 
 
 //Video functions
 
-function log(msg) {
-  // document.getElementById('events').innerHTML = '';
-  console.log(msg);
-}
+//var video = document.getElementsByTagName('video')[0];
+//var webcamvideo = document.getElementsByTagName('video')[1];
 
 
 //jump to time
@@ -1052,16 +1097,6 @@ function jumpToTime(landTime)
 	
 	video.currentTime = landTime;
 	video.play();
-	
-/* 	var isVolumeMuted =  videojs('my-video').muted();
-	console.log(isVolumeMuted); */
-	
-	//video.play();
-	//video.muted(false);
-	//playbackRate(0.5);
-	
-/* 	videojs('#my-video').play();
-	videojs('#my-video').prop('muted', false); */
 }
 
 
@@ -1126,3 +1161,8 @@ function formatTime(time){
 function setChannelName()
 {
 } */
+
+function log(msg) {
+  // document.getElementById('events').innerHTML = '';
+  console.log(msg);
+}
