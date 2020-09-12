@@ -1,19 +1,76 @@
 //is called automatically when the html page is loaded
 function init()
 {
-	//document.body.requestFullscreen();
+	addListeners();
     makeSettings();
 	toggleSettings();
 	toggleCamera(0);
 	initWebcam();
     //spam();
-	darkmode();
-	addListeners();
+	//darkmode();
 	loadDictionary();
 	
 	//initVideoControlBar();
 	//hideInterface();
 }
+
+
+
+// Event listeners
+function addListeners()
+{
+	var video = document.getElementsByTagName('video')[0];
+	var webcamvideo = document.getElementsByTagName('video')[1];
+	
+	video.addEventListener('waiting', function () {log('waiting');});
+
+	video.addEventListener('playing', function () {log('playing');
+		showInterface();
+		// this.muted = false;
+	});
+
+	video.addEventListener('pause', function () {log('pause');});
+
+	video.addEventListener('play', function () {
+		log('play');
+		if (!videostart){
+			videostart = true;
+			document.body.requestFullscreen();			
+			video.setAttribute("poster", "../img/art/svg/blank_poster.png");
+			webcamvideo.play();				
+			spam();			
+		}
+	});
+	
+
+	video.addEventListener('stalled', function () {log('stalled');});
+
+	video.addEventListener('seeking', function () {log('seeking');});
+
+	video.addEventListener('seeked', function () {log('seeked');});
+	
+	video.addEventListener('timeupdate', function() {
+		timeCheck();
+		updateFaceCam();
+		
+	});
+}
+
+
+// timer objects
+
+setInterval(function() {
+    var myPlayer = videojs('main-video');
+    var whereYouAt = myPlayer.currentTime();
+    var minutes = Math.floor(whereYouAt / 60);   
+    var seconds = Math.floor(whereYouAt - minutes * 60)
+    var x = minutes < 10 ? "0" + minutes : minutes;
+    var y = seconds < 10 ? "0" + seconds : seconds;
+
+    document.getElementById("timer").innerHTML = x + ":" + y;	
+}, 400);
+
+
 
 
 //--------------------------
@@ -59,8 +116,9 @@ function writeMessage()
     var element = $("#chattext");
     element.append(getMessage());
     cutTopOfChat();
-    scrollToBottom();	
-	cleanUpScroll();	
+    scrollToBottom();
+	var snd = new Sound("../snd/fx/bubble_pop.mp3", 10, false); 
+	snd.start();
 }
 
 //returns a random message
@@ -92,6 +150,112 @@ function getMessage()
     message.append(msgBody);
 	
     return message;
+}
+
+
+//scrolls to the bottom of the chat
+function scrollToBottom()
+{
+    var chattext = document.getElementById("chattext");
+    chattext.scrollTop = chattext.scrollHeight;
+	
+	//cleanUpScroll();
+}
+
+
+// Initial state
+// var scrollPos = 0;
+// adding scroll event
+/* document.addEventListener('scroll', function(){
+  // detects new state and compares it with the new one
+  var topOfScroll = $("#chattext").getBoundingClientRect().top;	
+  if (topOfScroll > scrollPos)
+		console.log("scrolling up");
+	else
+		console.log("scrolling up");
+	// saves the new position for iteration.
+	scrollPos = (document.body.getBoundingClientRect()).top;
+}); */
+
+var scrollDir = "down";
+
+$(function () {
+	
+    var position = $("#chattext").scrollTop();
+
+    $("#chattext").scroll(function () {
+        var scroll = $("#chattext").scrollTop();
+
+        if (scroll > position) {
+			scrollDir = "down";
+            console.log('moving DOWN the page');
+
+        } else {
+            console.log('moving UP the page');
+			scrollDir = "up";
+        }
+
+        position = scroll;
+    });
+
+});
+
+
+document.addEventListener('scroll', function (event) {
+    if (event.target.id === 'chattext')
+	{
+		// fade in and out bubbles by position and scroll direction
+		var topOfScroll = chattext.getBoundingClientRect().top;	
+		elements = document.querySelectorAll('#chatbubble');
+		
+		for (var i = 0; i < elements.length; i++)
+		{
+			var element = elements[i];
+			var positionFromTop = element.getBoundingClientRect().top;
+			var positionFromBottom = element.getBoundingClientRect().bottom;
+			var messageHeight = (element.clientHeight)/2;
+
+			if (scrollDir === "down"){
+				if (positionFromTop < topOfScroll - messageHeight + 32)
+				{
+					element.classList.remove('fade-in-element');
+					element.classList.add('fade-out-element');
+				}
+			}
+			
+			if (scrollDir === "up"){
+				if (positionFromBottom >= topOfScroll)
+				{
+					element.classList.remove('fade-out-element');
+					element.classList.add('fade-in-element');
+				}
+			}
+		}
+	}
+}, true /*Capture event*/);
+
+
+/* $("#chattext" ).scroll(function() {
+  cleanUpScroll();
+}); */
+
+
+
+//checks to see if the chat is too long and cuts the top elements if it is
+function cutTopOfChat()
+{
+    var element = $("#chattext");
+	chattext.scrollTop = chattext.scrollHeight;
+	
+	
+    if(element.children().length > 270)
+    {
+        var chatMessages = element.children();
+        for(i = 0; i<30; i++)
+        {
+            chatMessages[i].remove();
+        }
+    }
 }
 
 
@@ -265,61 +429,6 @@ function keepSpamming()
 
 
 
-//scrolls to the bottom of the chat
-function scrollToBottom()
-{
-    var chattext = document.getElementById("chattext");
-    chattext.scrollTop = chattext.scrollHeight;		
-}
-
-
-//scrolls to the bottom of the chat
-function cleanUpScroll()
-{
-    var chattext = document.getElementById("chattext");
-    chattext.scrollTop = chattext.scrollHeight;	
-
-	elements = document.querySelectorAll('.fade-in-element');
-	
-    for (var i = 0; i < elements.length; i++) {
-      var element = elements[i];
-      var positionFromTop = elements[i].getBoundingClientRect().top;
-      var positionFromBottom = elements[i].getBoundingClientRect().bottom;
-	  var messageHeight = element.clientHeight;
-	  
-	  var topOfScroll = chattext.getBoundingClientRect().top;	 
-	  
-	  
-      if (positionFromTop < (topOfScroll + messageHeight + 12)) {
-		//element.classList.remove('fade-in-element');
-		//$(element).fadeOut();
-        //element.classList.add('fade-out-element');
-		//console.log("message height: " + messageHeight);
-		scrollToBottom();
-        //element.classList.remove('hidden');
-      }
-    }	
-}
-
-
-//checks to see if the chat is too long and cuts the top elements if it is
-function cutTopOfChat()
-{
-    var element = $("#chattext");
-	chattext.scrollTop = chattext.scrollHeight;
-	
-	
-    if(element.children().length > 270)
-    {
-        var chatMessages = element.children();
-        for(i = 0; i<30; i++)
-        {
-            chatMessages[i].remove();
-        }
-    }
-}
-
-
 
 //--------------------------
 // Demo Settings	
@@ -489,7 +598,7 @@ function makeSettings()
 }
 
 
-/* videojs("my-video").ready(function(){
+/* videojs("main-video").ready(function(){
 	console.log("video ready");
 	var video = document.getElementsByTagName('video')[0];
 	video.jumpToTime(50);
@@ -593,69 +702,6 @@ function showInterface()
 {
 	$("#chat").css("display", "inline");
 }
-
-
-
-// Event listeners
-function addListeners(){
-	var video = document.getElementsByTagName('video')[0];
-	var webcamvideo = document.getElementsByTagName('video')[1];
-	
-	video.addEventListener('waiting', function () {log('waiting');});
-
-	video.addEventListener('playing', function () {log('playing');
-		showInterface();
-		// this.muted = false;
-	});
-
-	video.addEventListener('pause', function () {log('pause');});
-
-	video.addEventListener('play', function () {
-		log('play');
-		if (!videostart){
-			videostart = true;
-			document.body.requestFullscreen();			
-			video.setAttribute("poster", "../img/art/svg/blank_poster.png");
-			webcamvideo.play();			
-			spam();			
-		}
-	});
-	
-
-	video.addEventListener('stalled', function () {log('stalled');});
-
-	video.addEventListener('seeking', function () {log('seeking');});
-
-	video.addEventListener('seeked', function () {log('seeked');});
-	
-	video.addEventListener('timeupdate', function() {
-		timeCheck();
-		updateFaceCam();
-		
-	});
-}
-
-
-// timer objects
-
-/* var sec = 0;
-
-function pad ( val ) { return val > 9 ? val : "0" + val; }
-setInterval( function(){
-	$("#seconds").html(pad(++sec%60));
-	$("#minutes").html(pad(parseInt(sec/60,10)));
-}, 1000); */
-
-setInterval(function() {
-    var myPlayer = videojs('my-video');
-    var whereYouAt = myPlayer.currentTime();
-    var minutes = Math.floor(whereYouAt / 60);   
-    var seconds = Math.floor(whereYouAt - minutes * 60)
-    var x = minutes < 10 ? "0" + minutes : minutes;
-    var y = seconds < 10 ? "0" + seconds : seconds;
-
-    document.getElementById("timer").innerHTML = x + ":" + y;	
-}, 400);
 
 
 
@@ -772,7 +818,7 @@ function timeCheck()
 
 function RunSpeeches()
 {
-	var myPlayer = videojs('my-video');	
+	var myPlayer = videojs('main-video');	
 	
 	speechText = speeches[curspeech][0]
 	speechStart = speeches[curspeech][1];	
@@ -826,29 +872,29 @@ function getSpeech()
 // Chat message validation
 
 var chatTriggers = [
-	["_INVALID_", 	0,   0, 138.5],
+	["_INVALID_", 	0,   0, 139.5],
 	["START"	, 	0,   0, 43.5],
-	["AYESHA"	, 	15,  0, 54.5],
-	["ROAD"		, 	50,  0, 54.5],
-	["TREE"		, 	68,  0, 54.5],	
-	["PENTAGRAM", 	101, 0, 54.5],
-	["CHURCH"	, 	127, 0, 54.5],	
-	["DOOR"		, 	142, 0, 54.5],
-	["STEEPLE"	, 	151, 0, 54.5],
-	["FIELD"	, 	161, 0, 54.5],	
-	["FACE"		, 	170, 0, 54.5],
-	["DATE"		, 	181, 0, 54.5],
-	["FOUNDING"	, 	181, 0, 54.5],	
-	["ENGRAVING", 	181, 0, 54.5],		
-	["JENNA"	, 	224, 0, 54.5],	
-	["WINDOW"	, 	248, 0, 54.5],
-	["GRAFFITI"	, 	248, 0, 54.5],
-	["VANDALISM", 	248, 0, 54.5],		
-	["ERIC"		, 	285, 0, 54.5],
-	["PENIS"	, 	294, 0, 54.5],
-	["JASON"	, 	300, 0, 54.5],	
-	["ANNE"		, 	309, 0, 54.5],
-	["STAIRS"	, 	312, 0, 54.5]	
+	["AYESHA"	, 	15,  0, 54.65],
+	["ROAD"		, 	50,  0, 54.65],
+	["TREE"		, 	68,  0, 54.65],	
+	["PENTAGRAM", 	101, 0, 54.65],
+	["CHURCH"	, 	127, 0, 54.65],	
+	["DOOR"		, 	142, 0, 54.65],
+	["STEEPLE"	, 	151, 0, 54.65],
+	["FIELD"	, 	161, 0, 54.65],	
+	["FACE"		, 	170, 0, 54.65],
+	["DATE"		, 	181, 0, 54.65],
+	["FOUNDING"	, 	181, 0, 54.65],	
+	["ENGRAVING", 	181, 0, 54.65],		
+	["JENNA"	, 	224, 0, 54.65],	
+	["WINDOW"	, 	248, 0, 54.65],
+	["GRAFFITI"	, 	248, 0, 54.65],
+	["VANDALISM", 	248, 0, 54.65],		
+	["ERIC"		, 	285, 0, 54.65],
+	["PENIS"	, 	294, 0, 54.65],
+	["JASON"	, 	300, 0, 54.65],	
+	["ANNE"		, 	309, 0, 54.65],
+	["STAIRS"	, 	312, 0, 54.65]	
 ];
 
 
@@ -1008,8 +1054,9 @@ function assembleResponse(word)
 		var speechBody = "Okay, let's look at the " + word + ".";
 		speechBubble.append(speechBody);	
 		
-		console.log('"' + word + '" will trigger a game action.');		
-		//console.log("keywords=" + validWords.length);
+		console.log('"' + word + '" will trigger a game action.');	
+		
+		//console.log("keywords=" + validWords.length);		
 		
 		//invalidWords.push(wordRaw);		
 		//jumpToTime(keytimes[pos]);
@@ -1025,11 +1072,11 @@ function assembleResponse(word)
 		speechBubble.attr("class", "fade-in-element dialoguebubble");			
 		
 		var speechBody = "I don't see anything like that around here.";
-		speechBubble.append(speechBody);
+		speechBubble.append(speechBody);		
 	}
 	
-	loadResponse(speechBubble);
 	speak(speechBody);
+	loadResponse(speechBubble);
 }
 
 
@@ -1044,10 +1091,8 @@ function loadResponse(speechBubble)
 		element.append(speechBubble);
 		
 		clearTimeout(r_timer);
-		r_timer =  window.setTimeout(fadeResponse, 3800);	
-		
-		var webcamvideo = document.getElementsByTagName('video')[1];
-		webcamvideo.currentTime = chatTriggers[curResponse][3];
+		r_timer =  window.setTimeout(fadeResponse, 3093);
+		$("#webcam-video")[0].currentTime = chatTriggers[curResponse][3];
 	}	
 	else
 	{
@@ -1059,11 +1104,10 @@ function loadResponse(speechBubble)
 // Return webcam to a waiting loop
 function updateFaceCam()
 {
-	var webcamvideo = document.getElementsByTagName('video')[1];
-	if (webcamvideo.currentTime >= 43.5)
+	if ($("#webcam-video")[0].currentTime >= 43.5)
 	{
 		if ($("#response").length === 0) {
-			webcamvideo.currentTime = 36.5;
+			$("#webcam-video")[0].currentTime = 36.5;
 		}
 	}
 }
@@ -1100,6 +1144,54 @@ function jumpToTime(landTime)
 }
 
 
+
+
+function objTransform(obj, transIn, duration, transOut){
+	// scale effect
+	var webcamvideo = document.getElementsByTagName('video')[1];		
+	webcamvideo.classList.add("scale-up-element");
+}
+
+
+
+function Sound(source, volume, loop)
+{
+    this.source = source;
+    this.volume = volume;
+    this.loop = loop;
+    var son;
+    this.son = son;
+    this.finish = false;
+    this.stop = function()
+    {
+        document.body.removeChild(this.son);
+    }
+    this.start = function()
+    {
+        if (this.finish) return false;
+        this.son = document.createElement("embed");
+        this.son.setAttribute("src", this.source);
+        this.son.setAttribute("hidden", "true");
+        this.son.setAttribute("volume", this.volume);
+        this.son.setAttribute("autostart", "true");
+        this.son.setAttribute("loop", this.loop);
+        document.body.appendChild(this.son);
+    }
+    this.remove = function()
+    {
+        document.body.removeChild(this.son);
+        this.finish = true;
+    }
+    this.init = function(volume, loop)
+    {
+        this.finish = false;
+        this.volume = volume;
+        this.loop = loop;
+    }
+}
+
+
+
 /* function getVideo()
 {
 } */
@@ -1115,7 +1207,7 @@ player.ready(function() {
 
 
 /* VideoJS.DOMReady(function() {
-	var player = document.getElementById("my-video");
+	var player = document.getElementById("main-video");
 	player.pause();
 	player.play();
 	player.currentTime(40);

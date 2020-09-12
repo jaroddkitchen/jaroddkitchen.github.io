@@ -8,7 +8,7 @@ iframe
 
 body
 {
-    background-color: #6441a4;
+    background-color: #000000;
     margin: 0px;
     padding: 0px;
 }
@@ -21,17 +21,11 @@ body::-webkit-scrollbar
 
 p
 {
-    margin-bottom: 3px;
-	font-family: Bahnschrift SemiCondensed;
-	text-shadow: 2px 2px #000000;
 }
 
 li
 {
     list-style-type: none;
-}
-
-#wrapper {
 }
 
 
@@ -43,6 +37,40 @@ video
 {
 	object-fit: cover;
 	object-position: inherit;
+}
+
+#videoframe
+{
+}
+
+#webcamframe
+{
+}
+
+
+#webcam-wrapper
+{
+/* 	width: 15%;
+    height: 15%;
+    overflow:hidden;
+    display:block; */	
+}
+
+#webcam-video
+{
+	border:5px solid black;
+    position: absolute;
+	bottom: 2%;
+	left: 2%;
+
+    overflow:hidden;
+    display:block;
+	width: 15%;
+    height: 25%;
+	
+	transform-origin: bottom left;
+	
+	z-index: 10000054;
 }
 
 
@@ -109,7 +137,13 @@ video
     width: 20%;
     height: 100%;
 	right: 0%;
-	top: 0%;
+	bottom: 0%;
+	
+/*     border: solid;
+    border-width: 3px;
+	border-color: #3f3131ff;
+	border-radius: 20px; */	
+	
 }
 
 
@@ -150,6 +184,32 @@ video
 }
 
 
+#chattext
+{
+    position:absolute;
+    height:85%;
+	width: 95%;
+	bottom: 15%;
+	
+    overflow-y: auto;	
+	overflow: scroll;
+    overflow-x:hidden;	
+	word-wrap: break-word;
+	
+	font-size: 0.85em;
+	
+	/* vertical-align: bottom; */
+	
+	z-index: 1000001;	
+	
+	scroll-margin: 6px;
+	scroll-snap-align: start;
+	scroll-behavior: smooth;
+	scroll-snap-type: y proximity;
+	scroll-padding: auto;
+}
+
+
 #chatoverlay-back
 {
     position: absolute;
@@ -171,33 +231,142 @@ video
 	z-index: 1000000;
 }
 
-
-#chattext
+#belowchat
 {
-    position:absolute;
-    height:75%;
-	width: 90%;
-	bottom: 116px;
+    position: absolute;
+	width: 77.5%;
+	height: 15%;
+	min-height: 6vw;
+	bottom: 0%;
+	left: 12.5%;
 	
-    overflow-y: auto;
-	word-wrap: break-word;
-	font-size: 9pt;
+/* 	border-radius: 20px;
+	box-shadow: inset 0.25em 0.5em 0.5em rgb(255, 255, 255, 0.25);
+	background: #6441a4;
+	background: #3f3131ff */;	
 	
-	/* vertical-align: bottom; */
+/* 	display: flex;
+	justify-content: center;
+	align-items: center; */
 	
-	z-index: 1000001;	
-	
-	scroll-margin: 6px;
-	scroll-snap-align: start;
-	scroll-behavior: smooth;
-	scroll-snap-type:  y proximity;
-	scroll-padding: auto;	
-	
-	/* scroll-padding: auto;	 */
-	/* scroll-padding: 0px 0px 0px 0px; */
-	/* scroll-snap-type:  y proximity; */
-	
+	/* background: #3f3131ff; */
+
+	z-index: 1000002;
 }
+
+
+/* Player Interface */
+#textfield-container
+{
+    position: absolute;
+    height: 3vw;
+	width:95%;
+	left: 2.5%;
+	top: 0%;
+	
+	border-radius: 2vw;
+	box-shadow: inset 0.25em 0.5em 0.5em rgb(255, 255, 255, 0.25);
+	background: #866767ff;
+	background: #3f3131ff;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;	
+}
+
+
+#textfield
+{
+    position: relative;
+    height: 2vw;
+	width:92.5%;
+	top:0vw;
+
+	border: solid;
+	border-style: normal;
+	border-color: rgb(255, 255, 255, 0.25);
+	border-width:0.15vw;
+	border-radius: 1vw;
+	outline: none;
+	
+	background-color: black;	
+	font-size: 0.75vw;
+	color: white;
+}
+
+input[type = text]
+{
+	width: 100%;
+	padding: 10px 15px;
+	margin: 5px 0;
+	box-sizing: border-box;
+}
+
+
+
+/* Chat button styles */
+
+#chatButton-container
+{
+	position: relative;
+    height: 3vw;
+    width: 25%;
+	bottom: -3.5vw;
+	right: 3.5%;
+	float:right;	
+
+	display: flex;
+	justify-content: center;
+	align-items: center;	
+}
+
+#chatButton-container:hover #chatButtonIcon
+{
+	fill: #f3ecec;
+	fill: #866767;	
+}
+
+#chatButton-container:hover #chatButtonIconTxt
+{
+	fill: #262525;
+	fill: #3f3131ff;	
+}
+	
+#chatButton
+{
+	position: inherit;
+	height:0vw;
+	width:0vw;
+	border: none;
+	background-color: transparent;
+
+}
+
+#chatButtonIcon
+{
+	position: absolute;
+	fill: #866767;
+	fill: #d4b8b8;
+	fill: #3f3131ff;
+	height:100%;
+}
+
+#chatButtonIconTxt
+{
+	position: absolute;
+	fill: #866767;
+	fill: #1a1414;
+	height:100%;
+/* 	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	pointer-events: none;
+    cursor: default; */
+}
+
+
+
+/* Chat elements */
 
 img.emoticon
 {
@@ -216,9 +385,54 @@ img.emoticon
     font-weight: bold;
 }
 
+
 #chatbubble
 {
-	margin-bottom: 8px;
+	margin-top: 4%;
+	margin-bottom: 4%;
+	margin-left: 15%;	
+    padding: 3%;	
+	
+	font-family: Roboto;
+	color: #222222;
+	font-weight: normal;
+	text-shadow: 0.15em 0.15em 0.25em #FFFFFF;
+
+	line-height: 1.5em;
+	
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+	
+	box-shadow: inset 0 0.5em 0.5em 0px rgb(255, 255, 255, 0.5),inset 0 0.5em 0.5em 0px rgb(255, 255, 255, 0.5);
+	
+	vertical-align: text-top;
+	
+	border-radius: 15px;
+
+	background: rgba(255, 255, 255, 0.7);	
+
+	width:80%;
+	
+	z-index: 1000008;
+}
+
+/* #chatbubble:after {
+    position: relative;
+    width: 70%;
+    height: 70%;
+    background: rgba(255, 255, 255, 0.4);
+    content:' ';
+    left: 15%;
+    top: 15%;
+    box-shadow: 0 0 7px 50px rgba(255, 255, 255, 0.7);
+} */
+
+
+
+#darkbubble
+{
+	margin-top: 4px;
+	margin-bottom: 4px;
 	margin-left: 15%;	
     padding: 12px;	
 	
@@ -286,6 +500,8 @@ img.emoticon
 	
 	z-index: 1000008;	
 }
+
+
 .playertext
 {
 	margin-left: 16px;
@@ -298,17 +514,14 @@ img.emoticon
 
 #chattext::-webkit-scrollbar
 {
-    width: 12px;
-    border-radius: 2px;
+    width: 1em;
+    border-radius: 0.5em;
 }
 
 #chattext::-webkit-scrollbar-thumb
 {
-    background-color: #797a7a;
-    border-radius: 2px;
-	border: solid;
-	border-color: #666666;
-	border-width: 3px;
+    background-color: rgba(128,128,128,0.75);
+	border-radius: 0.5em;
 }
 
 #chattext::-webkit-scrollbar-track-piece {
@@ -317,7 +530,7 @@ img.emoticon
 
 /* Buttons */
 ::-webkit-scrollbar-button:single-button {
-  background-color: #bbbbbb;
+  background-color: #ffffff;
   display: block;
   border-style: solid;
   width: 16px;
@@ -337,7 +550,7 @@ img.emoticon
 /* Down */
 ::-webkit-scrollbar-button:single-button:vertical:increment {
   border-width: 8px 8px 0 8px;
-  border-color: #555555 transparent transparent transparent;
+  border-color: rgba(128,128,128,0.75) transparent transparent transparent;
   background-color: transparent;
 }
 
@@ -356,146 +569,30 @@ img.emoticon
 
 
 
-/* Player Interface */
-
-#belowchat
-{
-    position: absolute;
-	width: 62.5%;
-	height: 72px;
-	bottom: 16px;	
-	margin-left: 12.5%;
-	right: 12.5%;
-
-/*     -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;	 */
-    border: solid;
-    border-width: 3px;
-	border-color: #3f3131ff;
-	border-radius: 20px;
-
-
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	
-	padding: 12px;
-	background: black;
-
-	z-index: 1000002;
-}
-
-
-#textfield
-{
-    position: absolute;
-    height: 32px;
-    width: 83.5%;
-	bottom: 44px;
-	left: 5%;
-	
-	/* left: 5%; */
-/* 	left: 16px;
-	right: 16px; */
-    
-/* 	border-width: 0px;	
-    border: solid;	
-    border-width: 2px;
-    border-color: #866767ff; */
-	
-	border: solid;
-	border-width: 2px;
-	border-radius: 10px;
-	border-color: #3f3131ff;
-	outline: none;
-
-	background-color: #141414;
-	color: white;
-	
-	padding-left: 5%;
-	padding-right: -10%;
-}
-
-
-#chatButton
-{
-    position: absolute;
-    height: 28px;
-    width: 30%;
-    right: 5%;
-	bottom: 8px;
-
-/* 	-moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;	 */
-	
-	border: solid;
-	border-color: #3f3131ff;	
-	border-radius: 10px;
-    background-color: #866767ff;
-    color: white;
-	text-shadow: 2px 2px 1px #000000;
-	outline: none;
-	
-	font-size: 1vw;
-	font-family: Roboto;
-}
-
-
-
-/* Animations */
-
-.hidden {
-  opacity: 0.1;
-}
-
-@keyframes fade-in {
-    from {opacity: 0; transform: scale(.7,.7)}
-    to {opacity: 1;}
-}
-
-
-.fade-in-element {
-  animation: fade-in 0.5s;
-  animation-fill-mode: forwards;
-}
-
-@keyframes fade-out {
-    from {opacity: 1; transform: scale(1.0,1.0)}
-    to {opacity: 0;}
-}
-
-.fade-out-element {
-  animation: fade-out 0.5s;
-  animation-fill-mode: forwards;
-}
-
-
 
 /* Voice and Info elements */
 
 #timer-header
 {
-	font-size: 9pt;	
+	font-size: 0.75vw;
 }
 
 #timer-text
 {
     position: fixed;
-	padding: 6px;
-	bottom: 16px;
-	left: 16px;
+	padding: 1%;
+	bottom: 2%;
+	left: 2%;
 	
-	width: 158px;
+	width: 15%;
 	
-	background-color: #3f3131ff;
-/* 	border:5px solid black; */
+/*     -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box; */	
 	
-/*     border: solid;
-	border-radius: 0px;	
-    border-width: 2px;
-    border-color: #464646; */
+/* 	background-color: #3f3131ff;
+	border:5px solid black; */
 	
-	font-size: 12pt;
+	font-size: 2vw;
 	color: white;
 	font-family: Consolas;
 	text-shadow: 2px 2px #000000;
@@ -537,6 +634,8 @@ img.emoticon
 	left: 85px;
 	bottom: 260px;
 	width: 20%;
+	
+	z-index: 10000055;	
 }
 
 .dialoguebubble:before {
@@ -578,7 +677,6 @@ img.emoticon
 
 	background-color: rgb(255, 255, 255, 0.85);	
 	background: linear-gradient(to top, rgba(192, 192, 192, 0.75) 0%, rgba(255, 255, 255, 0.75) 100%);
-	
 }
 
 .monologuebubble
@@ -635,21 +733,20 @@ img.emoticon
 #cameraiconbox
 {
     position: absolute;
-	bottom: 12.5%;
+	bottom: 15%;
 	
-	width: 30%;
-	height: 10%;
+	width: 15%;
+	height: 7.5%;
 	
 	display: flex;
 	justify-content: space-between;
-	align-items: top;
 
 	background-color: transparent;
 	
 	z-index: 1000050;
 
-	bottom: 16px;
-	left: 220px;	
+	bottom: 2%;
+	left: 23%;	
 	
 }
 
@@ -659,9 +756,9 @@ img.emoticon
 	background-color: transparent;
 
 	display: flex;
-	justify-content: left;
-	align-items: top;
-	vertical-align: top;
+	justify-content: center;
+	align-items: center;
+	vertical-align: bottom;
 }
 
 .cameraIconButton
@@ -683,11 +780,12 @@ img.emoticon
 
 .cameraIconText
 {
-	display: block;
-	position: relative;
-    color: #241c1cff;
+	position:absolute;
+	top: 60%;
+	right: 0.75vw;
+    color: #3f3131ff;
 	font-family: Impact;
-	font-size: 2.5vw;
+	font-size: 1.25vw;
 	
 /* 	text-shadow:
 		0.1vw 0.1vw 0.15vw #000000,
@@ -701,8 +799,8 @@ img.emoticon
 /* 	left: 10%;
 	top: 30%; */
 	
-	left: 75%;
-	top: 25%;
+/* 	left: 50%;
+	top: 25%; */
 	
     background-color: transparent;
 	border: none;
@@ -713,24 +811,6 @@ img.emoticon
     cursor: default;	
 	
 	z-index: 1000051;
-}
-
-
-/* Chat inputs */
-
-#aboveinput
-{
-}
-
-#input
-{
-    position: absolute;
-    bottom: 10px;
-    width: 100%;
-    height: 15%;
-    min-height: 40px;
-    max-height: 100px;
-	bottom: 4px;
 }
 
 
@@ -854,28 +934,41 @@ img.emoticon
     padding: 0px;
 }
 
-#videoframe
-{
+
+
+video.scale1{
+  -moz-transform:scale(1.0,1.0);
+  -webkit-transform:scale(1.0,1.0);
+  -o-transform:scale(1.0,1.0);
+  -ms-transform:scale(1.0,1.0);
+  transform:scale(1.0,1.0);
+  
+  animation-direction: alternate;
+  animation-iteration-count: 2;
 }
 
-#webcamframe
-{
+video.rotate1{
+  -moz-transform:rotate(0deg);
+  -webkit-transform:rotate(0deg);
+  -o-transform:rotate(0deg);
+  -ms-transform:rotate(0deg);
+  transform:rotate(0deg);
 }
 
+video.scale2{
+  -moz-transform:scale(1.5);
+  -webkit-transform:scale(1.5);
+  -o-transform:scale(1.5);
+  -ms-transform:scale(1.5);
+  transform:scale(1.5);
+}
 
-#webcam-video
-{
-    border:5px solid black;
-    position: absolute;
-	bottom: 35px;
-	left: 16px;
-
-    width: 160px;
-    overflow:hidden;
-    display:block;
-    height: 160px;	
-	
-	z-index: 10000054;
+video.rotate2{
+  -moz-transform:rotate(22.5deg);
+  -webkit-transform:rotate(22.5deg);
+  -o-transform:rotate(22.5deg);
+  -ms-transform:rotate(22.5deg);
+  transform:rotate(22.5deg);
 }
 
 #youtubelink
@@ -945,6 +1038,49 @@ input[type=range]::-webkit-slider-thumb {
   margin-top: -4px;
 }
 input[type=range]:focus::-webkit-slider-runnable-track {
+}
+
+
+
+
+/* Animations */
+
+.hidden {
+  opacity: 0.0;
+}
+
+.full-opacity  {
+	opacity: 1.0;
+}
+
+@keyframes fade-in {
+    from {opacity: 0; transform: scale(.7,.7)}
+    to {opacity: 1; transform: scale(1.0,1.0)}
+}
+
+.fade-in-element {
+  animation: fade-in 0.5s;
+  animation-fill-mode: both;
+}
+
+@keyframes fade-out {
+    from {opacity: 1; transform: scale(1.0,1.0)}
+    to {opacity: 0.0; transform: scale(.7,.7)}
+}
+
+.fade-out-element {
+  animation: fade-out 0.5s;
+  animation-fill-mode: both;
+}
+
+@keyframes scale-up {
+    from {transform: scale(1.0,1.0)}
+	to {transform: scale(2.0,2.0);}
+}
+
+.scale-up-element {
+	animation: scale-up 5.0s;
+	animation-fill-mode: both;
 }
 
 

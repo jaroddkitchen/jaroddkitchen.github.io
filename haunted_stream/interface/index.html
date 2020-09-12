@@ -40,7 +40,7 @@
 	<!-- <style data-styled="" data-styled-version="7.8.4">	 -->
 	
 	<style data-styled="" data-styled-version="4.4.1">
-	#my-video, .video-js, .vjs-default-skin, .vjs-hd
+	#main-video, .video-js, .vjs-default-skin, .vjs-hd
 	{
 	  position: absolute;
 	  left: 0; 
@@ -57,7 +57,7 @@
 <body onload="init()">
 	<div id="videoframe">
 	<video
-		id="my-video"
+		id="main-video"
 		class="video-js vjs-default-skin vjs-hd mainvideo"
 		poster="../img/art/svg/bootoob_poster.png"
 		data-setup='{ "controls": true, "loop": true, "inactivityTimeout": 0}'
@@ -72,52 +72,110 @@
       >
     </p>
 	</video>		
+    </div>	
+	
+	<div id="webcamframe">
+		<div id="webcam-wrapper">
+			<video class="scale1" id="webcam-video" loop muted preload="auto">
+			<source src="https://video.wixstatic.com/video/bde2cd_f447f30577a74aba829138597bb3f323/720p/mp4/file.mp4" type="video/mp4" />
+			</video>
+			<div id="timer-text">
+				<!-- <div id="timer-header">time elapsed:</div> -->
+				<div id="timer"></div>	
+			</div>		
+		</div>
     </div>
 
-	<div id="webcamframe">
-	<video id="webcam-video" loop muted>
-    <source src="https://video.wixstatic.com/video/bde2cd_f447f30577a74aba829138597bb3f323/720p/mp4/file.mp4 " type="video/mp4" />
-	</video>
-		<div id="cameraiconbox">
-			<div id="cameraIconWrapper">
-				<div id="cameraText0" class="cameraIconText shadow" >1</div><img id="cameraButton1" name="0" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow">
-			</div>
-			<div id="cameraIconWrapper">
-				<div id="cameraText1" class="cameraIconText shadow" >2</div><img id="cameraButton2" name="1" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
-			</div>
-			<div id="cameraIconWrapper">
-				<div id="cameraText2" class="cameraIconText shadow" >3</div><img id="cameraButton3" name="2" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
-			</div>
-		</div>		
-    </div>
-	<div id="timer-text">
-		<div id="timer-header">time elapsed:</div>
-		<div id="timer"></div>	
-	</div>		
+	<div id="cameraiconbox">
+		<div id="cameraIconWrapper">
+			<img id="cameraButton1" name="0" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow">
+			<div id="cameraText0" class="cameraIconText shadow" >1</div>
+		</div>
+		<div id="cameraIconWrapper">
+			<img id="cameraButton2" name="1" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
+			<div id="cameraText1" class="cameraIconText shadow">2</div>
+		</div>
+		<div id="cameraIconWrapper">
+			<img id="cameraButton3" name="2" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
+			<div id="cameraText2" class="cameraIconText shadow">3</div>
+		</div>
+	</div>
+	
 	<div id="control-row">
 		<div id="control-panel">
 			<div id="input">		
-				<button id="settingsButton" onclick="toggleMenu();" style="background-color: rgb(100, 65, 164);" name="settings" class="dirButton">settings</button>			
+				<!-- <button id="settingsButton" onclick="toggleMenu();" style="background-color: rgb(100, 65, 164);" name="settings" class="dirButton">settings</button>			 -->
 			</div>
 		</div>		
     </div>
+	
     <div id="chat" style="display: none;">
 		<div id="abovechat">
 			<div id="channelname">
 			</div>
 		</div>		
 		<div id="chatoverlay-front">
-			<img src="../img/art/svg/vamp_front.png" draggable="false" width="80%"></img> 
+			<!-- <img src="../img/art/svg/vamp_front.png" draggable="false" width="80%"></img>  -->
 		</div>	
 		<div id="chattext" class="container y-scroll y-mandatory"></div>
 		<div id="chatoverlay-back">
-			<img src="../img/art/svg/vamp_back.png" draggable="false" width="80%"></img> 
-		</div>		
-		<div id="belowchat" class="shadow">
-			<div id="input">
+			<!-- <img src="../img/art/svg/vamp_back.png" draggable="false" width="80%"></img>  -->
+		</div>
+		<!-- <img src="../img/art/svg/chat_icon.svg" draggable="false" width="10%"></img>			 -->
+		<div id="belowchat" class="">	
+			<div id="input-wrapper">
 				<form onsubmit="return false">
-					<input type="text" id="textfield" maxlength="200" autocomplete="off" placeholder="send a message">
-					<input type="submit" id="chatButton" class="shadow" onclick="chat()" value="Chat" onkeypress="checkForEnter(event)">
+					<div" id="textfield-container" class="shadow">
+						<input type="text" id="textfield" maxlength="200" autocomplete="off" placeholder="send a message">
+					</div>
+					<div" id="chatButton-container" class="" type="submit" id="chatButtonIcon" onclick="chat()" value="">
+						<input type="submit" id="chatButton" class="" onclick="chat()" value="" onkeypress="checkForEnter(event)">
+						<svg class="shadow" xmlns="http://www.w3.org/2000/svg"
+								 width="0.644444in" height="0.566667in"
+								 viewBox="0 0 58 51">						 
+								  <path id="chatButtonIcon"
+										fill="none" stroke="none" stroke-width="1"
+										d="M 5.00,0.00
+										   C 2.28,0.00 0.00,2.26 0.00,4.96
+											 0.00,4.96 0.00,37.69 0.00,37.69
+											 0.00,40.39 2.28,42.65 5.00,42.65
+											 5.00,42.65 7.00,42.65 7.00,42.65
+											 7.00,42.65 13.00,42.65 13.00,42.65
+											 13.00,42.65 15.00,42.65 15.00,42.65
+											 15.00,42.65 15.00,51.00 15.00,51.00
+											 15.00,51.00 23.24,42.00 23.24,42.00
+											 23.24,42.00 28.24,36.24 28.24,36.24
+											 28.60,35.83 29.23,35.78 29.65,36.14
+											 30.07,36.49 30.12,37.12 29.76,37.54
+											 29.76,37.54 25.32,42.65 25.32,42.65
+											 25.32,42.65 53.00,42.65 53.00,42.65
+											 55.72,42.65 58.00,40.39 58.00,37.69
+											 58.00,37.69 58.00,4.96 58.00,4.96
+											 58.00,2.26 55.72,0.00 53.00,0.00
+											 53.00,0.00 5.00,0.00 5.00,0.00 Z" />
+								  <path id="chatButtonIconTxt"
+										fill="red" stroke="none" stroke-width="0"
+										d="M 15.00,18.36
+										   C 16.66,18.36 18.00,19.69 18.00,21.33
+											 18.00,22.98 16.66,24.31 15.00,24.31
+											 13.34,24.31 12.00,22.98 12.00,21.33
+											 12.00,19.69 13.34,18.36 15.00,18.36
+											 15.00,18.36 15.00,18.36 15.00,18.36 Z
+										   M 29.00,18.36
+										   C 30.66,18.36 32.00,19.69 32.00,21.33
+											 32.00,22.98 30.66,24.31 29.00,24.31
+											 27.34,24.31 26.00,22.98 26.00,21.33
+											 26.00,19.69 27.34,18.36 29.00,18.36
+											 29.00,18.36 29.00,18.36 29.00,18.36 Z
+										   M 43.00,18.36
+										   C 44.66,18.36 46.00,19.69 46.00,21.33
+											 46.00,22.98 44.66,24.31 43.00,24.31
+											 41.34,24.31 40.00,22.98 40.00,21.33
+											 40.00,19.69 41.34,18.36 43.00,18.36
+											 43.00,18.36 43.00,18.36 43.00,18.36 Z" />													 
+							</svg>
+						<!-- <img src="../img/art/svg/chat_icon.svg" type="submit" id="chatButtonIcon" onclick="chat()" value="" onkeypress="checkForEnter(event)"> -->
+					</div>
 				</form>
 			</div>		
 		</div>		
