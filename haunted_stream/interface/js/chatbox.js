@@ -85,7 +85,7 @@ setInterval(function() {
 var spamming = false;
 var darkMode = false;
 var spamType = "positive";
-var spamSpeed = 3200;
+var spamSpeed = 5000;
 
 
 var usernamePrefixes = ["scary", "spooky", "sick", "insane", "cool", "revenge_of_", "mad", "generic", "Cpt", "nice", "xxx", "Dan", "VAC", "SWE", "Wizard", "faceless", "olof","best_", "daddy", "boo", "mister_", "davai", "Nick", "da_", "the_", "iAm", "Loungin", "extra", "BOT", "dirty", "shoutout_to_", "devil", "Only"];
@@ -102,7 +102,7 @@ var scaredMessages = ["OMG WTF is was that?", "GET OUTTA THERE!", "Run, Forrest,
 
 var weirdMessages = ["The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top", "RUINED", "SAVED", "RUINED", "CoolStoryMan"];
 
-var demonMessages = ["i can see you", "i can hear you breathing", "im right over here ==->", "do you want to meet me?", "do you want to see my face?", "everbody hates you", "i can smell you", "i want to taste you", "chosen for whut?", "la diablo estas vivanta ene de mia korpo", "mi sangas pro la vundoj de inferaj trancxoj", "mi glutos vian animon","ni vekigu la lordon de la abismo", "im coming for you", "7:31", "mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon", "im just fukkin around with you chosen one", "look at you, all chosen-y!", "guess what's for dinner?", "i want to show you something", "these people are already dead. their blood is on your hands", "did you ever think about ending things?","i know things about you"];
+var demonMessages = ["i can see you", "i can hear you breathing", "im right over here ==->", "do you wanna meet me?", "do you wanna see my face?", "everbody hates you", "i can smell you", "i cant taste you", "chosen 4 whut?", "la diablo estas vivanta ene de mia korpo", "mi sangas pro la vundoj de inferaj trancxoj", "mi glutos vian animon","ni vekigu la lordon de la abismo", "im coming for you", "7:31", "mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon", "naw im just fukkin around with you chosen one", "we breathe chocolate over here", "guess what's for dinner?", "i want to show you something", "these people are already dead. their blood is on your hands", "did you ever think about ending things?","i know things", "i know your secret","i can do things","do you wanna see whut i can do","_eye1","_eye2","_eye3","_eye4","_face1","_face2","_face3","_face4","_face5","_face6","_face7","_face8","_face9"];
 
 
 var emotes = [
@@ -113,6 +113,22 @@ var emotes = [
     ["DansGame", "dansgame.png"],
     ["NotLikeThis", "notlikethis.png"],
     ["PogChamp", "pogchamp.png"]
+];
+
+var pics = [
+    ["_eye1", "eyescan.gif"],
+    ["_eye2", "eyebug.gif"],
+    ["_eye3", "eyescared.gif"],
+    ["_eye4", "eyeblood.gif"],	
+    ["_face1", "facetougues.gif"],
+    ["_face2", "facebald.gif"],
+    ["_face3", "girlmad.gif"],
+    ["_face4", "girlcry1.gif"],
+    ["_face5", "girlcry2.gif"],
+    ["_face6", "girlcry3.gif"],
+    ["_face7", "babyface.gif"],
+    ["_face8", "monsterwoman.gif"],
+    ["_face9", "mirrorgirl.gif"]
 ];
 
 
@@ -156,7 +172,8 @@ function getMessage()
 		//loadRandomImg(message);
 
     msgBody = replace_emotes(msgBody);
-
+    msgBody = replace_pics(msgBody);
+	
     message.append(msgBody);
 	
     return message;
@@ -167,9 +184,8 @@ function getDarkMessage()
 {
     var message = $('<div id="chatbubble"></div>');
 	message.attr("class", "fly-in-element darkbubble");	
-	message.append(getDemonName());
-	message.append("<br/>");
-	//message.append("&nbsp;&#58;&nbsp;");
+	//message.append(getDemonName());
+	//message.append("<br/>");
 
     var msgBody = "";
 	
@@ -188,11 +204,49 @@ function getDarkMessage()
 		//loadRandomImg(message);
 
     msgBody = replace_emotes(msgBody);
+    msgBody = replace_pics(msgBody);
+	if (imgMsg){
+		message.attr("class", "fly-in-element darkbubble imgbubble");
+		//message.append('<span height="10vh"></span>');
+	}
 
     message.append(msgBody);
 	
     return message;
 }
+
+
+//replace text with img
+function replace_emotes(message)
+{
+    for(var i=0;i<emotes.length;i++){
+        message = message.replace(new RegExp(emotes[i][0], 'g'), "<img src='../img/emotes/"+emotes[i][1]+"' class='emoticon' alt='"+emotes[i][0]+"' vertical-align='bottom'>");
+    } 
+
+    return message;
+}
+
+
+var imgMsg = false;
+
+function replace_pics(message)
+{	
+	imgMsg = false;
+
+    for(var i=0;i<pics.length;i++){
+		var str = message;
+		var n = str.search(pics[i][0], 'g');
+		if (n >=0) { 
+			imgMsg = true;
+		}
+		message = message.replace(new RegExp(pics[i][0], 'g'), "<img src='../img/pics/"+pics[i][1]+"' class='pic' alt='"+pics[i][0]+"'>");		
+    }
+
+    return message;
+}
+
+
+
 
 
 //returns a random username
@@ -273,18 +327,6 @@ function loadRandomImg(message)
 			$("<img width='100%' />").attr({src: data.items[rnd].media.m.replace('_m.','.')}).appendTo(message);
         });
 }
-
-
-//replace text with img
-function replace_emotes(message)
-{
-    for(var i=0;i<emotes.length;i++){
-        message = message.replace(new RegExp(emotes[i][0], 'g'), "<img src='../img/emotes/"+emotes[i][1]+"' class='emoticon' alt='"+emotes[i][0]+"' vertical-align='bottom'>");
-    } 
-
-    return message;
-}
-
 
 
 /* Chat scrolling functions */
@@ -473,6 +515,34 @@ function keepSpamming()
 
 
 
+//--------------------------
+// Demon functions
+//--------------------------
+
+var deffects = 3; 
+
+
+function demonIsSummoned()
+{	
+	for (i=0; i < deffects; i++){
+		var deffect = document.getElementById("overlay" + i);
+		deffect.classList.remove('hidden');	
+		deffect.classList.remove('dissolve-out-element');
+		deffect.classList.add('dissolve-in-element');
+		//$("#overlay" + i).css("z-index", "1000");		
+	}
+}
+
+function demonExits()
+{
+	for (i=0; i < deffects; i++){
+		var deffect = document.getElementById("overlay" + i);	
+		deffect.classList.remove('dissolve-in-element');
+		deffect.classList.add('dissolve-out-element');
+		//$("#overlay" + i).css("z-index", "-1");
+	}		
+}
+
 
 //--------------------------
 // Demo Settings	
@@ -486,22 +556,15 @@ function darkmode()
     {
         darkMode = false;
 		$("#darkModeButton").css("background-color", "#FFFFFF");
-		$("#darkModeButton").css("color", "#000000");		
-/*         chat.css("background-color", "transparent");
-        $("#textfield").css("background-color", "#141414");
-        $("#textfield").css("color", "white");
-        $("#chattext").attr("class", "dark");	 */	
+		$("#darkModeButton").css("color", "#000000");
+		demonExits();
     }
     else
     {
         darkMode = true;
 		$("#darkModeButton").css("background-color", "#000000");
-		$("#darkModeButton").css("color", "#FFFFFF");			
-/*         chat.css("background-color", "rgb(20, 20, 20, 0.5");
-        $("#textfield").css("background-color", "rgb(20, 20, 20, 0.5)");
-        $("#textfield").css("color", "white");
-        $("#chattext").removeAttr("class"); */			
-		
+		$("#darkModeButton").css("color", "#FFFFFF");
+		demonIsSummoned();
 	}
 }
 
