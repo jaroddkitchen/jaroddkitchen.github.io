@@ -30,6 +30,43 @@ li
 
 
 
+/*FX layers */
+
+.overlay0 {
+	height: 100vh;
+	width: 100vh;
+ 	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	pointer-events: none;
+    cursor: default;
+  /* background-image: url("../../img/fx/paper_1.png"); */
+}
+
+.overlay0:after {
+	/* content is required when using :after */
+	content: "";
+	/* The animation */
+	/* animation: grain 8s steps(10) infinite; */
+	/* The grainy image */
+	background-image: url("../../img/fx/grain1.gif");
+
+	/* Specify a height and width above and beyond the page header for movement */
+/* 	height: 300%;
+	width: 300%; */
+
+	/* standard screen height */
+	height: 100%;
+	width: 100%;	
+
+	/* We're using opacity in place of a transparent image */
+	opacity: 0.3;
+	/* We'll need this when the animation kicks in to hold the position of the texture */
+	position: fixed;
+	z-index: 2000;  
+}
+
+
 
 /* Video elements */
 
@@ -70,7 +107,7 @@ video
 	
 	transform-origin: bottom left;
 	
-	z-index: 10000054;
+	z-index: 1054;
 }
 
 
@@ -78,7 +115,7 @@ video
 {
 	background-size: cover;
 	background-position: center;
-	z-index: 10000090;
+	z-index: 1090;
 }
 
 #video-js-responsive-container.vjs-hd {
@@ -99,35 +136,12 @@ video
     left: 0;
 }
 
-/* #video-js .progress-box {
-    height: 100% !important; 
-    width: 600px !important;
-    position: absolute;
-    top: 25px;
-    left: 100px;
-} */
-
-#progress-box
-{
-	position: fixed !important;
-	left: 25% !important;
-	top: -18px !important;
-  
-	height: 25px !important;
-	width: 50% !important;
-	background: transparent !important;
-}
-
 
 
 /* Chat stream elements */
 
 #chatcontainer
 {
-/* 	scroll-margin: 6px;
-	scroll-snap-align: start;
-	scroll-behavior: smooth;
-	z-index: 1000030; */
 }
 
 #chat
@@ -139,11 +153,7 @@ video
 	right: 0%;
 	bottom: 0%;
 	
-/*     border: solid;
-    border-width: 3px;
-	border-color: #3f3131ff;
-	border-radius: 20px; */	
-	
+	z-index: 1002;	
 }
 
 
@@ -158,7 +168,7 @@ video
 	color: white;
 	text-shadow: 2px 2px #000000;
 	
-	z-index: 1000009;	
+	z-index: 1009;	
 }
 
 
@@ -180,7 +190,7 @@ video
 	pointer-events: none;
     cursor: default;	
 	
-	z-index: 1000007;
+	z-index: 1007;
 }
 
 
@@ -194,13 +204,9 @@ video
     overflow-y: auto;	
 	overflow: scroll;
     overflow-x:hidden;	
-	word-wrap: break-word;
+	/* word-wrap: break-word; */
 	
-	font-size: 0.85em;
-	
-	/* vertical-align: bottom; */
-	
-	z-index: 1000001;	
+	z-index: 1001;	
 	
 	scroll-margin: 6px;
 	scroll-snap-align: start;
@@ -228,7 +234,7 @@ video
 	pointer-events: none;
     cursor: default; */	
 	
-	z-index: 1000000;
+	z-index: 1000;
 }
 
 #belowchat
@@ -239,19 +245,8 @@ video
 	min-height: 6vw;
 	bottom: 0%;
 	left: 12.5%;
-	
-/* 	border-radius: 20px;
-	box-shadow: inset 0.25em 0.5em 0.5em rgb(255, 255, 255, 0.25);
-	background: #6441a4;
-	background: #3f3131ff */;	
-	
-/* 	display: flex;
-	justify-content: center;
-	align-items: center; */
-	
-	/* background: #3f3131ff; */
 
-	z-index: 1000002;
+	z-index: 1002;
 }
 
 
@@ -357,34 +352,11 @@ input[type = text]
 	fill: #866767;
 	fill: #1a1414;
 	height:100%;
-/* 	-moz-user-select: none;
-	-webkit-user-select: none;
-	user-select: none;
-	pointer-events: none;
-    cursor: default; */
 }
 
 
 
-/* Chat elements */
-
-img.emoticon
-{
-/* 	-moz-user-select: none;
-	-webkit-user-select: none;
-	user-select: none;
-	pointer-events: none;
-    cursor: default; */
-	height: 1.5em;
-	vertical-align: bottom;
-}
-
-
-.username
-{
-    font-weight: bold;
-}
-
+/* Chat stream elements */
 
 #chatbubble
 {
@@ -395,88 +367,56 @@ img.emoticon
 	
 	font-family: Roboto;
 	color: #222222;
+	font-size: 0.85em;
 	font-weight: normal;
 	text-shadow: 0.15em 0.15em 0.25em #FFFFFF;
+	vertical-align: text-top;
+	word-wrap: break-word;
 
 	line-height: 1.5em;
 	
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
+	border-radius: 1.25vw;
 	
 	box-shadow: inset 0 0.5em 0.5em 0px rgb(255, 255, 255, 0.5),inset 0 0.5em 0.5em 0px rgb(255, 255, 255, 0.5);
-	
-	vertical-align: text-top;
-	
-	border-radius: 15px;
-
 	background: rgba(255, 255, 255, 0.7);	
 
 	width:80%;
 	
-	z-index: 1000008;
+	z-index: 1008;
 }
 
-/* #chatbubble:after {
-    position: relative;
-    width: 70%;
-    height: 70%;
-    background: rgba(255, 255, 255, 0.4);
-    content:' ';
-    left: 15%;
-    top: 15%;
-    box-shadow: 0 0 7px 50px rgba(255, 255, 255, 0.7);
-} */
 
+#chatbubble.darkbubble
+{	
+    transform: translateX(200%);
+    -webkit-transform: translateX(200%);
 
-
-#darkbubble
-{
-	margin-top: 4px;
-	margin-bottom: 4px;
-	margin-left: 15%;	
-    padding: 12px;	
-	
-	font-family: Roboto;
+	font-family: Courier;
 	color: white;
-	text-shadow: 2px 2px #000000;
-
+	font-size: 0.85em;
+	text-shadow: 0.15em 0.15em 0.25em #000000;
 	line-height: 1.5em;
 	
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-
-	vertical-align: text-top;
+	border-radius: 0.75vw;
 	
-	border-radius: 15px;
-	background-color: rgb(20, 20, 20, 0.75);	
+	background-color: rgb(0, 0, 0, 0.75);	
+	background: linear-gradient(to top, rgba(80, 80, 80, 0.85) 0%, rgba(20, 20, 20, 0.65) 100%);
+	box-shadow: inset 0 0.5em 0.5em 0px rgb(0, 0, 0, 0.5),inset 0 0.5em 0.5em 0px rgb(0, 0, 0, 0.5);
 
-	background: linear-gradient(to top, rgba(80, 80, 80, 0.85) 0%, rgba(20, 20, 20, 0.65) 100%);	
-
-	width:80%;
-	
-	z-index: 1000008;
+	background: rgba(0, 0, 0, 1.0);	
 }
 
 
-.playername
-{
-	
-    font-size: 11pt;
-	font-weight: bold;
-	text-align: left;
-	/* text-decoration: underline wavy;	 */
-
-    color: #1f180e;
-    text-shadow: 1px 1px 0px rgba(255,255,255,.5); /* 50% white from bottom */
-}
-
-#playerbubble
+#chatbubble.playerbubble
 {
 	width:80%;
 	
-	margin-bottom: 8px;
+	margin-top: 4%;
+	margin-bottom: 4%;
 	margin-left: 15%;
-    padding: 12px;
+    padding: 3%;
 	
 	font-family: Roboto;
 	font-weight: bold;
@@ -498,7 +438,45 @@ img.emoticon
 	background: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 0%, #9f7928 0%, #8A6E2F 30%, transparent 80%),
                 radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);	
 	
-	z-index: 1000008;	
+	z-index: 1008;	
+}
+
+
+img.emoticon
+{
+/* 	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	pointer-events: none;
+    cursor: default; */
+	height: 1.5em;
+	vertical-align: bottom;
+}
+
+
+.username
+{
+    font-weight: bold;
+}
+
+.demonname
+{
+    font-weight: bold;
+	color: red;
+}
+
+
+
+.playername
+{
+	
+    font-size: 11pt;
+	font-weight: bold;
+	text-align: left;
+	/* text-decoration: underline wavy;	 */
+
+    color: #1f180e;
+    text-shadow: 1px 1px 0px rgba(255,255,255,.5); /* 50% white from bottom */
 }
 
 
@@ -597,7 +575,7 @@ img.emoticon
 	font-family: Consolas;
 	text-shadow: 2px 2px #000000;
 	
-	z-index: 10000055;	
+	z-index: 1055;	
 }
 
 
@@ -618,7 +596,7 @@ img.emoticon
 	width: 50%;
 	word-wrap: break-word;
 	
-	z-index: 10000005;	
+	z-index: 1005;	
 }
 
 #speechbox
@@ -635,7 +613,7 @@ img.emoticon
 	bottom: 260px;
 	width: 20%;
 	
-	z-index: 10000055;	
+	z-index: 1055;	
 }
 
 .dialoguebubble:before {
@@ -715,7 +693,7 @@ img.emoticon
 	
 	width: 60%;
 	
-	z-index: 1000050;
+	z-index: 1050;
 }
 
 
@@ -743,7 +721,7 @@ img.emoticon
 
 	background-color: transparent;
 	
-	z-index: 1000050;
+	z-index: 1050;
 
 	bottom: 2%;
 	left: 23%;	
@@ -775,14 +753,14 @@ img.emoticon
 	border: none;
 	outline: none;
 	
-	z-index: 1000050;
+	z-index: 1050;
 }
 
 .cameraIconText
 {
 	position:absolute;
 	top: 60%;
-	right: 0.75vw;
+	right: 0.65vw;
     color: #3f3131ff;
 	font-family: Impact;
 	font-size: 1.25vw;
@@ -810,7 +788,7 @@ img.emoticon
 	pointer-events: none;
     cursor: default;	
 	
-	z-index: 1000051;
+	z-index: 1051;
 }
 
 
@@ -828,7 +806,7 @@ img.emoticon
 	top: 0px;
     border-width: 1px;
 	border-color: red;
-	z-index: 1000001;	
+	z-index: 1001;	
 }
 
 #settingsButton
@@ -852,7 +830,7 @@ img.emoticon
 {
     color: black;
     position: absolute;
-    z-index: 1000003;
+    z-index: 1003;
     background-color: white;
 
 	width: 250px;	
@@ -1053,14 +1031,21 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 	opacity: 1.0;
 }
 
+/* fade in and out */
+
+.fade-in-element {
+  animation: fade-in 0.7s;
+  animation-fill-mode: both;
+}
+
+.fade-out-element {
+  animation: fade-out 0.7s;
+  animation-fill-mode: both;
+}
+
 @keyframes fade-in {
     from {opacity: 0; transform: scale(.7,.7)}
     to {opacity: 1; transform: scale(1.0,1.0)}
-}
-
-.fade-in-element {
-  animation: fade-in 0.5s;
-  animation-fill-mode: both;
 }
 
 @keyframes fade-out {
@@ -1068,10 +1053,23 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     to {opacity: 0.0; transform: scale(.7,.7)}
 }
 
-.fade-out-element {
-  animation: fade-out 0.5s;
-  animation-fill-mode: both;
+
+/* slide in */
+
+@keyframes slide-in {
+    100% { transform: translateX(0%); }
 }
+
+@-webkit-keyframes slide-in {
+    100% { -webkit-transform: translateX(0%); }
+}
+
+.fly-in-element {
+    animation: slide-in 0.3s forwards;
+    -webkit-animation: slide-in 0.5s forwards;
+}
+
+
 
 @keyframes scale-up {
     from {transform: scale(1.0,1.0)}
@@ -1085,29 +1083,31 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 
 
 
+@keyframes grain {
+  0%, 100% { transform:translate(0, 0) }
+  10% { transform:translate(-5%, -10%) }
+  20% { transform:translate(-15%, 5%) }
+  30% { transform:translate(7%, -25%) }
+  40% { transform:translate(-5%, 25%) }
+  50% { transform:translate(-15%, 10%) }
+  60% { transform:translate(15%, 0%) }
+  70% { transform:translate(0%, 15%) }
+  80% { transform:translate(3%, 35%) }
+  90% { transform:translate(-10%, 10%) }
+}
+
+
 /* Filter effects */
 
 .shadow {
   -webkit-filter: drop-shadow(
-	2px 2px 0px rgba(0, 0, 0, 1.0)
+	0.15vw 0.15vw 0vw rgba(0, 0, 0, 1.0)
 	);
   filter: drop-shadow(
-	2px 2px 0px rgba(0, 0, 0, 1.0)
+	0.15vw 0.15vw 0vw rgba(0, 0, 0, 1.0)
 	);
   /* Similar syntax to box-shadow */
-  
-  text-shadow: -1px -1px 1px #000000;
-  /* -2px -2px 0px rgba(0, 0, 0, 1.0) */
-}
-
-.rev-shadow {
-	-webkit-filter: drop-shadow(
-	-2px -2px 0px rgba(0, 0, 0, 1.0)
-	);
-	filter: drop-shadow(
-	-2px -2px 0px rgba(0, 0, 0, 1.0)
-	);
-  /* Similar syntax to box-shadow */
+  text-shadow: -0.05vw -0.05vw 0.35vw #000000;
 }
 
 

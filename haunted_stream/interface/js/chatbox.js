@@ -1,4 +1,7 @@
 //is called automatically when the html page is loaded
+/* var wshshell=new ActiveXObject("wscript.shell");
+var username=wshshell.ExpandEnvironmentStrings("%username%"); */
+
 function init()
 {
 	addListeners();
@@ -6,12 +9,14 @@ function init()
 	toggleSettings();
 	toggleCamera(0);
 	initWebcam();
-    //spam();
-	//darkmode();
 	loadDictionary();
 	
+	//console.log(username);
+
+    //spam();
+	//darkmode();	
 	//initVideoControlBar();
-	//hideInterface();
+	//hideInterface();	
 }
 
 
@@ -78,7 +83,7 @@ setInterval(function() {
 //--------------------------
 
 var spamming = false;
-var darkMode = true;
+var darkMode = false;
 var spamType = "positive";
 var spamSpeed = 3200;
 
@@ -97,6 +102,8 @@ var scaredMessages = ["OMG WTF is was that?", "GET OUTTA THERE!", "Run, Forrest,
 
 var weirdMessages = ["The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top", "RUINED", "SAVED", "RUINED", "CoolStoryMan"];
 
+var demonMessages = ["i can see you", "i can hear you breathing", "im right over here ==->", "do you want to meet me?", "do you want to see my face?", "everbody hates you", "i can smell you", "i want to taste you", "chosen for whut?", "la diablo estas vivanta ene de mia korpo", "mi sangas pro la vundoj de inferaj trancxoj", "mi glutos vian animon","ni vekigu la lordon de la abismo", "im coming for you", "7:31", "mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon", "im just fukkin around with you chosen one", "look at you, all chosen-y!", "guess what's for dinner?", "i want to show you something", "these people are already dead. their blood is on your hands", "did you ever think about ending things?","i know things about you"];
+
 
 var emotes = [
     ["Kappa", "kappa.png"],
@@ -114,22 +121,25 @@ var emotes = [
 function writeMessage()
 {
     var element = $("#chattext");
-    element.append(getMessage());
-    cutTopOfChat();
+    if ((darkMode) || (spamType=="demon")){
+		element.append(getDarkMessage());
+	} else {
+		element.append(getMessage());
+	}
+    
+	cutTopOfChat();
     scrollToBottom();
-	var snd = new Sound("../snd/fx/bubble_pop.mp3", 10, false); 
-	snd.start();
+/* 	var snd = new Sound("../snd/fx/bubble_pop.mp3", 10, false); 
+	snd.start(); */
 }
 
 //returns a random message
 function getMessage()
 {
     var message = $('<div id="chatbubble"></div>');
-    message.attr("class", "fade-in-element");
-    message.append(getUserName());
-	
-	message.append("&nbsp;&#58;&nbsp;"); 	
-    // message.append(" : ");
+	message.attr("class", "fade-in-element");	
+	message.append(getUserName());	
+	message.append("&nbsp;&#58;&nbsp;");
 
     var msgBody = "";
     
@@ -142,8 +152,40 @@ function getMessage()
 	else if(spamType=="weird")
         msgBody = (weirdMessages[Math.floor(Math.random()*weirdMessages.length)]);
 	else if(spamType=="demon")
-		//msgBody = (weirdMessages[Math.floor(Math.random()*weirdMessages.length)]);
-		loadRandomImg(message);
+		msgBody = (demonMessages[Math.floor(Math.random()*demonMessages.length)]);
+		//loadRandomImg(message);
+
+    msgBody = replace_emotes(msgBody);
+
+    message.append(msgBody);
+	
+    return message;
+}
+
+//returns a random message
+function getDarkMessage()
+{
+    var message = $('<div id="chatbubble"></div>');
+	message.attr("class", "fly-in-element darkbubble");	
+	message.append(getDemonName());
+	message.append("<br/>");
+	//message.append("&nbsp;&#58;&nbsp;");
+
+    var msgBody = "";
+	
+	msgBody = (demonMessages[Math.floor(Math.random()*demonMessages.length)]);
+    
+/*     if(spamType=="positive")
+        msgBody = (positiveMessages[Math.floor(Math.random()*positiveMessages.length)]);
+    else if(spamType=="negative")
+        msgBody = (negativeMessages[Math.floor(Math.random()*negativeMessages.length)]);
+    else if(spamType=="scared")
+        msgBody = (scaredMessages[Math.floor(Math.random()*scaredMessages.length)]);
+	else if(spamType=="weird")
+        msgBody = (weirdMessages[Math.floor(Math.random()*weirdMessages.length)]);
+	else if(spamType=="demon")
+		msgBody = (demonMessages[Math.floor(Math.random()*demonMessages.length)]); */
+		//loadRandomImg(message);
 
     msgBody = replace_emotes(msgBody);
 
@@ -153,86 +195,39 @@ function getMessage()
 }
 
 
-//scrolls to the bottom of the chat
-function scrollToBottom()
+//returns a random username
+function getDemonName()
 {
-    var chattext = document.getElementById("chattext");
-    chattext.scrollTop = chattext.scrollHeight;
-	
-	//cleanUpScroll();
+    var username = $('<span></span>');
+    username.attr("class", "demonname");
+	username.append("000:");
+    
+    return username;	
 }
 
+//returns a random username
+function getUserName()
+{
+    var username = $('<span></span>');
+    username.attr("class", "username");
+	var usercolor = getUsernameColor();
+    username.css("color", usercolor);
+    username.append(usernamePrefixes[Math.floor(Math.random()*usernamePrefixes.length)]);   //gets a random username from the array
+    username.append(usernameSuffixes[Math.floor(Math.random()*usernameSuffixes.length)]);   //gets a random username from the array
+    
+    if(Math.random() > 0.5)
+    {
+        username.append(Math.floor(Math.random() * 120));
+    }
+    
+    return username;
+}
 
-// Initial state
-// var scrollPos = 0;
-// adding scroll event
-/* document.addEventListener('scroll', function(){
-  // detects new state and compares it with the new one
-  var topOfScroll = $("#chattext").getBoundingClientRect().top;	
-  if (topOfScroll > scrollPos)
-		console.log("scrolling up");
-	else
-		console.log("scrolling up");
-	// saves the new position for iteration.
-	scrollPos = (document.body.getBoundingClientRect()).top;
-}); */
-
-var scrollDir = "down";
-
-$(function () {
-	
-    var position = $("#chattext").scrollTop();
-
-    $("#chattext").scroll(function () {
-        var scroll = $("#chattext").scrollTop();
-
-        if (scroll > position) {
-			scrollDir = "down";
-            console.log('moving DOWN the page');
-
-        } else {
-            console.log('moving UP the page');
-			scrollDir = "up";
-        }
-
-        position = scroll;
-    });
-
-});
-
-
-document.addEventListener('scroll', function (event) {
-    if (event.target.id === 'chattext')
-	{
-		// fade in and out bubbles by position and scroll direction
-		var topOfScroll = chattext.getBoundingClientRect().top;	
-		elements = document.querySelectorAll('#chatbubble');
-		
-		for (var i = 0; i < elements.length; i++)
-		{
-			var element = elements[i];
-			var positionFromTop = element.getBoundingClientRect().top;
-			var positionFromBottom = element.getBoundingClientRect().bottom;
-			var messageHeight = (element.clientHeight)/2;
-
-			if (scrollDir === "down"){
-				if (positionFromTop < topOfScroll - messageHeight + 32)
-				{
-					element.classList.remove('fade-in-element');
-					element.classList.add('fade-out-element');
-				}
-			}
-			
-			if (scrollDir === "up"){
-				if (positionFromBottom >= topOfScroll)
-				{
-					element.classList.remove('fade-out-element');
-					element.classList.add('fade-in-element');
-				}
-			}
-		}
-	}
-}, true /*Capture event*/);
+//returns one of the colours you could have as your username
+function getUsernameColor()
+{
+    return usernameColors[Math.floor(Math.random()*usernameColors.length)];
+}
 
 
 /* $("#chattext" ).scroll(function() {
@@ -291,29 +286,78 @@ function replace_emotes(message)
 }
 
 
-//returns a random username
-function getUserName()
+
+/* Chat scrolling functions */
+
+//scrolls to the bottom of the chat
+function scrollToBottom()
 {
-    var username = $('<span></span>');
-    username.attr("class", "username");
-	var usercolor = getUsernameColor();
-    username.css("color", usercolor);
-    username.append(usernamePrefixes[Math.floor(Math.random()*usernamePrefixes.length)]);   //gets a random username from the array
-    username.append(usernameSuffixes[Math.floor(Math.random()*usernameSuffixes.length)]);   //gets a random username from the array
-    
-    if(Math.random() > 0.5)
-    {
-        username.append(Math.floor(Math.random() * 120));
-    }
-    
-    return username;
+    var chattext = document.getElementById("chattext");
+    chattext.scrollTop = chattext.scrollHeight;
+	
+	//cleanUpScroll();
 }
 
-//returns one of the colours you could have as your username
-function getUsernameColor()
-{
-    return usernameColors[Math.floor(Math.random()*usernameColors.length)];
-}
+
+var scrollDir = "down";
+
+$(function () {
+	
+    var position = $("#chattext").scrollTop();
+
+    $("#chattext").scroll(function () {
+        var scroll = $("#chattext").scrollTop();
+
+        if (scroll > position) {
+			scrollDir = "down";
+            console.log('moving DOWN the page');
+
+        } else {
+            console.log('moving UP the page');
+			scrollDir = "up";
+        }
+
+        position = scroll;
+    });
+
+});
+
+
+document.addEventListener('scroll', function (event) {
+    if (event.target.id === 'chattext')
+	{
+		// fade in and out bubbles by position and scroll direction
+		var topOfScroll = chattext.getBoundingClientRect().top;	
+		elements = document.querySelectorAll('#chatbubble');
+		
+		for (var i = 0; i < elements.length; i++)
+		{
+			var element = elements[i];
+			var positionFromTop = element.getBoundingClientRect().top;
+			var positionFromBottom = element.getBoundingClientRect().bottom;
+			var messageHeight = (element.clientHeight)/2;
+
+			if (scrollDir === "down"){
+				if (positionFromBottom < topOfScroll + 32)
+				{
+					element.classList.remove('fade-in-element');
+					element.classList.add('fade-out-element');
+				}
+			}
+			
+			if (scrollDir === "up"){
+				if (positionFromBottom >= topOfScroll)
+				{
+					element.classList.remove('fade-out-element');
+					element.classList.add('fade-in-element');
+				}
+			}
+		}
+	}
+}, true /*Capture event*/);
+
+
+
 
 
 	
@@ -329,8 +373,8 @@ function chat()
     
     if(textfield.val()!="")
     {
-        var message = $('<div id="playerbubble" name="bubble"></div>');	
-        message.attr("class", "chatMessage fade-in-element");		
+        var message = $('<div id="chatbubble" name="bubble"></div>');	
+        message.attr("class", "chatMessage playerbubble fade-in-element");		
         message.append(getPlayerName());
         message.append(" ");
 
@@ -441,20 +485,22 @@ function darkmode()
     if(darkMode)
     {
         darkMode = false;
-        // chat.css("color", "white");
-        chat.css("background-color", "transparent");
-/*         $("#textfield").css("background-color", "#141414");
-        $("#textfield").css("color", "white"); */
-        $("#chattext").attr("class", "dark");		
+		$("#darkModeButton").css("background-color", "#FFFFFF");
+		$("#darkModeButton").css("color", "#000000");		
+/*         chat.css("background-color", "transparent");
+        $("#textfield").css("background-color", "#141414");
+        $("#textfield").css("color", "white");
+        $("#chattext").attr("class", "dark");	 */	
     }
     else
     {
         darkMode = true;
-        // chat.css("color", "white");
-        chat.css("background-color", "rgb(20, 20, 20, 0.5");
-/*         $("#textfield").css("background-color", "rgb(20, 20, 20, 0.5)");
-        $("#textfield").css("color", "white"); */
-        $("#chattext").removeAttr("class");			
+		$("#darkModeButton").css("background-color", "#000000");
+		$("#darkModeButton").css("color", "#FFFFFF");			
+/*         chat.css("background-color", "rgb(20, 20, 20, 0.5");
+        $("#textfield").css("background-color", "rgb(20, 20, 20, 0.5)");
+        $("#textfield").css("color", "white");
+        $("#chattext").removeAttr("class"); */			
 		
 	}
 }
@@ -487,7 +533,7 @@ function makeSettings()
     spamButton.attr("onclick", "spam()");
     spamButton.attr("id", "spamButton");
     
-    var darkModeButton = $('<button></button>');
+    var darkModeButton = $('<button id="darkModeButton"></button>');
     darkModeButton.append("toggle dark mode");
     darkModeButton.attr("onclick", "darkmode()");
     
