@@ -1,0 +1,1188 @@
+/*Global tag elements */
+
+iframe
+{
+    padding: 0px;
+    margin: 0px;
+}
+
+body
+{
+    background-color: #000000;
+    margin: 0px;
+    padding: 0px;
+}
+
+/* hides the scrollbar for browsers that supports webkit */
+body::-webkit-scrollbar
+{
+    width: 0px;
+}
+
+p
+{
+}
+
+li
+{
+    list-style-type: none;
+}
+
+
+/* Video elements */
+
+.vjs-poster
+{
+	background-size: cover;
+	background-position: center;
+	z-index: 6000;
+}
+
+#video-js-responsive-container.vjs-hd {
+    padding-top: 56.25%;
+}
+#video-js-responsive-container.vjs-sd {
+    padding-top: 75%;
+}
+#video-js-responsive-container {
+    width: 100%;
+    position: relative;
+}
+#video-js-responsive-container .video-js {
+    height: 100% !important; 
+    width: 100% !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+video
+{
+	object-fit: cover;
+	object-position: inherit;
+	
+ 	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	pointer-events: none;
+    cursor: default;
+	background-image: none;	
+	
+	z-index: 0
+}
+
+#videoframe
+{
+}
+
+#webcamframe
+{
+}
+
+
+#webcam-wrapper
+{
+/* 	width: 15%;
+    height: 15%;
+    overflow:hidden;
+    display:block; */	
+}
+
+#webcam-video
+{
+	border:5px solid black;
+    position: absolute;
+	bottom: 2%;
+	left: 2%;
+
+    overflow:hidden;
+    display:block;
+	width: 15%;
+    height: 25%;
+	
+	transform-origin: bottom left;
+	
+	z-index: 3;
+}
+
+
+/* FX layers */
+
+.colorbox {
+	position:absolute;
+	height: 100%;
+	width: 100%;
+	background-color:black;
+	background-image: none;
+	opacity: 1.0;	
+	
+ 	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	pointer-events: none;
+    cursor: default;
+	
+	z-index: 4;
+}
+
+.apparitions {
+	position:absolute;
+	height: 100%;
+	width: 100%;
+	background-color:transparent;
+	background-image: none;
+	opacity: 1.0;	
+	
+ 	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	pointer-events: none;
+    cursor: default;
+	
+	z-index: 6;
+}
+
+.textures {
+	position:absolute;	
+	height: 100vh;
+	width: 100vh;
+
+ 	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	pointer-events: none;
+    cursor: default;
+	background-image: none;
+
+	z-index: 4;
+	
+	/* Interference animation */
+	/* background-image: url("../../img/fx/paper.png"); */	
+}
+
+.textures:after {
+	/* content is required when using :after */
+	content: "";
+
+	/* Grainy image effect */	
+	background-image: url("../../img/fx/static.gif");	
+	/* standard screen height */
+	height: 100%;
+	width: 100%;	
+
+	/* Interference animation */
+	/* animation: grain 8s steps(10) infinite; */
+	/* The grainy image */
+	/* background-image: url("../../img/fx/paper.png"); */
+	/* Specify a height and width above and beyond the page header for movement */
+/* 	height: 300%;
+	width: 300%; */	
+	
+	/* We're using opacity in place of a transparent image */
+	opacity: 1.0;
+	/* We'll need this when the animation kicks in to hold the position of the texture */
+	position: fixed;
+}
+
+
+
+
+/* Chat stream elements */
+
+#chatcontainer
+{
+}
+
+#chat
+{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+	right: 0%;
+	bottom: 0%;
+	
+	z-index: 4;	
+}
+
+
+#abovechat
+{
+    position: absolute;
+	width: 100%;
+	height: 12.5%;
+	
+	font-family: Impact;
+	font-size: 24pt;
+	color: white;
+	text-shadow: 2px 2px #000000;
+	
+	z-index: 5;	
+}
+
+
+#chatoverlay-front
+{
+    position: absolute;
+	width: 100%;	
+	height: 12.5%;
+	top: 5%;
+	right: 0%;
+	
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	pointer-events: none;
+    cursor: default;	
+	
+	z-index: 6;
+}
+
+
+#chattext
+{
+    position:absolute;
+	width: 100%;	
+    height:85%;
+	bottom: 15%;
+	
+    overflow-y: auto;	
+	overflow: scroll;
+    overflow-x:hidden;	
+	/* word-wrap: break-word; */
+	
+/* 	scroll-margin: 60px;
+	scroll-snap-align: start;
+	scroll-behavior: smooth;
+	scroll-snap-type: y proximity;
+	scroll-padding: auto; */
+
+	scroll-behavior: smooth;
+	scroll-snap-type: y mandatory;
+	scroll-padding: auto;	
+}
+
+
+#chatoverlay-back
+{
+    position: absolute;
+	width: 100%;	
+	height: 12.5%;
+	top: 5%;
+	right: 0%;	
+	
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	
+/* 	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	pointer-events: none;
+    cursor: default; */	
+	
+	z-index: 3;
+}
+
+#belowchat
+{
+    position: absolute;
+	width: 16%;
+	height: 15%;
+	min-height: 6vw;
+	bottom: 0%;
+	right: 0.5%;
+
+	z-index: 5;
+}
+
+
+/* Player Interface */
+#textfield-container
+{
+    position: absolute;
+    height: 3vw;
+	width:95%;
+	left: 2.5%;
+	top: 0%;
+	
+	border-radius: 2vw;
+	box-shadow: inset 0.25em 0.5em 0.5em rgb(255, 255, 255, 0.25);
+	background: #866767ff;
+	background: #3f3131ff;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+
+#textfield
+{
+    position: relative;
+    height: 2vw;
+	width:92.5%;
+	top:0vw;
+
+	border: solid;
+	border-style: normal;
+	border-color: rgb(255, 255, 255, 0.25);
+	border-width:0.15vw;
+	border-radius: 1vw;
+	outline: none;
+	
+	background-color: black;	
+	font-size: 0.75vw;
+	color: white;
+}
+
+input[type = text]
+{
+	width: 100%;
+	padding: 10px 15px;
+	margin: 5px 0;
+	box-sizing: border-box;
+}
+
+
+
+/* Chat button styles */
+
+#chatButton-container
+{
+	position: relative;
+    height: 3vw;
+    width: 25%;
+	bottom: -3.5vw;
+	right: 3.5%;
+	float:right;	
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	
+}
+
+#chatButton-container:hover #chatButtonIcon
+{
+	fill: #f3ecec;
+	fill: #866767;	
+}
+
+#chatButton-container:hover #chatButtonIconTxt
+{
+	fill: #262525;
+	fill: #3f3131ff;	
+}
+	
+#chatButton
+{
+	position: inherit;
+	height:0vw;
+	width:0vw;
+	border: none;
+	background-color: transparent;
+
+}
+
+#chatButtonIcon
+{
+	position: absolute;
+	fill: #866767;
+	fill: #d4b8b8;
+	fill: #3f3131ff;
+	height:100%;
+}
+
+#chatButtonIconTxt
+{
+	position: absolute;
+	fill: #866767;
+	fill: #1a1414;
+	height:100%;
+}
+
+
+
+/* Chat stream elements */
+
+#chatbubble
+{
+	width:15%;
+	
+	margin-top: 1%;
+	margin-bottom: 1%;
+	margin-left: 85%;	
+    padding: 1%;
+	
+	font-family: Roboto;
+	color: #222222;
+	font-size: 0.85em;
+	font-weight: normal;
+	text-shadow: 0.15em 0.15em 0.25em #FFFFFF;
+	vertical-align: text-top;
+	word-wrap: break-word;
+
+	line-height: 1.5em;
+	
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+	border-radius: 1.25vw;
+	
+	box-shadow: inset 0 0.5em 0.5em 0px rgb(255, 255, 255, 0.5),inset 0 0.5em 0.5em 0px rgb(255, 255, 255, 0.5);
+	background: rgba(255, 255, 255, 0.7);	
+}
+
+
+#chatbubble.darkbubble
+{
+    transform: translateX(200%);
+    -webkit-transform: translateX(200%);
+
+	font-family: Courier;
+	color: white;
+	font-size: 0.85em;
+	text-shadow: 0.15em 0.15em 0.25em #000000;
+	line-height: 1.5em;
+	
+	border-radius: 0.75vw;
+	
+	background-color: rgb(0, 0, 0, 0.75);
+	box-shadow: none;
+	background: rgba(0, 0, 0, 1.0);
+}
+
+#chatbubble.imgbubble
+{	
+	height: auto;
+    padding: 0%;
+	background-color: transparent;
+	background: none;	
+	box-shadow: none;
+	vertical-align: bottom;
+/* 	overflow-y: auto; */	
+}
+
+.clip-circle {
+  clip-path: circle(80px at center);
+  /* OLD VALUE example: circle(245px, 140px, 50px); */
+  /* Yep, even the new clip-path has deprecated stuff. */
+}
+
+
+#chatbubble.playerbubble
+{	
+	font-family: Roboto;
+	font-weight: bold;
+	
+	line-height: 1.5em;
+	
+    color: #1f180e;
+    background-color: #FFFFFF;
+    text-shadow: 1px 1px 0px rgba(255,255,255,.5); /* 50% white from bottom */
+	font-size: 9pt;
+	
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+
+	vertical-align: text-top;
+	
+	border-radius: 15px;
+
+	background: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 0%, #9f7928 0%, #8A6E2F 30%, transparent 80%),
+                radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);	
+}
+
+
+img.emoticon
+{
+/* 	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	pointer-events: none;
+    cursor: default; */
+	height: 1.5em;
+	vertical-align: bottom;
+}
+
+img.pic
+{
+	width:100%;
+/* 	margin-left: 0%; */
+    padding: 0%;
+	background-color: transparent;
+	background: none;	
+	box-shadow: none;
+	vertical-align: bottom;	
+	
+/* 	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	pointer-events: none;
+    cursor: default; */
+	/* height: 1.5em; */
+	/* vertical-align: bottom; */
+}
+
+
+.username
+{
+    font-weight: bold;
+}
+
+.demonname
+{
+    font-weight: bold;
+	color: red;
+}
+
+
+
+.playername
+{
+	
+    font-size: 11pt;
+	font-weight: bold;
+	text-align: left;
+	/* text-decoration: underline wavy;	 */
+
+    color: #1f180e;
+    text-shadow: 1px 1px 0px rgba(255,255,255,.5); /* 50% white from bottom */
+}
+
+
+.playertext
+{
+	margin-left: 16px;
+	margin-top: 8px;
+	padding-bottom: 4px;
+}
+
+
+/* styles the chat scrollbar for the browsers that supports webkit */
+
+#chattext::-webkit-scrollbar
+{
+    width: 1em;
+    border-radius: 0.5em;
+}
+
+#chattext::-webkit-scrollbar-thumb
+{
+    background-color: rgba(128,128,128,0.75);
+	border-radius: 0.5em;
+}
+
+#chattext::-webkit-scrollbar-track-piece {
+	/* background-color: silver; */
+}
+
+/* Buttons */
+::-webkit-scrollbar-button:single-button {
+  background-color: #ffffff;
+  display: block;
+  border-style: solid;
+  width: 16px;
+}
+/* Up */
+::-webkit-scrollbar-button:single-button:vertical:decrement {
+  border-width: 0 8px 8px 8px;
+  border-color: transparent transparent transparent transparent;
+  height: 65px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+  border-color: transparent transparent transparent transparent;
+  background-color: transparent;
+}
+/* Down */
+::-webkit-scrollbar-button:single-button:vertical:increment {
+  border-width: 8px 8px 0 8px;
+  border-color: rgba(128,128,128,0.75) transparent transparent transparent;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-button:vertical:single-button:increment:hover {
+  border-color: transparent transparent transparent transparent;
+  background-color: transparent;
+}
+
+.y-mandatory {
+  scroll-snap-type: y mandatory;
+}
+
+.y-scroll .element {
+  margin-bottom: 10px;
+}
+
+
+
+
+/* Voice and Info elements */
+
+#timer-header
+{
+	font-size: 0.75vw;
+}
+
+#timer-text
+{
+    position: fixed;
+	padding: 1%;
+	bottom: 2%;
+	left: 2%;
+	
+	width: 15%;
+	
+/*     -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box; */	
+	
+/* 	background-color: #3f3131ff;
+	border:5px solid black; */
+	
+	font-size: 2vw;
+	color: white;
+	font-family: Consolas;
+	text-shadow: 2px 2px #000000;
+	
+	z-index: 4;	
+}
+
+
+#voicebox
+{
+    position: fixed;
+	bottom: 40%;
+	right: 25%;
+
+/* 	display: grid;
+	grid-row-gap: 8px; */
+	
+	justify-content: center;
+	align-items: top;
+
+	outline: none;	
+
+	width: 50%;
+	word-wrap: break-word;
+	
+	z-index: 4;	
+}
+
+#speechbox
+{
+/* 	box-sizing: border-box;
+	width: 100%;
+	word-wrap: break-word; */
+}
+
+#responsebox
+{
+	position: absolute;
+	left: 85px;
+	bottom: 260px;
+	width: 20%;
+	
+	z-index: 3;	
+}
+
+.dialoguebubble:before {
+	content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+	left: 20%;
+	top: 100%;
+
+	border: 25px solid;
+	border-color: rgba(192, 192, 192, 0.75) transparent transparent rgba(192, 192, 192, 0.75) ;	 	
+}
+
+/* .dialoguebubble:after {
+	content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+	right: 50%;
+	top: 100%;
+	border: 25px solid;
+	border-color: rgba(192, 192, 192, 0.75) transparent transparent rgba(192, 192, 192, 0.75) ;  
+} */
+
+.dialoguebubble
+{
+	/* display: flex; */
+	box-sizing: border-box;
+	width: auto;
+	
+	padding: 20px;
+    color: black;
+	font-family: Roboto;
+	font-size: 12pt;
+	text-shadow: 2px 2px #FFFFFF;
+
+	border-radius: 10px;
+
+	background-color: rgb(255, 255, 255, 0.85);	
+	background: linear-gradient(to top, rgba(192, 192, 192, 0.75) 0%, rgba(255, 255, 255, 0.75) 100%);
+}
+
+.monologuebubble
+{
+	/* display: flex; */
+	box-sizing: border-box;
+	width: 100%;
+	
+	padding: 20px;
+    color: white;
+	font-family: Roboto;
+	font-size: 16pt;
+	text-shadow: 2px 2px #000000;
+
+	border-radius: 10px;
+
+	background-color: rgb(0, 0, 0, 0.75);	
+	background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.75) 100%);
+	/* background: transparent; */
+	
+}
+
+
+
+/* Camera controls */
+
+#cameraiconbox
+{
+    position: absolute;
+	bottom: 15%;
+	
+	width: 15%;
+	height: 7.5%;
+	
+	display: flex;
+	justify-content: space-between;
+
+	background-color: transparent;
+
+	bottom: 2%;
+	left: 23%;
+	
+	z-index: 5;
+	
+}
+
+#cameraIconWrapper
+{
+	position: relative;
+	background-color: transparent;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	vertical-align: bottom;
+}
+
+.cameraIconButton
+{
+/*     position: relative;
+    width: 35%;
+	padding: 0px;
+
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;	 */
+
+	position: absolute;
+	
+	border: none;
+	outline: none;
+}
+
+.cameraIconText
+{
+	position:absolute;
+	top: 60%;
+	right: 0.65vw;
+    color: #3f3131ff;
+	font-family: Impact;
+	font-size: 1.25vw;
+	
+/* 	text-shadow:
+		0.1vw 0.1vw 0.15vw #000000,
+		-0.1vw -0.1vw 0.15vw #000000,
+		-0.1vw 0.1vw 0.15vw #000000,
+		0.1vw -.01vw 0.15vw #000000; */
+	
+/* 	text-align: left;
+	vertical-align: center; */
+	
+/* 	left: 10%;
+	top: 30%; */
+	
+/* 	left: 50%;
+	top: 25%; */
+	
+    background-color: transparent;
+	border: none;
+	outline: none;
+	
+	user-select: none;
+	pointer-events: none;
+    cursor: default;
+}
+
+
+
+/* Demo Controls */
+
+#control-row
+{
+}
+
+#control-panel
+{
+    position: fixed;
+    left: 510px;
+	top: 0px;
+    border-width: 1px;
+	border-color: red;
+	z-index: 5000;	
+}
+
+#settingsButton
+{
+    position: relative;
+    height: 40px;
+    width: 250px;
+	padding: 6px;
+    
+    left: -505px;
+	top: 100%;
+    
+    background-color: white;
+    color: black;
+	
+	border: solid;
+    border: 1px;
+}
+
+#settings
+{
+    color: black;
+    position: absolute;
+    z-index: 1003;
+    background-color: white;
+
+	width: 250px;	
+    left: 0px;
+	top: 42px;
+	
+	z-index: 5000;	
+	
+}
+
+#settingsMenu
+{
+    text-align: center;
+    font-weight: bold;
+	
+	z-index: 5000;	
+}
+
+#settings h3
+{
+    position: relative;
+    
+    text-align: center;
+    font-weight: bold;
+    
+    margin-top: 6%;
+    margin-bottom: 0px;
+    font-size: 18px;
+    
+    padding-left: 0px;
+    padding-right: 0px;
+    
+    border-bottom: solid;
+    border-bottom-color: white;
+}
+
+#settings button
+{
+    position: relative;
+    padding: 6px;
+    margin: 2px;
+    
+    width: 90%;
+    left: 0%;
+    height: 15%;
+	
+	background-color: white;
+	
+    border: solid;
+    border-width: 1px;	
+}
+
+#settings select
+{
+    position: relative;
+    width: 90%;
+	height: 1.6rem;
+    left: 0%;
+	font-size: 14pt;
+	padding-bottom: 4pt;
+	
+	box-sizing: content-box;
+}
+
+
+#settings select option
+{
+	padding:5px 0px;
+	/* line-height: 20px !important; */
+/* 	font-size: 16pt;
+	vertical-align: bottom;	 */
+}
+
+
+
+/* to the left of chat */
+#notchat
+{
+    position: absolute;
+    width: 80%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+
+
+video.scale1{
+  -moz-transform:scale(1.0,1.0);
+  -webkit-transform:scale(1.0,1.0);
+  -o-transform:scale(1.0,1.0);
+  -ms-transform:scale(1.0,1.0);
+  transform:scale(1.0,1.0);
+  
+  animation-direction: alternate;
+  animation-iteration-count: 2;
+}
+
+video.rotate1{
+  -moz-transform:rotate(0deg);
+  -webkit-transform:rotate(0deg);
+  -o-transform:rotate(0deg);
+  -ms-transform:rotate(0deg);
+  transform:rotate(0deg);
+}
+
+video.scale2{
+  -moz-transform:scale(1.5);
+  -webkit-transform:scale(1.5);
+  -o-transform:scale(1.5);
+  -ms-transform:scale(1.5);
+  transform:scale(1.5);
+}
+
+video.rotate2{
+  -moz-transform:rotate(22.5deg);
+  -webkit-transform:rotate(22.5deg);
+  -o-transform:rotate(22.5deg);
+  -ms-transform:rotate(22.5deg);
+  transform:rotate(22.5deg);
+}
+
+#youtubelink
+{
+    position: absolute;
+    left: 25%;
+    width: 50%;
+    font-size: 24px;
+    top: 45%;
+    
+    border-radius: 4px;
+}
+
+#videoButton
+{
+    position: absolute;
+    left: 65%;
+    width: 10%;
+    top: 50%;
+    padding: 5px;
+    
+    border-radius: 4px;
+}
+
+
+
+#errormsg
+{
+    position: absolute;
+    left: 25%;
+    top: 45%;
+    z-index: -1;
+}
+
+
+
+/* range input style */
+input[type=range] {
+  position: relative;
+  -webkit-appearance: none;
+  margin: 0;
+  width:  90%;
+  left: 0%;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  
+  width: 100%;
+  height: 8px;
+  cursor: pointer;
+  background-color: #ffffff;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border-radius: 1.3px;
+  border: 0.2px solid #010101;
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 1px solid #000000;
+  height: 16px;
+  width: 10px;
+  border-radius: 3px;
+  background: white;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -4px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+}
+
+
+
+
+/* Animations */
+
+.hidden {
+  opacity: 0.0;
+}
+
+.full-opacity  {
+	opacity: 1.0;
+}
+
+
+/* fade in and out */
+
+.dissolve-in-element {
+  animation: dissolve-in 3.0s;
+  animation-fill-mode: both;
+}
+
+.dissolve-out-element {
+  animation: dissolve-out 3.0s;
+  animation-fill-mode: both;
+}
+
+@keyframes dissolve-in {
+    from {opacity: 0;}
+    to {opacity: 0.5;}
+}
+
+@keyframes dissolve-out {
+    from {opacity: 0.5;}
+    to {opacity: 0.0;}
+}
+
+
+/* fade in and out */
+
+.fade-in-element {
+  animation: fade-in 0.7s;
+  animation-fill-mode: both;
+}
+
+.fade-out-element {
+  animation: fade-out 0.7s;
+  animation-fill-mode: both;
+}
+
+@keyframes fade-in {
+    from {opacity: 0; transform: scale(.7,.7)}
+    to {opacity: 1; transform: scale(1.0,1.0)}
+}
+
+@keyframes fade-out {
+    from {opacity: 1; transform: scale(1.0,1.0)}
+    to {opacity: 0.0; transform: scale(.7,.7)}
+}
+
+
+/* slide in */
+
+@keyframes slide-in {
+    100% { transform: translateX(0%); }
+}
+
+@-webkit-keyframes slide-in {
+    100% { -webkit-transform: translateX(0%); }
+}
+
+.fly-in-element {
+    animation: slide-in 0.3s forwards;
+    -webkit-animation: slide-in 0.5s forwards;
+}
+
+
+
+@keyframes scale-up {
+    from {transform: scale(1.0,1.0)}
+	to {transform: scale(2.0,2.0);}
+}
+
+.scale-up-element {
+	animation: scale-up 5.0s;
+	animation-fill-mode: both;
+}
+
+
+
+@keyframes grain {
+  0%, 100% { transform:translate(0, 0) }
+  10% { transform:translate(-5%, -10%) }
+  20% { transform:translate(-15%, 5%) }
+  30% { transform:translate(7%, -25%) }
+  40% { transform:translate(-5%, 25%) }
+  50% { transform:translate(-15%, 10%) }
+  60% { transform:translate(15%, 0%) }
+  70% { transform:translate(0%, 15%) }
+  80% { transform:translate(3%, 35%) }
+  90% { transform:translate(-10%, 10%) }
+}
+
+
+/* Filter effects */
+
+.shadow {
+  -webkit-filter: drop-shadow(
+	0.15vw 0.15vw 0vw rgba(0, 0, 0, 1.0)
+	);
+  filter: drop-shadow(
+	0.15vw 0.15vw 0vw rgba(0, 0, 0, 1.0)
+	);
+  /* Similar syntax to box-shadow */
+  text-shadow: -0.05vw -0.05vw 0.35vw #000000;
+}
+
+
+.stroked {
+	-webkit-text-stroke-width: 2px;
+	-webkit-text-stroke-color: black;
+}
