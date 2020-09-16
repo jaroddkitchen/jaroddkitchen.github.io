@@ -158,9 +158,9 @@ setInterval(function() {
 
 
 var timedEvents = [
-	[true, 1,	0, [function() {call_Darkness(10000)}, function() {demonMode(10000)}, function() {manifestTentacle(null)}]	],
-	[true, 17,	0, [function() {call_Darkness(10000)}, function() {log_dark(2)}]								],
-	[true, 32,	0, [function() {call_Darkness(12000)}, function() {demonMode(10000)}]							],	
+	[true, 1,	0, [function(){call_Darkness(5000)}, function(){tentacleManifest(5000)}] ],
+	[true, 10,	0, [function(){call_Darkness(10000)}, function(){demonMode(10000)}] ],
+	[true, 25,	0, [function(){call_Darkness(12000)}, function(){demonMode(10000)}, function(){tentacleManifest(7000)}] ],	
 ];
 
 var pastEvents = [];
@@ -179,7 +179,6 @@ function log_dark(num){
 
 function call_Darkness(n){
 	var timeout = n; 
-	//demonMode(timeout);
 	console.log("darkness called for " + n + " milliseconds");
 }
 
@@ -205,12 +204,22 @@ function demonMode(timeout)
 }
 
 
-function manifestTentacle(n){
+var t_timer = 1000;
+
+function tentacleManifest(timeout){
 	if (!tentacleInit)
 	{
 		initTentacle();
 	}
+	tentacleIsActive = true;
 	console.log("tentacle has arrived");
+	
+	clearTimeout(t_timer);
+	t_timer =  window.setTimeout(tentacleExit, timeout);	
+}
+
+function tentacleExit(){
+	tentacleIsActive = false;	
 }
 
 
@@ -235,7 +244,7 @@ function demonIsSummoned(timeout){
 	$("#overlay2").fadeTo( 3000, 0.5, function(){
 	});	
 	
-	//manifestTentacle();
+	//tentacleManifest();
 	
 	console.log("demon has arrived");	
 	

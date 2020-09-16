@@ -3,13 +3,15 @@ var tentacleRootY = 1;
 var tentacleNodeSize = 12;
 var tentacleFlex = 6;
 var tentacleMinLength = 100;
-var tentacleFreq = 0.015;
+var tentacleFreq = 0.15;
 var tentacleAmp = 0.02;
 var tentacleVel = 4;
 var tentacleAlpha = 1.0;
 var tentacleScale = 0;
 var numTentacles = 1;
+
 var tentacleInit = false;
+var tentacleIsActive = false;
 
 var tentSpawnX = 0;
 var tentSpawnY = 0;
@@ -50,29 +52,28 @@ function initTentacle()
 			//move right
 			//tentacleRootX++;
 			
-			// Change heading at edge 
-			//if (darkMode) && (this.free) {			
-				if (head.x > canvas.width) {
-					head.x--;
-					this.dir += 0.1;
-				} else if (head.x < 0) {
-					head.x++;
-					this.dir += 0.1;
-				}
-				if (head.y > canvas.height) {
-					head.y--;
-					this.dir += 0.1;
-				} else if (head.y < 0) {
-					head.y++;
-					this.dir += 0.1;
-				}
-			//}
-			if (darkMode){
+			// Change heading at edge 		
+			if (head.x > canvas.width) {
+				head.x--;
+				this.dir += 0.1;
+			} else if (head.x < 0) {
+				head.x++;
+				this.dir += 0.1;
+			}
+			if (head.y > canvas.height) {
+				head.y--;
+				this.dir += 0.1;
+			} else if (head.y < 0) {
+				head.y++;
+				this.dir += 0.1;
+			}
+			
+			if (tentacleIsActive){
+			// Track Mouse Pointer	
 				const dx = pointer.x - head.x;
 				const dy = pointer.y - head.y;
 				const dist = Math.sqrt(dx * dx + dy * dy);
 
-				// Track Mouse Pointer
 				if (dist < 200) {
 					if (this.free) {
 						this.dir = Math.atan2(dy, dx);
@@ -85,6 +86,7 @@ function initTentacle()
 					this.vel = tentacleVel;
 					this.free = true;
 				}
+			// Track Exit
 			} else {
 				const dx = tentSpawnX - head.x;
 				const dy = tentSpawnY - head.y;
@@ -92,17 +94,6 @@ function initTentacle()
 				this.dir = Math.atan2(dy, dx);
 				this.vel = 1 + dist * 0.05;				
 			}
-			
-			// Track Exit
-/* 			if (!darkMode) {
-				if (this.free) {
-					this.dir = Math.atan2(dy, dx);
-					this.vel = 1 + dist * 0.05;
-				}
-			} else {
-				this.vel = tentacleVel;
-				this.free = true;
-			} */
 			
 			this.vDir += 0.05 * (Math.random() - Math.random());
 			this.dir += this.vDir;
