@@ -2,17 +2,44 @@
 /* var wshshell=new ActiveXObject("wscript.shell");
 var username=wshshell.ExpandEnvironmentStrings("%username%"); */
 
+	var camLoaded = false;
+	var webcamLoaded = false;
+	var videoBuffered = false;
+	var webcamvideoBuffered = false;	
+
 function init()
+{
+	loadCam();
+	loadWebCam();
+	setupInterface();
+}
+
+function loadCam(){
+	videojs('main-video').ready(function(){
+		var video = this;
+		console.log("player ready");
+		camLoaded = true;
+		video.setAttribute("poster", "../img/art/svg/blank_poster.png");		
+	})
+}
+
+function loadWebCam(){
+	$("#webcam-video").ready(function(){
+		var webvideo = this;
+		console.log("webcam player ready");
+		webcamLoaded = true;
+	})	
+}
+
+
+function setupInterface()
 {
 	addListeners();
     makeSettings();
 	toggleSettings();
-	toggleCamera(0);
 	initWebcam();
+	toggleCamera(0);	
 	loadDictionary();
-	
-	//console.log(username);
-
     //spam();
 	//darkmode();	
 	//initVideoControlBar();
@@ -20,33 +47,44 @@ function init()
 }
 
 
-
 // Event listeners
 function addListeners()
 {
 	var video = document.getElementsByTagName('video')[0];
 	var webcamvideo = document.getElementsByTagName('video')[1];
+
+/* 	video.oncanplaythrough = function() {
+	  // Ready to play whole video?
+		console.log("video can play through");
+		videoBuffered = true;
+		if (videostart){
+			video.play();
+		}	  
+	} */
+	
+/* 	webcamvideo.oncanplaythrough = function() {
+	  // Ready to play whole video?
+		console.log("webcamvideo can play through");
+		webcamvideoBuffered = true;
+		if (videostart){
+			webcamvideo.play();
+		}	  
+	} */
+
 	
 	video.addEventListener('waiting', function () {log('waiting');});
 
 	video.addEventListener('playing', function () {log('playing');
-		showInterface();
-		// this.muted = false;
-	});
+	});	
 
 	video.addEventListener('pause', function () {log('pause');});
 
 	video.addEventListener('play', function () {
 		log('play');
 		if (!videostart){
-			videostart = true;
-			document.body.requestFullscreen();			
-			video.setAttribute("poster", "../img/art/svg/blank_poster.png");
-			webcamvideo.play();				
-			spam();			
+			initVideoStartup();
 		}
 	});
-	
 
 	video.addEventListener('stalled', function () {log('stalled');});
 
@@ -55,523 +93,107 @@ function addListeners()
 	video.addEventListener('seeked', function () {log('seeked');});
 	
 	video.addEventListener('timeupdate', function() {
-		timeCheck();
-		updateFaceCam();
+		//speechCheck();
+		//timeCheck();
+		updateWebCam();
 		
 	});
 }
 
 
+document.addEventListener("fullscreenchange", function() {
+  console.log("fullscreenchange event fired!");
+});
+
+function initVideoStartup(){
+	var video = document.getElementsByTagName('video')[0];
+	var webcamvideo = document.getElementsByTagName('video')[1];
+	video.setAttribute("poster", "../img/art/svg/blank_poster.png");	
+	document.body.requestFullscreen();	
+	videostart = true;
+	showInterface();
+	video.pause();
+	webcamvideo.pause();
+	video.play();
+	webcamvideo.play();
+	spam();	
+}
+
+function checkForBuffer(){
+/* 	if ((videoBuffered === true) && (webcamvideoBuffered === true)){
+		video.play();
+		webcamvideo.play();
+	} */
+}
+
 // timer objects
 
+var minutes = 0;
+var seconds = 0;
+
 setInterval(function() {
-    var myPlayer = videojs('main-video');
-    var whereYouAt = myPlayer.currentTime();
-    var minutes = Math.floor(whereYouAt / 60);   
-    var seconds = Math.floor(whereYouAt - minutes * 60)
+    var video = videojs('main-video');
+    var curTime = video.currentTime();
+    minutes = Math.floor(curTime  / 60);   
+    seconds = Math.floor(curTime - minutes * 60)
     var x = minutes < 10 ? "0" + minutes : minutes;
     var y = seconds < 10 ? "0" + seconds : seconds;
 
+// check for scheduled events
+	var eventTime = Math.floor(curTime);
+	var eventsLength = timedEvents.length;
+	if (eventsLength>0){
+		if (eventTime===timedEvents[0][1])
+		{
+			if (timedEvents[0][0]){
+				var n = timedEvents[0][3][1];
+				timedEvents[0][3][0](n);
+				timedEvents.splice(0,1);
+				//console.log(timedEvents);
+			} else {
+				timedEvents.splice(0,1);
+				console.log("event skipped");
+			}
+		}
+	}
+
+/* 	for (i=0; i < timedEvents.length; i++){
+		if (eventTime===timedEvents[i][1])
+		{
+			if (timedEvents[i][0]){
+				var n = timedEvents[i][3][1];
+				timedEvents[i][3][0](n);
+				timedEvents.splice(0,1);
+				//console.log(timedEvents);					
+				break;
+			} else {
+				timedEvents.splice(0,1);
+				//console.log("event skipped");
+			}
+		}
+	} */
     document.getElementById("timer").innerHTML = x + ":" + y;	
 }, 400);
 
 
 
-
-//--------------------------
-// AutoChat module
-//--------------------------
-
-var spamming = false;
-var darkMode = false;
-var spamType = "positive";
-var spamSpeed = 5000;
+var timedEvents = [
+	[true, 3,	0, [call_Darkness,10000]],
+	[false, 17,	0, [call_Darkness,8000]],
+	[true, 28,	0, [call_Darkness,12000]],		
+];	
 
 
-var usernamePrefixes = ["scary", "spooky", "sick", "insane", "cool", "revenge_of_", "mad", "generic", "Cpt", "nice", "xxx", "Dan", "VAC", "SWE", "Wizard", "faceless", "olof","best_", "daddy", "boo", "mister_", "davai", "Nick", "da_", "the_", "iAm", "Loungin", "extra", "BOT", "dirty", "shoutout_to_", "devil", "Only"];
-
-var usernameSuffixes = ["Kappa", "Sniper", "maniac", "shipwreck", "M", "LULZ", "Games", "Radley101", "lolo", "_yolo", "QQ", "stone", "Trumpster", "xD", "meister", "eric", "jenna", "loser", "haha", "noob", "dude", "Bro", "shotgun", "DADDY", "OneTaps", "winner", "jarod", "pepe", "explosion", "easy", "Nut", "000", "Biceps", "gamer", "Majestic", "zzzzz", "vortex", "sound", "tv"];
-
-var usernameColors = ["red", "green", "#40b7b5", "blue", "purple", "#aa9929"];
-
-var positiveMessages = ["vvv_HEARTS_vvv", "HEY YOOOO GUYZ!!", "best eppie evah", "LIZZY LUV", "I can't feel my lungs", "<== feels all the feels", "gettin goosebumps now", "WTF", "LUL", "holy shit", "SAVED", "ez", "GG", "Kappa", "LOVE THIS SHOW!!!", "WHAT", "Smash Like Button Peasants", "PogChamp PogChamp PogChamp PogChamp PogChamp", "anyone like pasta?", "awesome clawsome", "Freddy has powerful swim swims", "Mark is my spirit animal", "KAT GREED", "The enemy of my enemy is my Freddy", "The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top"];
-
-var negativeMessages = ["BOT", "WTF LMAO", "Stop moving your head! gettin dizzy", "dizzy", "VOLUME UP, PREEZ!", "NA CS", "LOL this ridic", "WTF", "LUL", "HAHAHAHA", "OMG", "LMAO", "so bad omg", "xD", "FAKE", "fake", "fake as fxxk", "FAKE FAKE FAKE", "WutFace", "NotLikeThis", "4Head", "KAT GREED", "salty peanuts yum yum", "Lizzy already won this debate, move along", "PALPATINE'S BEHIND IT ALL!!!"];
-
-var scaredMessages = ["OMG WTF is was that?", "GET OUTTA THERE!", "Run, Forrest, Run!", "dizzy", "Noooooooo", "OMFG", "just crapped my pantaloons", "WTF", "this is my worst nightmare", "OMG run", "OMG", "LMAO", "so bad omg", "xD", "FAKE", "fake", "can't take this", "please jesus god no more jump scares", "", "NotLikeThis", "...", "<=== IS SCARED", "heart palpittashuns"];
-
-var weirdMessages = ["The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top", "RUINED", "SAVED", "RUINED", "CoolStoryMan"];
-
-var demonMessages = ["i can see you", "i can hear you breathing", "im right over here ==->", "do you wanna meet me?", "do you wanna see my face?", "everbody hates you", "i can smell you", "i cant taste you", "chosen 4 whut?", "la diablo estas vivanta ene de mia korpo", "mi sangas pro la vundoj de inferaj trancxoj", "mi glutos vian animon","ni vekigu la lordon de la abismo", "im coming for you", "7:31", "mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon", "naw im just fukkin around with you chosen one", "we breathe chocolate over here", "guess what's for dinner?", "i want to show you something", "these people are already dead. their blood is on your hands", "did you ever think about ending things?","i know things", "i know your secret","i can do things","do you wanna see whut i can do","_eye1","_eye2","_eye3","_eye4","_face1","_face2","_face3","_face4","_face5","_face6","_face7","_face8","_face9"];
-
-
-var emotes = [
-    ["Kappa", "kappa.png"],
-    ["WutFace", "wutface.png"],
-    ["4Head", "4head.png"],
-    ["CoolStoryMan", "bobross.png"],
-    ["DansGame", "dansgame.png"],
-    ["NotLikeThis", "notlikethis.png"],
-    ["PogChamp", "pogchamp.png"]
-];
-
-var pics = [
-    ["_eye1", "eyescan.gif"],
-    ["_eye2", "eyebug.gif"],
-    ["_eye3", "eyered.gif"],
-    ["_eye4", "eyeblood.gif"],	
-    ["_face1", "facetougues.gif"],
-    ["_face2", "facebald.gif"],
-    ["_face3", "girlmad.gif"],
-    ["_face4", "girlcry1.gif"],
-    ["_face5", "girlcry2.gif"],
-    ["_face6", "girlcry3.gif"],
-    ["_face7", "babyface.gif"],
-    ["_face8", "monsterwoman.gif"],
-    ["_face9", "mirrorgirl.gif"]
-];
-
-
-
-//writes a random message in the chat
-function writeMessage()
-{
-    var element = $("#chattext");
-    if ((darkMode) || (spamType=="demon")){
-		element.append(getDarkMessage());
-	} else {
-		element.append(getMessage());
-	}
-    
-	cutTopOfChat();
-    scrollToBottom();
-/* 	var snd = new Sound("../snd/fx/bubble_pop.mp3", 10, false); 
-	snd.start(); */
-}
-
-//returns a random message
-function getMessage()
-{
-    var message = $('<div id="chatbubble"></div>');
-	message.attr("class", "fade-in-element");	
-	message.append(getUserName());	
-	message.append("&nbsp;&#58;&nbsp;");
-
-    var msgBody = "";
-    
-    if(spamType=="positive")
-        msgBody = (positiveMessages[Math.floor(Math.random()*positiveMessages.length)]);
-    else if(spamType=="negative")
-        msgBody = (negativeMessages[Math.floor(Math.random()*negativeMessages.length)]);
-    else if(spamType=="scared")
-        msgBody = (scaredMessages[Math.floor(Math.random()*scaredMessages.length)]);
-	else if(spamType=="weird")
-        msgBody = (weirdMessages[Math.floor(Math.random()*weirdMessages.length)]);
-	else if(spamType=="demon")
-		msgBody = (demonMessages[Math.floor(Math.random()*demonMessages.length)]);
-		//loadRandomImg(message);
-
-    msgBody = replace_emotes(msgBody);
-    msgBody = replace_pics(msgBody);
-	
-    message.append(msgBody);
-	
-    return message;
-}
-
-var demonMsgOriginX = 85;
-
-//returns a random message
-function getDarkMessage()
-{
-	
-	var message = $('<div id="chatbubble" margin-left="' + adjX + '" ></div>');
-	message.attr("class", "fly-in-element darkbubble");
-
-	var randomX = Math.floor(Math.random()*5);
-	var adjX = demonMsgOriginX - randomX;
-	message.css("margin-left", adjX +"%");
-	
-	//message.append(getDemonName());
-	//message.append("<br/>");
-
-    var msgBody = "";
-	
-	msgBody = (demonMessages[Math.floor(Math.random()*demonMessages.length)]);
-    
-/*     if(spamType=="positive")
-        msgBody = (positiveMessages[Math.floor(Math.random()*positiveMessages.length)]);
-    else if(spamType=="negative")
-        msgBody = (negativeMessages[Math.floor(Math.random()*negativeMessages.length)]);
-    else if(spamType=="scared")
-        msgBody = (scaredMessages[Math.floor(Math.random()*scaredMessages.length)]);
-	else if(spamType=="weird")
-        msgBody = (weirdMessages[Math.floor(Math.random()*weirdMessages.length)]);
-	else if(spamType=="demon")
-		msgBody = (demonMessages[Math.floor(Math.random()*demonMessages.length)]); */
-		//loadRandomImg(message);
-
-    msgBody = replace_emotes(msgBody);
-    msgBody = replace_pics(msgBody);
-	if (imgMsg){
-		message.attr("class", "fly-in-element darkbubble imgbubble");
-	}
-
-    message.append(msgBody);
-	
-    return message;
-}
-
-
-//replace text with img
-function replace_emotes(message)
-{	
-    for(var i=0;i<emotes.length;i++){
-        message = message.replace(new RegExp(emotes[i][0], 'g'), "<img src='../img/emotes/"+emotes[i][1]+"' class='emoticon' alt='"+emotes[i][0]+"' vertical-align='bottom'>");
-    } 
-
-    return message;
-}
-
-
-var imgMsg = false;
-
-function replace_pics(message)
-{	
-	imgMsg = false;
-
-    for(var i=0;i<pics.length;i++){
-		var str = message;
-		var n = str.search(pics[i][0], 'g');
-		if (n >=0) { 
-			imgMsg = true;
-		}
-		message = message.replace(new RegExp(pics[i][0], 'g'), "<img src='../img/pics/"+pics[i][1]+"' class='pic' alt='"+pics[i][0]+"'>");	
-		//message = message.replace(new RegExp(pics[i][0], 'g'), "<img src='../img/pics/eyered2.gif' class='pic' alt='"+pics[i][0]+"'>");	
-    }
-
-    return message;
+function call_Darkness(n){
+	var timeout = n; 
+	demonMode(timeout);
+	console.log("darkness called for " + n + " milliseconds");
 }
 
 
 
-
-
-//returns a random username
-function getDemonName()
-{
-    var username = $('<span></span>');
-    username.attr("class", "demonname");
-	username.append("000:");
-    
-    return username;	
-}
-
-//returns a random username
-function getUserName()
-{
-    var username = $('<span></span>');
-    username.attr("class", "username");
-	var usercolor = getUsernameColor();
-    username.css("color", usercolor);
-    username.append(usernamePrefixes[Math.floor(Math.random()*usernamePrefixes.length)]);   //gets a random username from the array
-    username.append(usernameSuffixes[Math.floor(Math.random()*usernameSuffixes.length)]);   //gets a random username from the array
-    
-    if(Math.random() > 0.5)
-    {
-        username.append(Math.floor(Math.random() * 120));
-    }
-    
-    return username;
-}
-
-//returns one of the colours you could have as your username
-function getUsernameColor()
-{
-    return usernameColors[Math.floor(Math.random()*usernameColors.length)];
-}
-
-
-/* $("#chattext" ).scroll(function() {
-  cleanUpScroll();
-}); */
-
-
-
-//checks to see if the chat is too long and cuts the top elements if it is
-function cutTopOfChat()
-{
-    var element = $("#chattext");
-	chattext.scrollTop = chattext.scrollHeight;
-	
-	
-    if(element.children().length > 40)
-    {
-        var chatMessages = element.children();
-        for(i = 0; i<10; i++)
-        {
-            chatMessages[i].remove();
-        }
-    }
-}
-
-
-var keytags = "scary, demon, evil";
-
-function loadRandomImg(message)
-{
-        $.getJSON("http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?",
-        {
-            tags: keytags,
-            tagmode: "all",
-            format: "json"
-        },
-        function(data) {
-            var rnd = Math.floor(Math.random() * data.items.length);
-
-            var image_src = data.items[rnd]['media']['m'].replace("_m", "_b");
-
-            //$('body').css('background-image', "url('" + image_src + "')");
-			$("<img width='100%' />").attr({src: data.items[rnd].media.m.replace('_m.','.')}).appendTo(message);
-        });
-}
-
-
-/* Chat scrolling functions */
-
-//scrolls to the bottom of the chat
-function scrollToBottom()
-{
-    var chattext = document.getElementById("chattext");
-    chattext.scrollTop = chattext.scrollHeight;
-	
-	//cleanUpScroll();
-}
-
-
-var scrollDir = "down";
-
-$(function () {
-	
-    var position = $("#chattext").scrollTop();
-
-    $("#chattext").scroll(function () {
-        var scroll = $("#chattext").scrollTop();
-
-        if (scroll > position) {
-			scrollDir = "down";
-            console.log('moving DOWN the page');
-
-        } else {
-            console.log('moving UP the page');
-			scrollDir = "up";
-        }
-
-        position = scroll;
-    });
-
-});
-
-
-document.addEventListener('scroll', function (event) {
-    if (event.target.id === 'chattext')
-	{
-		// fade in and out bubbles by position and scroll direction
-		var topOfScroll = chattext.getBoundingClientRect().top;	
-		elements = document.querySelectorAll('#chatbubble');
-		
-		for (var i = 0; i < elements.length; i++)
-		{
-			var element = elements[i];
-			var positionFromTop = element.getBoundingClientRect().top;
-			var positionFromBottom = element.getBoundingClientRect().bottom;
-			var messageHeight = (element.clientHeight)/2;
-
-			if (scrollDir === "down"){
-				if (positionFromBottom < topOfScroll + 32)
-				{
-					element.classList.remove('fade-in-element');
-					element.classList.add('fade-out-element');
-				}
-			}
-			
-			if (scrollDir === "up"){
-				if (positionFromBottom >= topOfScroll)
-				{
-					element.classList.remove('fade-out-element');
-					element.classList.add('fade-in-element');
-				}
-			}
-		}
-	}
-}, true /*Capture event*/);
-
-
-
-
-
-	
-//--------------------------
-// Player Chat interaction	
-//--------------------------
-
-//writes the text of the input field into the chat with a declared username
-function chat()
-{    
-    var textfield = $("#textfield");
-    var element = $("#chattext");
-    
-    if(textfield.val()!="")
-    {
-        var message = $('<div id="chatbubble" name="bubble"></div>');	
-        message.attr("class", "chatMessage playerbubble fade-in-element");		
-        message.append(getPlayerName());
-        message.append(" ");
-
-        var msgBody = textfield.val();
-        msgBody = replace_emotes(msgBody);
-		var msgBodyDiv = $('<div class="playertext">' + msgBody +'</div>');
-		message.append(msgBodyDiv);
-   
-        textfield.val("");
-    
-        element.append(message);
-
-		strToArray(msgBody);
-		
-		//msgCommand = "the " + msgBody;
-		//searchCommandWords(msgCommand);
-		
-		scrollToBottom();
-		cutTopOfChat();
-    }
-}
-
-
-//returns a set player rname
-function getPlayerName()
-{
-	var playername = $('<div text-align = "center"></div>');
-	playername.attr("class", "playername");
-	playername.append("&#9733;&nbsp;The Chosen One");
-	playername.append("<br>");
-	
-	return playername;
-	
-}
-
-
-//hides the chat text
-function hideChatText()
-{
-    var element = $("#chattext");
-    var hideButton = $("#hideButton");
-    
-    element.toggle();
-    hideButton.empty();
-    
-    if(element.is(":visible"))
-    {
-        hideButton.append("hide");
-    }
-    else
-    {
-        hideButton.append("show");
-    }
-}
-
-
-//clears the chat of messages
-function clearChat()
-{
-    var element = $("#chattext");
-    
-    element.empty();
-}
-
-
-
-//starts spamming, calls keepSpamming()
-function spam()
-{
-    var spamButton = $("#spamButton");
-    spamButton.empty();
-    
-    if(spamming)
-    {
-        spamming = false;
-        spamButton.append("spam");
-    }
-    else
-    {
-        spamming = true;
-        keepSpamming();
-        spamButton.append("stop spamming");
-    }
-}
-
-
-//recursive function that writes a message every 0-249ms
-function keepSpamming()
-{
-    if(spamming)
-    {
-        writeMessage();
-        setTimeout(function() {keepSpamming(); }, Math.floor(Math.random() * spamSpeed));
-    }
-}
-
-
-
-//--------------------------
-// Demon functions
-//--------------------------
-
-var deffects = 3; 
-
-function demonIsSummoned()
-{	
-	for (i=0; i < deffects; i++){
-		var deffect = document.getElementById("overlay" + i);
-		$("#overlay"+i).fadeTo( 'slow', 0.5, function(){ 
-			console.log("demon has arrived");
-			//$("#cameraiconbox").css("z-index", "3");
-        });		
-	}
-	
-	$("#cameraiconbox").css("z-index", "3");	
-	$("#timer-text").css("z-index", "3");
-	
-	if (!tentacleInit)
-	{
-		initTentacle();
-	}
-	tentacleRootX = 0;
-}
-
-function demonExits()
-{
-	for (i=0; i < deffects; i++){
-		var deffect = document.getElementById("overlay" + i);
-		$("#overlay"+i).fadeTo( 'slow', 0.0, function(){			
-			$("#cameraiconbox").css("z-index", "5");
-			$("#timer-text").css("z-index", "4");			
-			deffect.classList.add('hidden');
-			console.log("demon has left");
-        });		
-	}
-	
-	tentacleRootX = -200;
-}
-
-
-//--------------------------
-// Demo Settings	
-//--------------------------
-
-//toggles between dark mode and normal mode
-function darkmode()
-{
+function demonMode(timeout)
+{ 	
     var chat = $("#chat");
     if(darkMode)
     {
@@ -585,8 +207,113 @@ function darkmode()
         darkMode = true;
 		$("#darkModeButton").css("background-color", "#000000");
 		$("#darkModeButton").css("color", "#FFFFFF");
-		demonIsSummoned();
+		demonIsSummoned(timeout);
 	}
+	console.log("demon mode=" + darkMode);
+}
+
+
+
+//--------------------------
+// Demon functions
+//--------------------------
+
+var overlays = 3; 
+var d_timer = 5000;
+
+function demonIsSummoned(timeout){	
+
+	//var video = document.getElementsByTagName('video')[0];
+	//var webcamvideo = document.getElementsByTagName('video')[1];
+
+	$("#cameraiconbox").css("z-index", "3");	
+	$("#timer-text").css("z-index", "3");
+
+	$("#overlay0").fadeTo( 3000, 0.5, function(){
+	});
+
+	$("#overlay1").fadeTo( 3000, 0.5, function(){
+	});		
+
+	$("#overlay2").fadeTo( 3000, 0.5, function(){
+	});	
+	
+/* 	for (i=0; i < overlays; i++){
+		var deffect = document.getElementById("overlay" + i);
+		$("#overlay"+i).fadeTo( 3000, 0.5, function(){
+        });		
+	} */	
+	
+	if (!tentacleInit)
+	{
+		initTentacle();
+	}	
+
+	console.log("demon has arrived");	
+	
+	clearTimeout(d_timer);
+	d_timer =  window.setTimeout(demonMode, timeout);
+}
+
+function demonExits(){
+	//var video = document.getElementsByTagName('video')[0];	
+	//var webcamvideo = document.getElementsByTagName('video')[1];
+
+	$("#cameraiconbox").css("z-index", "5");
+	$("#timer-text").css("z-index", "4");			
+
+	$("#overlay0").fadeTo( 3000, 0.0, function(){
+		//$("#overlay0").classList.add('hidden');
+	});
+
+	$("#overlay1").fadeTo( 3000, 0.0, function(){
+		//$("#overlay1").classList.add('hidden');		
+	});		
+
+	$("#overlay2").fadeTo( 3000, 0.0, function(){
+		//$("#overlay2").classList.add('hidden');		
+	});	
+	
+	console.log("demon has left");
+
+	
+/* 	for (i=0; i < overlays; i++){
+		var deffect = document.getElementById("overlay" + i);
+		$("#overlay"+i).fadeTo( 3000, 0.0, function(){			
+			$("#cameraiconbox").css("z-index", "5");
+			$("#timer-text").css("z-index", "4");			
+			deffect.classList.add('hidden');
+			console.log("demon has left");
+        });
+	} */
+}
+
+
+//--------------------------
+// Demo Settings	
+//--------------------------
+
+//toggles between dark mode and normal mode
+function darkmode()
+{ 	
+	var darkModeEnd = 20000;
+
+    var chat = $("#chat");
+    if(darkMode)
+    {
+        darkMode = false;
+		$("#darkModeButton").css("background-color", "#FFFFFF");
+		$("#darkModeButton").css("color", "#000000");
+		demonExits();
+    }
+    else
+    {
+        darkMode = true;
+		$("#darkModeButton").css("background-color", "#000000");
+		$("#darkModeButton").css("color", "#FFFFFF");
+		demonIsSummoned(darkModeEnd);
+	}
+	console.log("darkmode=" + darkMode);
 }
 
 
@@ -852,6 +579,18 @@ var webcamplaylist = [
 		["Ryan", "https://video.wixstatic.com/video/bde2cd_385539cd85ff4cb0a0eff3967da87bf2/720p/mp4/file.mp4"]
 ];
 
+/* var videoplaylist = [
+	["chapel", "../video_src/Chapel to Cellar.mp4"],
+	["pennhurst", "../video_src/Penhurst Explorers.mp4"],
+	["desert", "../video_src/Biker Explorer.mp4"]
+];
+
+var webcamplaylist = [
+		["Ms5K", "../video_src/Face-cams1.mp4"],
+		["Wimpy", "../video_src/Face-cams2.mp4"],
+		["Ryan", "../video_src/Face-cams3.mp4"]
+];
+ */
 
 var videostart = false;
 
@@ -938,11 +677,11 @@ var speechEnd = speeches[curspeech][2];
 var speechflag = false;
 
 
-function timeCheck()
+function speechCheck()
 {
-	if (curspeech < speeches.length){
-		//RunSpeeches();
-	}
+/* 	if (curspeech < speeches.length){
+		RunSpeeches();
+	} */
 }
 
 
@@ -996,6 +735,8 @@ function getSpeech()
 	element.html(speechBubble);
 	return;
 }
+
+
 
 
 
@@ -1085,22 +826,22 @@ function strToArray(str)
 	const removeWords = ["A", "AS", "THE", "TO", "OF"]; 
 	playerwords = playerwords.filter( ( el ) => !removeWords.includes( el ) );	
 
-	validWords = [];
+	triggersWords = [];
 	
 	for (var i = 0; i < playerwords.length; i++){	
 		searchCommands(playerwords[i]);
 	}
 	
-	var lastValidWord = validWords.length - 1;	
+	var lastValidWord = triggersWords.length - 1;	
 	
-	assembleResponse(validWords[lastValidWord]);
+	assembleResponse(triggersWords[lastValidWord]);
 	console.log(playerwords);
 }
 
 
 var curResponse = 0;
 var r_timer = null;
-var validWords = [];
+var triggersWords = [];
 var keynouns = [];
 var keytimes = [];
 var pos;
@@ -1127,7 +868,7 @@ function searchCommands(word)
 	if (result)
 	{
 		curResponse = pos;
-		validWords.push(wordRaw);		
+		triggersWords.push(wordRaw);		
     }
 	
 	// a creepy tree is over there
@@ -1177,7 +918,7 @@ function findWord(letters) {
 
 function assembleResponse(word)
 {	
-	if (validWords.length > 0) {
+	if (triggersWords.length > 0) {
 		var speechBubble = $('<div id="response"></div>');
 		speechBubble.attr("class", "fade-in-element dialoguebubble");	
 		
@@ -1186,7 +927,7 @@ function assembleResponse(word)
 		
 		console.log('"' + word + '" will trigger a game action.');	
 		
-		//console.log("keywords=" + validWords.length);		
+		//console.log("keywords=" + triggersWords.length);		
 		
 		//invalidWords.push(wordRaw);		
 		//jumpToTime(keytimes[pos]);
@@ -1210,7 +951,6 @@ function assembleResponse(word)
 }
 
 
-
 // Load a response from the webcam
 function loadResponse(speechBubble)
 {
@@ -1232,7 +972,7 @@ function loadResponse(speechBubble)
 
 
 // Return webcam to a waiting loop
-function updateFaceCam()
+function updateWebCam()
 {
 	if ($("#webcam-video")[0].currentTime >= 43.5)
 	{
@@ -1253,6 +993,7 @@ function fadeResponse()
 	
 	console.log("response removed");
 }
+
 
 
 
@@ -1322,67 +1063,453 @@ function Sound(source, volume, loop)
 
 
 
-/* function getVideo()
+
+//--------------------------
+// AutoChat module
+//--------------------------
+
+var spamming = false;
+var darkMode = false;
+var spamType = "positive";
+var spamSpeed = 5000;
+
+
+var usernamePrefixes = ["scary", "spooky", "sick", "insane", "cool", "revenge_of_", "mad", "generic", "Cpt", "nice", "xxx", "Dan", "VAC", "SWE", "Wizard", "faceless", "olof","best_", "daddy", "boo", "mister_", "davai", "Nick", "da_", "the_", "iAm", "Loungin", "extra", "BOT", "dirty", "shoutout_to_", "devil", "Only"];
+
+var usernameSuffixes = ["Kappa", "Sniper", "maniac", "shipwreck", "M", "LULZ", "Games", "Radley101", "lolo", "_yolo", "QQ", "stone", "Trumpster", "xD", "meister", "eric", "jenna", "loser", "haha", "noob", "dude", "Bro", "shotgun", "DADDY", "OneTaps", "winner", "jarod", "pepe", "explosion", "easy", "Nut", "000", "Biceps", "gamer", "Majestic", "zzzzz", "vortex", "sound", "tv"];
+
+var usernameColors = ["red", "green", "#40b7b5", "blue", "purple", "#aa9929"];
+
+var positiveMessages = ["vvv_HEARTS_vvv", "HEY YOOOO GUYZ!!", "best eppie evah", "LIZZY LUV", "I can't feel my lungs", "<== feels all the feels", "gettin goosebumps now", "WTF", "LUL", "holy shit", "SAVED", "ez", "GG", "Kappa", "LOVE THIS SHOW!!!", "WHAT", "Smash Like Button Peasants", "PogChamp PogChamp PogChamp PogChamp PogChamp", "anyone like pasta?", "awesome clawsome", "Freddy has powerful swim swims", "Mark is my spirit animal", "KAT GREED", "The enemy of my enemy is my Freddy", "The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top"];
+
+var negativeMessages = ["BOT", "WTF LMAO", "Stop moving your head! gettin dizzy", "dizzy", "VOLUME UP, PREEZ!", "NA CS", "LOL this ridic", "WTF", "LUL", "HAHAHAHA", "OMG", "LMAO", "so bad omg", "xD", "FAKE", "fake", "fake as fxxk", "FAKE FAKE FAKE", "WutFace", "NotLikeThis", "4Head", "KAT GREED", "salty peanuts yum yum", "Lizzy already won this debate, move along", "PALPATINE'S BEHIND IT ALL!!!"];
+
+var scaredMessages = ["OMG WTF is was that?", "GET OUTTA THERE!", "Run, Forrest, Run!", "dizzy", "Noooooooo", "OMFG", "just crapped my pantaloons", "WTF", "this is my worst nightmare", "OMG run", "OMG", "LMAO", "so bad omg", "xD", "FAKE", "fake", "can't take this", "please jesus god no more jump scares", "", "NotLikeThis", "...", "<=== IS SCARED", "heart palpittashuns"];
+
+var weirdMessages = ["The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top", "RUINED", "SAVED", "RUINED", "CoolStoryMan"];
+
+var demonMessages = ["i can see you", "i can hear you breathing", "im right over here ==->", "do you wanna meet me?", "do you wanna see my face?", "everbody hates you", "i can smell you", "i cant taste you", "chosen 4 whut?", "la diablo estas vivanta ene de mia korpo", "mi sangas pro la vundoj de inferaj trancxoj", "mi glutos vian animon","ni vekigu la lordon de la abismo", "im coming for you", "7:31", "mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon", "naw im just fukkin around with you chosen one", "we breathe chocolate over here", "guess what's for dinner?", "i want to show you something", "these people are already dead. their blood is on your hands", "did you ever think about ending things?","i know things", "i know your secret","i can do things","do you wanna see whut i can do","_eye1","_eye2","_eye3","_eye4","_face1","_face2","_face3","_face4","_face5","_face6","_face7","_face8","_face9"];
+
+
+var emotes = [
+    ["Kappa", "kappa.png"],
+    ["WutFace", "wutface.png"],
+    ["4Head", "4head.png"],
+    ["CoolStoryMan", "bobross.png"],
+    ["DansGame", "dansgame.png"],
+    ["NotLikeThis", "notlikethis.png"],
+    ["PogChamp", "pogchamp.png"]
+];
+
+var pics = [
+    ["_eye1", "eyescan.gif"],
+    ["_eye2", "eyebug.gif"],
+    ["_eye3", "eyered.gif"],
+    ["_eye4", "eyeblood.gif"],	
+    ["_face1", "facetougues.gif"],
+    ["_face2", "facebald.gif"],
+    ["_face3", "girlmad.gif"],
+    ["_face4", "girlcry1.gif"],
+    ["_face5", "girlcry2.gif"],
+    ["_face6", "girlcry3.gif"],
+    ["_face7", "babyface.gif"],
+    ["_face8", "monsterwoman.gif"],
+    ["_face9", "mirrorgirl.gif"]
+];
+
+
+
+//writes a random message in the chat
+function writeMessage()
 {
-} */
-
-
-/* var player = videojs('player');
-
-player.ready(function() {
-	player.pause(true);
-	player.play();
-	player.currentTime(200)	
-}) */
-
-
-/* VideoJS.DOMReady(function() {
-	var player = document.getElementById("main-video");
-	player.pause();
-	player.play();
-	player.currentTime(40);
-});
- */
-
-
-
-/* function initialize()
-{
+    var element = $("#chattext");
+    if ((darkMode) || (spamType=="demon")){
+		element.append(getDarkMessage());
+	} else {
+		element.append(getMessage());
+	}
+    
+	cutTopOfChat();
+    scrollToBottom();
+/* 	var snd = new Sound("../snd/fx/bubble_pop.mp3", 10, false); 
+	snd.start(); */
 }
 
-function onPlayerReady() {
-} */
+//returns a random message
+function getMessage()
+{
+    var message = $('<div id="chatbubble"></div>');
+	message.attr("class", "fade-in-element");	
+	message.append(getUserName());	
+	message.append("&nbsp;&#58;&nbsp;");
 
+    var msgBody = "";
+    
+    if(spamType=="positive")
+        msgBody = (positiveMessages[Math.floor(Math.random()*positiveMessages.length)]);
+    else if(spamType=="negative")
+        msgBody = (negativeMessages[Math.floor(Math.random()*negativeMessages.length)]);
+    else if(spamType=="scared")
+        msgBody = (scaredMessages[Math.floor(Math.random()*scaredMessages.length)]);
+	else if(spamType=="weird")
+        msgBody = (weirdMessages[Math.floor(Math.random()*weirdMessages.length)]);
+	else if(spamType=="demon")
+		msgBody = (demonMessages[Math.floor(Math.random()*demonMessages.length)]);
+		//loadRandomImg(message);
+
+    msgBody = replace_emotes(msgBody);
+    msgBody = replace_pics(msgBody);
 	
-//generic seekTo function taking a player element and seconds as parameters    
-/* function playerSeekTo(player, seconds) {
+    message.append(msgBody);
+	
+    return message;
 }
 
+var demonMsgOriginX = 85;
 
-function onPlayerStateChange(event) {
-} */
-
-
-// This function is called by initialize()
-/* function updateTimerDisplay(){
-}
-
-function formatTime(time){
-} */
-
-// This function is called by initialize()
-/* function updateProgressBar(){
-} */
-
-
-//gives the user an input field to change the name of the channel
-/* function changeChannel()
+//returns a random message
+function getDarkMessage()
 {
+	
+	var message = $('<div id="chatbubble" margin-left="' + adjX + '" ></div>');
+	message.attr("class", "fly-in-element darkbubble");
+
+	var randomX = Math.floor(Math.random()*5);
+	var adjX = demonMsgOriginX - randomX;
+	message.css("margin-left", adjX +"%");
+	
+	//message.append(getDemonName());
+	//message.append("<br/>");
+
+    var msgBody = "";
+	
+	msgBody = (demonMessages[Math.floor(Math.random()*demonMessages.length)]);
+    
+/*     if(spamType=="positive")
+        msgBody = (positiveMessages[Math.floor(Math.random()*positiveMessages.length)]);
+    else if(spamType=="negative")
+        msgBody = (negativeMessages[Math.floor(Math.random()*negativeMessages.length)]);
+    else if(spamType=="scared")
+        msgBody = (scaredMessages[Math.floor(Math.random()*scaredMessages.length)]);
+	else if(spamType=="weird")
+        msgBody = (weirdMessages[Math.floor(Math.random()*weirdMessages.length)]);
+	else if(spamType=="demon")
+		msgBody = (demonMessages[Math.floor(Math.random()*demonMessages.length)]); */
+		//loadRandomImg(message);
+
+    msgBody = replace_emotes(msgBody);
+    msgBody = replace_pics(msgBody);
+	if (imgMsg){
+		message.attr("class", "fly-in-element darkbubble imgbubble");
+	}
+
+    message.append(msgBody);
+	
+    return message;
 }
 
-function setChannelName()
+
+//replace text with img
+function replace_emotes(message)
+{	
+    for(var i=0;i<emotes.length;i++){
+        message = message.replace(new RegExp(emotes[i][0], 'g'), "<img src='../img/emotes/"+emotes[i][1]+"' class='emoticon' alt='"+emotes[i][0]+"' vertical-align='bottom'>");
+    } 
+
+    return message;
+}
+
+
+var imgMsg = false;
+
+function replace_pics(message)
+{	
+	imgMsg = false;
+
+    for(var i=0;i<pics.length;i++){
+		var str = message;
+		var n = str.search(pics[i][0], 'g');
+		if (n >=0) { 
+			imgMsg = true;
+		}
+		message = message.replace(new RegExp(pics[i][0], 'g'), "<img src='../img/pics/"+pics[i][1]+"' class='pic' alt='"+pics[i][0]+"'>");	
+		//message = message.replace(new RegExp(pics[i][0], 'g'), "<img src='../img/pics/eyered2.gif' class='pic' alt='"+pics[i][0]+"'>");	
+    }
+
+    return message;
+}
+
+
+//returns a random username
+function getDemonName()
 {
-} */
+    var username = $('<span></span>');
+    username.attr("class", "demonname");
+	username.append("000:");
+    
+    return username;	
+}
+
+//returns a random username
+function getUserName()
+{
+    var username = $('<span></span>');
+    username.attr("class", "username");
+	var usercolor = getUsernameColor();
+    username.css("color", usercolor);
+    username.append(usernamePrefixes[Math.floor(Math.random()*usernamePrefixes.length)]);   //gets a random username from the array
+    username.append(usernameSuffixes[Math.floor(Math.random()*usernameSuffixes.length)]);   //gets a random username from the array
+    
+    if(Math.random() > 0.5)
+    {
+        username.append(Math.floor(Math.random() * 120));
+    }
+    
+    return username;
+}
+
+//returns one of the colours you could have as your username
+function getUsernameColor()
+{
+    return usernameColors[Math.floor(Math.random()*usernameColors.length)];
+}
+
+
+/* $("#chattext" ).scroll(function() {
+  cleanUpScroll();
+}); */
+
+
+
+//checks to see if the chat is too long and cuts the top elements if it is
+function cutTopOfChat()
+{
+    var element = $("#chattext");
+	chattext.scrollTop = chattext.scrollHeight;
+	
+	
+    if(element.children().length > 40)
+    {
+        var chatMessages = element.children();
+        for(i = 0; i<10; i++)
+        {
+            chatMessages[i].remove();
+        }
+    }
+}
+
+
+
+//starts spamming, calls keepSpamming()
+function spam()
+{
+    var spamButton = $("#spamButton");
+    spamButton.empty();
+    
+    if(spamming)
+    {
+        spamming = false;
+        spamButton.append("spam");
+    }
+    else
+    {
+        spamming = true;
+        keepSpamming();
+        spamButton.append("stop spamming");
+    }
+}
+
+
+//recursive function that writes a message every 0-249ms
+function keepSpamming()
+{
+    if(spamming)
+    {
+        writeMessage();
+        setTimeout(function() {keepSpamming(); }, Math.floor(Math.random() * spamSpeed));
+    }
+}
+
+
+
+//random web image
+var keytags = "scary, demon, evil";
+
+function loadRandomImg(message)
+{
+        $.getJSON("http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?",
+        {
+            tags: keytags,
+            tagmode: "all",
+            format: "json"
+        },
+        function(data) {
+            var rnd = Math.floor(Math.random() * data.items.length);
+
+            var image_src = data.items[rnd]['media']['m'].replace("_m", "_b");
+
+            //$('body').css('background-image', "url('" + image_src + "')");
+			$("<img width='100%' />").attr({src: data.items[rnd].media.m.replace('_m.','.')}).appendTo(message);
+        });
+}
+
+
+/* Chat scrolling functions */
+
+//scrolls to the bottom of the chat
+function scrollToBottom()
+{
+    var chattext = document.getElementById("chattext");
+    chattext.scrollTop = chattext.scrollHeight;
+	
+	//cleanUpScroll();
+}
+
+
+var scrollDir = "down";
+
+$(function () {
+	
+    var position = $("#chattext").scrollTop();
+
+    $("#chattext").scroll(function () {
+        var scroll = $("#chattext").scrollTop();
+
+        if (scroll > position) {
+			scrollDir = "down";
+            //console.log('moving DOWN the page');
+
+        } else {
+			scrollDir = "up";
+            //console.log('moving UP the page');			
+        }
+
+        position = scroll;
+    });
+
+});
+
+
+document.addEventListener('scroll', function (event) {
+    if (event.target.id === 'chattext')
+	{
+		// fade in and out bubbles by position and scroll direction
+		var topOfScroll = chattext.getBoundingClientRect().top;	
+		elements = document.querySelectorAll('#chatbubble');
+		
+		for (var i = 0; i < elements.length; i++)
+		{
+			var element = elements[i];
+			var positionFromTop = element.getBoundingClientRect().top;
+			var positionFromBottom = element.getBoundingClientRect().bottom;
+			var messageHeight = (element.clientHeight)/2;
+
+			if (scrollDir === "down"){
+				if (positionFromBottom < topOfScroll + 32)
+				{
+					element.classList.remove('fade-in-element');
+					element.classList.add('fade-out-element');
+				}
+			}
+			
+			if (scrollDir === "up"){
+				if (positionFromBottom >= topOfScroll)
+				{
+					element.classList.remove('fade-out-element');
+					element.classList.add('fade-in-element');
+				}
+			}
+		}
+	}
+}, true /*Capture event*/);
+
+
+
+
+//--------------------------
+// Player Chat interaction	
+//--------------------------
+
+//writes the text of the input field into the chat with a declared username
+function chat()
+{    
+    var textfield = $("#textfield");
+    var element = $("#chattext");
+    
+    if(textfield.val()!="")
+    {
+        var message = $('<div id="chatbubble" name="bubble"></div>');	
+        message.attr("class", "chatMessage playerbubble fade-in-element");		
+        message.append(getPlayerName());
+        message.append(" ");
+
+        var msgBody = textfield.val();
+        msgBody = replace_emotes(msgBody);
+		var msgBodyDiv = $('<div class="playertext">' + msgBody +'</div>');
+		message.append(msgBodyDiv);
+   
+        textfield.val("");
+    
+        element.append(message);
+
+		strToArray(msgBody);
+		
+		//msgCommand = "the " + msgBody;
+		//searchCommandWords(msgCommand);
+		
+		scrollToBottom();
+		cutTopOfChat();
+    }
+}
+
+
+//returns a set player rname
+function getPlayerName()
+{
+	var playername = $('<div text-align = "center"></div>');
+	playername.attr("class", "playername");
+	playername.append("&#9733;&nbsp;The Chosen One");
+	playername.append("<br>");
+	
+	return playername;
+	
+}
+
+
+//hides the chat text
+function hideChatText()
+{
+    var element = $("#chattext");
+    var hideButton = $("#hideButton");
+    
+    element.toggle();
+    hideButton.empty();
+    
+    if(element.is(":visible"))
+    {
+        hideButton.append("hide");
+    }
+    else
+    {
+        hideButton.append("show");
+    }
+}
+
+
+//clears the chat of messages
+function clearChat()
+{
+    var element = $("#chattext");
+    
+    element.empty();
+}
+
+
+
+
+
+
+
 
 function log(msg) {
   // document.getElementById('events').innerHTML = '';

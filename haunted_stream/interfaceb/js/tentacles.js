@@ -2,10 +2,10 @@ var tentacleRootX = 200;
 var tentacleRootY = 1;
 var tentacleNodeSize = 12;
 var tentacleFlex = 7;
-var tentacleMinLength = 120;
-var tentacleFreq = 0.025;
+var tentacleMinLength = 100;
+var tentacleFreq = 0.015;
 var tentacleAmp = 0.02;
-var tentacleVel = 4;
+var tentacleVel = 6;
 var numTentacles = 1;
 var tentacleInit = false;
 
