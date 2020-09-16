@@ -141,8 +141,7 @@ setInterval(function() {
 		{
 			if (timedEvents[0][0]){
 				for (i=0; i< timedEvents[0][3].length; i++){					
-					var param = timedEvents[0][3][i][1];
-					timedEvents[0][3][i][0](param);
+					timedEvents[0][3][i]();
 				}
 				pastEvents.push(timedEvents[0]);
 				timedEvents.splice(0,1);
@@ -157,10 +156,11 @@ setInterval(function() {
 }, 400);
 
 
+
 var timedEvents = [
-	[true, 1,	0, [[call_Darkness,10000], [log_dark,1]]	],
-	[true, 17,	0, [[call_Darkness,10000], [log_dark,2]]	],
-	[true, 32,	0, [[call_Darkness,12000], [log_dark,3]]	],	
+	[true, 1,	0, [function() {call_Darkness(10000)}, function() {demonMode(10000)}, function() {manifestTentacle(null)}]	],
+	[true, 17,	0, [function() {call_Darkness(10000)}, function() {log_dark(2)}]								],
+	[true, 32,	0, [function() {call_Darkness(12000)}, function() {demonMode(10000)}]							],	
 ];
 
 var pastEvents = [];
@@ -179,7 +179,7 @@ function log_dark(num){
 
 function call_Darkness(n){
 	var timeout = n; 
-	demonMode(timeout);
+	//demonMode(timeout);
 	console.log("darkness called for " + n + " milliseconds");
 }
 
@@ -205,7 +205,7 @@ function demonMode(timeout)
 }
 
 
-function manifestTentacle(){
+function manifestTentacle(n){
 	if (!tentacleInit)
 	{
 		initTentacle();
@@ -235,7 +235,7 @@ function demonIsSummoned(timeout){
 	$("#overlay2").fadeTo( 3000, 0.5, function(){
 	});	
 	
-	manifestTentacle();
+	//manifestTentacle();
 	
 	console.log("demon has arrived");	
 	
