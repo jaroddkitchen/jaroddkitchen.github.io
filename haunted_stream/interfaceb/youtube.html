@@ -6,11 +6,7 @@
 	
 	
 	<!-- initializing custom controls -->
-
-    <!-- importing videojs -->	
-	<script src="https://vjs.zencdn.net/7.8.4/video.js"></script>	
-	<!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
-	<script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+	
 
     <!-- importing the styling -->
 	<link rel="stylesheet" href="https://vjs.zencdn.net/7.8.4/video-js.css" />	
@@ -19,13 +15,10 @@
 	<!-- importing text-to-speech files -->	
 	<script src="./js/speechsynth.js"></script>	
 	<!-- <script src="https://code.responsivevoice.org/responsivevoice.js?key=lxcndNc5"></script> -->
-	
-	 <!-- importing the jQuery library  -->
-    <script src="./js/jquery.min.js"></script>
-    
-	<!-- importing main js files -->
-    <script src="./js/main.js"></script>	
-    <!-- <script src="./js/youtube.js"></script> -->
+
+	<!-- importing animation files -->
+	<!-- <script src="./js/TweenMax.min.js"></script>	 -->
+    <!-- <script src="./js/animate.js"></script>	 -->
 	
 	<!-- importing dictionary files -->
 	<script src="./dict/dictionary.js"></script>
@@ -56,72 +49,17 @@
 	
 </head>
 
-<body onload="init()">
+<body>
 	
 	<div id="overlays">
 		<div id="overlay0" class="colorbox hidden"></div>
 		<div id="overlay1" class="textures hidden"></div>
 		<div id="overlay2" class="apparitions hidden">
 			<img id="node" src="../img/fx/dot.png" alt="">
-			<!-- <img id="nodeb" src="../img/fx/dot_simple.png" alt=""> -->
 			<script  src="./js/tentacles.js"></script>			
 		</div>
 	</div>
-	
-	<div id="videoframe">
-	<video
-		id="main-video"
-		class="video-js vjs-default-skin vjs-hd mainvideo"
-		poster="../img/art/svg/bootoob_poster-min.png"
-		data-setup='{ "controls": true, "loop": true, "inactivityTimeout": 0}'
-	>
-<!--     <source src="../video_src/Chapel and Cellar.mp4" type="video/mp4" /> -->
-    <source src="https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4" type="video/mp4" />
-    <p class="vjs-no-js">
-      To view this video please enable JavaScript, and consider upgrading to a
-      web browser that
-      <a href="https://videojs.com/html5-video-support/" target="_blank"
-        >supports HTML5 video</a
-      >
-    </p>
-	</video>		
-    </div>	
-	
-	<div id="webcamframe">
-		<div id="webcam-wrapper">
-			<video class="scale1" id="webcam-video" loop muted preload="auto">
-			<source src="https://video.wixstatic.com/video/bde2cd_f447f30577a74aba829138597bb3f323/720p/mp4/file.mp4" type="video/mp4" />
-			</video>
-			<div id="timer-text">
-				<!-- <div id="timer-header">time elapsed:</div> -->
-				<div id="timer"></div>	
-			</div>		
-		</div>
-    </div>
 
-	<div id="cameraiconbox">
-		<div id="cameraIconWrapper">
-			<img id="cameraButton1" name="0" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow">
-			<div id="cameraText0" class="cameraIconText shadow" >1</div>
-		</div>
-		<div id="cameraIconWrapper">
-			<img id="cameraButton2" name="1" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
-			<div id="cameraText1" class="cameraIconText shadow">2</div>
-		</div>
-		<div id="cameraIconWrapper">
-			<img id="cameraButton3" name="2" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
-			<div id="cameraText2" class="cameraIconText shadow">3</div>
-		</div>
-	</div>
-	
-	<div id="control-row">
-		<div id="control-panel">
-			<div id="input">		
-				<button id="settingsButton" onclick="toggleMenu();" style="background-color: rgb(100, 65, 164);" name="settings" class="dirButton">settings</button>	
-			</div>
-		</div>		
-    </div>
-	
     <div id="chat" style="display: none;">
 		<div id="abovechat">
 			<div id="channelname">
@@ -193,6 +131,51 @@
 			</div>		
 		</div>		
 	</div>
+	
+	<div id="videoframe">
+	<video
+		id="main-video"
+		class="video-js vjs-default-skin vjs-hd mainvideo"
+		controls
+		data-setup='{ "techOrder": ["html5","youtube"], "sources": [{ "type": "video/youtube", "src": "https://www.youtube.com/watch?v=y08Fk5cLTRw&t=2s"}] }'		
+	>
+	</video>
+<!-- 	data-setup='{ "techOrder": ["youtube"], "src": "https://www.youtube.com/watch?v=y08Fk5cLTRw&t=2s" }'	 -->
+    </div>		
+	<div id="webcamframe">
+		<div id="webcam-wrapper">
+			<video class="scale1" id="webcam-video" loop muted preload="auto">
+			<source src="https://video.wixstatic.com/video/bde2cd_f447f30577a74aba829138597bb3f323/720p/mp4/file.mp4" type="video/mp4" />
+			</video>
+			<div id="timer-text">
+				<!-- <div id="timer-header">time elapsed:</div> -->
+				<div id="timer"></div>	
+			</div>		
+		</div>
+    </div>
+
+	<div id="cameraiconbox">
+		<div id="cameraIconWrapper">
+			<img id="cameraButton1" name="0" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow">
+			<div id="cameraText0" class="cameraIconText shadow" >1</div>
+		</div>
+		<div id="cameraIconWrapper">
+			<img id="cameraButton2" name="1" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
+			<div id="cameraText1" class="cameraIconText shadow">2</div>
+		</div>
+		<div id="cameraIconWrapper">
+			<img id="cameraButton3" name="2" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
+			<div id="cameraText2" class="cameraIconText shadow">3</div>
+		</div>
+	</div>
+	
+	<div id="control-row">
+		<div id="control-panel">
+			<div id="input">		
+				<button id="settingsButton" onclick="toggleMenu();" style="background-color: rgb(100, 65, 164);" name="settings" class="dirButton">settings</button>	
+			</div>
+		</div>		
+    </div>
 	<div id="notchat">
 		<div id="responsebox">
 		</div>
@@ -200,5 +183,15 @@
 			<div id="speechbox"></div>
 		</div>		
 	</div>
+    <!-- importing videojs -->	
+	<script src="https://vjs.zencdn.net/7.8.4/video.js"></script>	
+	<!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+	<script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+    <script src="./js/youtube.js"></script>
+	 <!-- importing the jQuery library  -->
+    <script src="./js/jquery.min.js"></script>	
+	<!-- importing main js files -->
+    <script src="./js/main_youtube.js"></script>	
+	
 </body>
 </html>

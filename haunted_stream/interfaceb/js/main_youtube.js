@@ -7,6 +7,8 @@ var username=wshshell.ExpandEnvironmentStrings("%username%"); */
 	var videoBuffered = false;
 	var webcamvideoBuffered = false;	
 
+//init();
+
 function init()
 {
 	loadCam();
@@ -34,13 +36,11 @@ function loadWebCam(){
 
 function setupInterface()
 {
-	addListeners();
+	//addListeners();
     makeSettings();
 	toggleSettings();
-	initWebcam();
-	toggleCamera(0);	
 	loadDictionary();
-    //spam();
+    spam();
 	//darkmode();	
 	//initVideoControlBar();
 	//hideInterface();	
@@ -50,9 +50,12 @@ function setupInterface()
 // Event listeners
 function addListeners()
 {
-	var video = document.getElementsByTagName('video')[0];
-	var webcamvideo = document.getElementsByTagName('video')[1];
+	//var video = document.getElementsByTagName('video')[0];
+	//var webcamvideo = document.getElementsByTagName('video')[1];
 
+	var video = document.getElementById("main-video");
+	var webcamvideo = document.getElementById("webcam-video");
+	
 /* 	video.oncanplaythrough = function() {
 	  // Ready to play whole video?
 		console.log("video can play through");
@@ -106,21 +109,30 @@ document.addEventListener("fullscreenchange", function() {
 });
 
 function initVideoStartup(){
-	var video = document.getElementsByTagName('video')[0];
-	var webcamvideo = document.getElementsByTagName('video')[1];
+	//var video = document.getElementsByTagName('video')[0];
+	//var webcamvideo = document.getElementsByTagName('video')[1];
+	
+	var video = document.getElementById("main-video");
+	var webcamvideo = document.getElementById("webcam-video");
+	
 	video.setAttribute("poster", "../img/art/svg/blank_poster.png");	
 	document.body.requestFullscreen();	
 	videostart = true;
 	showInterface();
+
+	initWebcam();
+	toggleCamera(0);	
+
 	video.pause();
 	webcamvideo.pause();
+
 	video.play();
 	webcamvideo.play();
 	spam();	
 }
 
 
-// Global Timer Object
+// timer objects
 
 var minutes = 0;
 var seconds = 0;
@@ -140,13 +152,10 @@ setInterval(function() {
 		if (eventTime===timedEvents[0][1])
 		{
 			if (timedEvents[0][0]){
-				for (i=0; i< timedEvents[0][3].length; i++){					
-					var param = timedEvents[0][3][i][1];
-					timedEvents[0][3][i][0](param);
-				}
-				pastEvents.push(timedEvents[0]);
+				var n = timedEvents[0][3][1];
+				timedEvents[0][3][0](n);
 				timedEvents.splice(0,1);
-				console.log(pastEvents);
+				//console.log(timedEvents);
 			} else {
 				timedEvents.splice(0,1);
 				console.log("event skipped");
@@ -157,25 +166,17 @@ setInterval(function() {
 }, 400);
 
 
+
 var timedEvents = [
-	[true, 1,	0, [[call_Darkness,10000], [log_dark,1]]	],
-	[true, 17,	0, [[call_Darkness,10000], [log_dark,2]]	],
-	[true, 32,	0, [[call_Darkness,12000], [log_dark,3]]	],	
+	[true, 3,	0, [call_Darkness,10000]],
+	[false, 17,	0, [call_Darkness,8000]],
+	[false, 28,	0, [call_Darkness,12000]],		
 ];
-
-var pastEvents = [];
-
-
 
 
 //--------------------------
 // Demon functions
 //--------------------------
-
-function log_dark(num){
-	console.log("empty function " + num);
-}
-
 
 function call_Darkness(n){
 	var timeout = n; 
@@ -205,17 +206,7 @@ function demonMode(timeout)
 }
 
 
-function manifestTentacle(){
-	if (!tentacleInit)
-	{
-		initTentacle();
-	}
-	console.log("tentacle has arrived");
-}
-
-
-
-///var overlays = 3; 
+var overlays = 3; 
 var d_timer = 5000;
 
 function demonIsSummoned(timeout){	
@@ -235,8 +226,17 @@ function demonIsSummoned(timeout){
 	$("#overlay2").fadeTo( 3000, 0.5, function(){
 	});	
 	
-	manifestTentacle();
+/* 	for (i=0; i < overlays; i++){
+		var deffect = document.getElementById("overlay" + i);
+		$("#overlay"+i).fadeTo( 3000, 0.5, function(){
+        });		
+	} */	
 	
+	if (!tentacleInit)
+	{
+		initTentacle();
+	}	
+
 	console.log("demon has arrived");	
 	
 	clearTimeout(d_timer);
@@ -556,6 +556,7 @@ function showInterface()
 
 
 var videoplaylist = [
+	["entrance", "https://www.youtube.com/watch?v=y08Fk5cLTRw&t=2s"],
 	["chapel", "https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4"],
 	["pennhurst", "https://video.wixstatic.com/video/bde2cd_29fc09fb61cd469fa5e1de604ddd8be6/720p/mp4/file.mp4"],
 	["desert", "https://video.wixstatic.com/video/bde2cd_0b465ccc294f4786bd45df5fa6edee4d/720p/mp4/file.mp4"]
@@ -584,15 +585,18 @@ var videostart = false;
 
 function initWebcam()
 {
-	var myWebcam = document.getElementsByTagName('video')[1];
-	myWebcam.currentTime = 37;
+	var webcamvideo = document.getElementById("webcam-video");
+	webcamvideo.currentTime = 37;
+	
+	//var myWebcam = document.getElementsByTagName('video')[1];
+	//myWebcam.currentTime = 37;
 }
 
 function toggleCamera(n){
 	var camera = n;
 	console.log("camera " + camera);
 	
-	var myPlayer = document.getElementsByTagName('video')[0];
+	var myPlayer = document.getElementById("main-video");	
 	var curtime = myPlayer.currentTime;
 	myPlayer.setAttribute("src", videoplaylist[n][1]);
 	myPlayer.setAttribute("type", "video/mp4");
@@ -996,7 +1000,7 @@ function fadeResponse()
 function jumpToTime(landTime)
 {
 	// var player = VideoJS.setup("current_video");
-	var video = document.getElementsByTagName('video')[0];	
+	var video = document.getElementById("main-video");	
 	
 	video.currentTime = landTime;
 	video.play();

@@ -1,14 +1,18 @@
 var tentacleRootX = 200;
 var tentacleRootY = 1;
 var tentacleNodeSize = 12;
-var tentacleFlex = 7;
+var tentacleFlex = 6;
 var tentacleMinLength = 100;
 var tentacleFreq = 0.015;
 var tentacleAmp = 0.02;
-var tentacleVel = 6;
+var tentacleVel = 4;
+var tentacleAlpha = 1.0;
+var tentacleScale = 0;
 var numTentacles = 1;
 var tentacleInit = false;
 
+var tentSpawnX = 0;
+var tentSpawnY = 0;
 
 "use strict";
 function initTentacle()
@@ -31,14 +35,8 @@ function initTentacle()
 					new Tentacle.Node(
 						this,
 						i,
-						//canvas.width * Math.random(),
-						//canvas.height * Math.random()
-						
-						//canvas.width + this.length,
-						//canvas.height
-
-						canvas.width * 1,
-						canvas.height					
+						tentSpawnX,
+						tentSpawnY					
 					)
 				);
 			}
@@ -69,42 +67,42 @@ function initTentacle()
 					this.dir += 0.1;
 				}
 			//}
-/* 			const dx = pointer.x - head.x;
-			const dy = pointer.y - head.y;
-			const dist = Math.sqrt(dx * dx + dy * dy); */
+			if (darkMode){
+				const dx = pointer.x - head.x;
+				const dy = pointer.y - head.y;
+				const dist = Math.sqrt(dx * dx + dy * dy);
 
-			// Track Mouse Pointer
-			/* 			if (dist < 300) {
-				if (this.free) {
-					this.dir = Math.atan2(dy, dx);
-					this.vel = 1 + dist * 0.1;
-					if (dist < 1) {
-						this.free = false;
+				// Track Mouse Pointer
+				if (dist < 200) {
+					if (this.free) {
+						this.dir = Math.atan2(dy, dx);
+						this.vel = 1 + dist * 0.05;
+						if (dist < 1) {
+							this.free = false;
+						}
 					}
+				} else {
+					this.vel = tentacleVel;
+					this.free = true;
 				}
 			} else {
-				this.vel = 2;
-				this.free = true;
-			} */
-
-			const dx = canvas.width - head.x;
-			const dy = canvas.height - head.y;
-			const dist = Math.sqrt(dx * dx + dy * dy);	
+				const dx = tentSpawnX - head.x;
+				const dy = tentSpawnY - head.y;
+				const dist = Math.sqrt(dx * dx + dy * dy);
+				this.dir = Math.atan2(dy, dx);
+				this.vel = 1 + dist * 0.05;				
+			}
 			
-			// Track target
-			if (!darkMode) {
+			// Track Exit
+/* 			if (!darkMode) {
 				if (this.free) {
 					this.dir = Math.atan2(dy, dx);
-					this.vel = 1 + dist * 0.1;
-					//if (dist < 1) {
-						//this.free = false;
-						//this.vel = 0;
-					//}
+					this.vel = 1 + dist * 0.05;
 				}
 			} else {
 				this.vel = tentacleVel;
 				this.free = true;
-			}
+			} */
 			
 			this.vDir += 0.05 * (Math.random() - Math.random());
 			this.dir += this.vDir;
@@ -127,11 +125,20 @@ function initTentacle()
 			const s = tentacle.length - i;
 			this.prev = i > 0 ? tentacle.nodes[i - 1] : null;
 			this.pprev = i > 1 ? tentacle.nodes[i - 2] : null;
-			this.size = tentacleNodeSize + s * s / tentacle.length;
+			//this.size = (tentacleNodeSize + s * s / tentacle.length) * tentacleScale;
+			this.size = tentacleNodeSize + s * s / tentacle.length + tentacleScale;			
 			this.x = x;
 			this.y = y;
 			this.a = 0;
 			this.img = document.getElementById("node");
+/* 			const h = tentacle.length/4;
+			if (i > h){
+				var tailfade = (100-i)/10;
+				this.img.css("opacity", "0.5");
+			} */
+/* 			if (i > h){
+				this.img = document.getElementById("nodeb");
+			} */
 		}
 		move() {
 				const dx = this.x - this.pprev.x;
@@ -141,10 +148,11 @@ function initTentacle()
 				this.x = this.prev.x + dx * tentacleFlex / d;
 				this.y = this.prev.y + dy * tentacleFlex / d;
 				ctx.save();
+				ctx.globalAlpha = tentacleAlpha;	
 				ctx.translate(this.x, this.y);
 				ctx.rotate(this.a + 0.4);
-				ctx.drawImage(
-					this.img,
+				ctx.drawImage(		
+					this.img,					
 					-this.size * 0.5,
 					-this.size * 0.5,
 					this.size,
@@ -164,6 +172,8 @@ function initTentacle()
 		resize() {
 			this.width = this.elem.width = this.elem.offsetWidth;
 			this.height = this.elem.height = this.elem.offsetHeight;
+			tentSpawnX = this.width*1;
+			tentSpawnY = 0;
 		}
 	};
 	const pointer = {

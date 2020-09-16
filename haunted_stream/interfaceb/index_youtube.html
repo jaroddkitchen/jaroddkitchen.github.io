@@ -4,29 +4,6 @@
 
     <meta name="description" content="The Haunted Stream Project">
 	
-	
-	<!-- initializing custom controls -->
-
-    <!-- importing videojs -->	
-	<script src="https://vjs.zencdn.net/7.8.4/video.js"></script>	
-	<!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
-	<script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
-
-    <!-- importing the styling -->
-	<link rel="stylesheet" href="https://vjs.zencdn.net/7.8.4/video-js.css" />	
-	<link rel="stylesheet" type="text/css" href="./css/video_controls.css" />	
-	
-	<!-- importing text-to-speech files -->	
-	<script src="./js/speechsynth.js"></script>	
-	<!-- <script src="https://code.responsivevoice.org/responsivevoice.js?key=lxcndNc5"></script> -->
-	
-	 <!-- importing the jQuery library  -->
-    <script src="./js/jquery.min.js"></script>
-    
-	<!-- importing main js files -->
-    <script src="./js/main.js"></script>	
-    <!-- <script src="./js/youtube.js"></script> -->
-	
 	<!-- importing dictionary files -->
 	<script src="./dict/dictionary.js"></script>
 	<script src="./dict/verbs.js"></script>
@@ -34,7 +11,7 @@
 
 	
 	<!-- importing my own style -->
-    <link rel="stylesheet" type="text/css" href="./css/main.css">
+    <link rel="stylesheet" type="text/css" href="./css/main_youtube.css">
     <link rel="stylesheet" type="text/css" href="./css/styles.css">
 	<link rel="stylesheet" href="./css/tentacles-style.css">	
     <!-- <link rel="stylesheet" type="text/css" href="./css/animate.css">	 -->
@@ -42,7 +19,7 @@
 	<!-- <style data-styled="" data-styled-version="7.8.4">	 -->
 	
 	<style data-styled="" data-styled-version="4.4.1">
-	#main-video, .video-js, .vjs-default-skin, .vjs-hd
+	#main-video, .vjs-default-skin, .vjs-hd
 	{
 	  position: absolute;
 	  left: 0; 
@@ -63,33 +40,31 @@
 		<div id="overlay1" class="textures hidden"></div>
 		<div id="overlay2" class="apparitions hidden">
 			<img id="node" src="../img/fx/dot.png" alt="">
-			<!-- <img id="nodeb" src="../img/fx/dot_simple.png" alt=""> -->
 			<script  src="./js/tentacles.js"></script>			
 		</div>
 	</div>
 	
 	<div id="videoframe">
-	<video
-		id="main-video"
-		class="video-js vjs-default-skin vjs-hd mainvideo"
-		poster="../img/art/svg/bootoob_poster-min.png"
-		data-setup='{ "controls": true, "loop": true, "inactivityTimeout": 0}'
-	>
-<!--     <source src="../video_src/Chapel and Cellar.mp4" type="video/mp4" /> -->
-    <source src="https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4" type="video/mp4" />
-    <p class="vjs-no-js">
-      To view this video please enable JavaScript, and consider upgrading to a
-      web browser that
-      <a href="https://videojs.com/html5-video-support/" target="_blank"
-        >supports HTML5 video</a
-      >
-    </p>
-	</video>		
+		<video
+			id="main-video"
+			class="video-js vjs-default-skin vjs-hd mainvideo"
+			data-setup='{"controls": true, "loop": true, "inactivityTimeout": 0 }'
+		>
+		<!-- <source src="../video_src/Chapel and Cellar.mp4" type="video/mp4" /> -->
+		<source src="https://www.youtube.com/watch?v=y08Fk5cLTRw&t=2s" type="video/youtube" />
+		<p class="vjs-no-js">
+		  To view this video please enable JavaScript, and consider upgrading to a
+		  web browser that
+		  <a href="https://videojs.com/html5-video-support/" target="_blank"
+			>supports HTML5 video</a
+		  >
+		</p>
+		</video>
     </div>	
 	
 	<div id="webcamframe">
 		<div id="webcam-wrapper">
-			<video class="scale1" id="webcam-video" loop muted preload="auto">
+			<video class="video-js scale1" id="webcam-video" loop muted preload="auto">
 			<source src="https://video.wixstatic.com/video/bde2cd_f447f30577a74aba829138597bb3f323/720p/mp4/file.mp4" type="video/mp4" />
 			</video>
 			<div id="timer-text">
@@ -200,5 +175,26 @@
 			<div id="speechbox"></div>
 		</div>		
 	</div>
+	<!-- initializing custom controls -->
+
+    <!-- importing videojs -->	
+	<script src="https://vjs.zencdn.net/7.8.4/video.js"></script>	
+	<!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+	<script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+
+    <!-- importing the styling -->
+	<link rel="stylesheet" href="https://vjs.zencdn.net/7.8.4/video-js.css" />	
+	<link rel="stylesheet" type="text/css" href="./css/video_controls.css" />	
+	
+	<!-- importing text-to-speech files -->	
+	<script src="./js/speechsynth.js"></script>	
+	<!-- <script src="https://code.responsivevoice.org/responsivevoice.js?key=lxcndNc5"></script> -->
+	
+	 <!-- importing the jQuery library  -->
+    <script src="./js/jquery.min.js"></script>
+    
+	<!-- importing main js files -->
+    <script src="./js/main_youtube.js"></script>	
+    <script src="./js/youtube.js"></script>
 </body>
 </html>

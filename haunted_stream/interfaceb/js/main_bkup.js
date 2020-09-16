@@ -50,8 +50,8 @@ function setupInterface()
 // Event listeners
 function addListeners()
 {
-	var video = document.getElementsByTagName('video')[0];
-	var webcamvideo = document.getElementsByTagName('video')[1];
+	var video = document.getElementsById("main-video");
+	var video = document.getElementsById("webcam-video");
 
 /* 	video.oncanplaythrough = function() {
 	  // Ready to play whole video?
@@ -106,8 +106,8 @@ document.addEventListener("fullscreenchange", function() {
 });
 
 function initVideoStartup(){
-	var video = document.getElementsByTagName('video')[0];
-	var webcamvideo = document.getElementsByTagName('video')[1];
+	var video = document.getElementsById("main-video");
+	var video = document.getElementsById("webcam-video");
 	video.setAttribute("poster", "../img/art/svg/blank_poster.png");	
 	document.body.requestFullscreen();	
 	videostart = true;
@@ -120,7 +120,7 @@ function initVideoStartup(){
 }
 
 
-// Global Timer Object
+// timer objects
 
 var minutes = 0;
 var seconds = 0;
@@ -140,10 +140,8 @@ setInterval(function() {
 		if (eventTime===timedEvents[0][1])
 		{
 			if (timedEvents[0][0]){
-				for (i=0; i< timedEvents[0][3].length; i++){					
-					var param = timedEvents[0][3][i][1];
-					timedEvents[0][3][i][0](param);
-				}
+				var n = timedEvents[0][3][1];
+				timedEvents[0][3][0](n);
 				pastEvents.push(timedEvents[0]);
 				timedEvents.splice(0,1);
 				console.log(pastEvents);
@@ -157,25 +155,19 @@ setInterval(function() {
 }, 400);
 
 
+
 var timedEvents = [
-	[true, 1,	0, [[call_Darkness,10000], [log_dark,1]]	],
-	[true, 17,	0, [[call_Darkness,10000], [log_dark,2]]	],
-	[true, 32,	0, [[call_Darkness,12000], [log_dark,3]]	],	
+	[true, 3,	0, [call_Darkness,10000]],
+	[true, 17,	0, [call_Darkness,8000]],
+	[true, 28,	0, [call_Darkness,12000]],		
 ];
 
 var pastEvents = [];
 
 
-
-
 //--------------------------
 // Demon functions
 //--------------------------
-
-function log_dark(num){
-	console.log("empty function " + num);
-}
-
 
 function call_Darkness(n){
 	var timeout = n; 
@@ -205,23 +197,13 @@ function demonMode(timeout)
 }
 
 
-function manifestTentacle(){
-	if (!tentacleInit)
-	{
-		initTentacle();
-	}
-	console.log("tentacle has arrived");
-}
-
-
-
-///var overlays = 3; 
+var overlays = 3; 
 var d_timer = 5000;
 
 function demonIsSummoned(timeout){	
 
-	//var video = document.getElementsByTagName('video')[0];
-	//var webcamvideo = document.getElementsByTagName('video')[1];
+	//var video = document.getElementsById("main-video");
+	//var video = document.getElementsById("webcam-video");
 
 	$("#cameraiconbox").css("z-index", "3");	
 	$("#timer-text").css("z-index", "3");
@@ -235,8 +217,17 @@ function demonIsSummoned(timeout){
 	$("#overlay2").fadeTo( 3000, 0.5, function(){
 	});	
 	
-	manifestTentacle();
+/* 	for (i=0; i < overlays; i++){
+		var deffect = document.getElementById("overlay" + i);
+		$("#overlay"+i).fadeTo( 3000, 0.5, function(){
+        });		
+	} */	
 	
+	if (!tentacleInit)
+	{
+		initTentacle();
+	}	
+
 	console.log("demon has arrived");	
 	
 	clearTimeout(d_timer);
@@ -244,8 +235,8 @@ function demonIsSummoned(timeout){
 }
 
 function demonExits(){
-	//var video = document.getElementsByTagName('video')[0];	
-	//var webcamvideo = document.getElementsByTagName('video')[1];
+	//var video = document.getElementsById("main-video");	
+	//var video = document.getElementsById("webcam-video");
 
 	$("#cameraiconbox").css("z-index", "5");
 	$("#timer-text").css("z-index", "4");			
@@ -445,7 +436,7 @@ function makeSettings()
 
 /* videojs("main-video").ready(function(){
 	console.log("video ready");
-	var video = document.getElementsByTagName('video')[0];
+	var video = document.getElementsById("main-video");
 	video.jumpToTime(50);
 
 }); */
@@ -988,15 +979,15 @@ function fadeResponse()
 
 //Video functions
 
-//var video = document.getElementsByTagName('video')[0];
-//var webcamvideo = document.getElementsByTagName('video')[1];
+//var video = document.getElementsById("main-video");
+//var video = document.getElementsById("webcam-video");
 
 
 //jump to time
 function jumpToTime(landTime)
 {
 	// var player = VideoJS.setup("current_video");
-	var video = document.getElementsByTagName('video')[0];	
+	var video = document.getElementsById("main-video");	
 	
 	video.currentTime = landTime;
 	video.play();
@@ -1007,7 +998,7 @@ function jumpToTime(landTime)
 
 function objTransform(obj, transIn, duration, transOut){
 	// scale effect
-	var webcamvideo = document.getElementsByTagName('video')[1];		
+	var video = document.getElementsById("webcam-video");		
 	webcamvideo.classList.add("scale-up-element");
 }
 
