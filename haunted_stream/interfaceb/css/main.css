@@ -457,12 +457,14 @@ input[type = text]
 
 #chatbubble.imgbubble
 {	
-	height: auto;
-    padding: 0%;
+    padding: 0vw;
 	background-color: transparent;
-	background: none;	
+	background: none;
 	box-shadow: none;
-	vertical-align: bottom;
+	vertical-align: middle;
+/* 	cool effect
+	height: 100%;
+	vertical-align: top; */
 /* 	overflow-y: auto; */	
 }
 
@@ -1136,10 +1138,23 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 }
 
 .fly-in-element {
-    animation: slide-in 0.3s forwards;
+    animation: slide-in 0.5s forwards;
     -webkit-animation: slide-in 0.5s forwards;
 }
 
+
+@keyframes slide-out {
+    0% { transform: translateX(100%); }
+}
+
+@-webkit-keyframes slide-out {
+    0% { -webkit-transform: translateX(100%); }
+}
+
+.fly-out-element {
+    animation: slide-out 0.5s forwards;
+    -webkit-animation: slide-out 0.5s forwards;
+}
 
 
 @keyframes scale-up {

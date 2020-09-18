@@ -291,13 +291,12 @@ setInterval(function() {
 
 
 var timedEvents = [
-	[true, 6,	0, [function(){summon_Darkness(8000)}, function(){summon_Chat(8000)}] ],
+	[true, 1,	0, [function(){summon_Darkness(8000)}, function(){summon_Sound('music/Ice_Demon.mp3',8000)}, function(){summon_Chat(8000)}] ],
 	[true, 20,	0, [function(){summon_Darkness(15000)}, function(){summon_Tentacle(15000)}, function(){summon_Chat(15000)}] ],
 	[true, 50,	0, [function(){summon_Darkness(17000)}, function(){summon_Chat(18000)}, function(){summon_Tentacle(30000)}] ],	
 ];
 
 var pastEvents = [];
-
 
 
 
@@ -307,6 +306,33 @@ var pastEvents = [];
 
 function log_dark(num){
 	console.log("empty function " + num);
+}
+
+
+//--------------------------
+// Demon Sounds
+//--------------------------
+
+	//var music_twnk = new Audio('../snd/music/twinkle_twinkle.mp3');
+	//$("#audio1").css("src", '../snd/music/twinkle_twinkle.mp3');
+	//music.src = '../snd/music/Ice_Demon.mp3';
+
+	var s_timer = 5000;
+
+function summon_Sound(snd, timeout){
+	var music_player = $("#audio1");
+	var music = $("#audio1")[0];
+	music.volume = 0.05;
+	music.src = '../snd/' + snd;	
+	music.play();
+	audioFadeIn(music_player, 3500);
+	clearTimeout(s_timer);
+	s_timer =  window.setTimeout(banish_Sound, timeout);		
+}
+
+function banish_Sound(){
+	var audio = $("#audio1");
+	audioFadeOut(audio, 3500);
 }
 
 
@@ -380,7 +406,7 @@ function banish_Tentacle(){
 	var c_timer = 5000;
 	var lastSpamType = "positive";
 
-function summon_Chat(timeout){
+function summon_Chat(timeout){	
 	lastSpamType = spamType;
 	spamType="demon";
 	demonMsgCount = 0;
@@ -393,7 +419,6 @@ function summon_Chat(timeout){
 
 function banish_Chat(){
 	spamType=lastSpamType;
-	console.log("demon is silent");
 	spamming = false;
 
     var element = $("#chattext");
@@ -401,13 +426,21 @@ function banish_Chat(){
 	
 	for (i=0; i<demonMsgCount; i++){		
 		var element = elements[i]; 		
-		delayedExit(i,element);
-		//scrollTotop();
-		//var chattext = document.getElementById("chattext");
-		//chattext.scrollTop = 0;			
+		delayedFade(i,element);
+		scrollToBottom();		
 	}
-
 	restoreChat();
+	
+	console.log("demon is silent");
+}
+
+function delayedFade(i, el){
+	var wait = i * 0.125;
+	var myTween = new TweenMax.fromTo(el, 0.4, { x: 0, opacity: 1 }, {x: 0, opacity:0, delay:wait, onComplete:removeEl, onCompleteParams:[el]});
+}
+
+function removeEl (el){
+	el.remove();
 }
 
 
@@ -421,23 +454,12 @@ function restoreChat(){
 	spamming = true;
 }
 
-	var delay_timer = 0;
+/* 	var delay_timer = 0;
 
 function delayedExit(i,el) {	
 	clearTimeout(delay_timer);
-	delay_timer = window.setTimeout(delayedFade(i, el), 100);	 
-}
-
-
-function delayedFade(i, el){
-	FX.fadeOut(el, {
-		duration: (100 *i),
-		complete: function() {
-			el.remove();		
-			scrollToBottom();
-		}
-	});
-}
+	delay_timer = window.setTimeout(delayedFade(i, el), 5000);	 
+} */
 
 
 //returns a demon name
@@ -451,17 +473,22 @@ function getDemonName()
 }
 
 
-//returns a random demon message
+//returns a demon message
 	var demonMsgOriginX = 85;
 	var demonMsgCount = 0;
 
 function getDarkMessage()
 {
+	var snd_heartbeat = new Audio('../snd/fx/heartbeat.mp3');	
+	audioPlay(snd_heartbeat,0.7);
+	snd_heartbeat.onended = function() {
+		snd_heartbeat.remove();
+	};
 	
 	var message = $('<div id="chatbubble" margin-left="' + adjX + '" ></div>');
 	message.attr("class", "fly-in-element darkbubble");
 
-	var randomX = Math.floor(Math.random()*5);
+	var randomX = Math.floor(Math.random()*3.5);
 	var adjX = demonMsgOriginX - randomX;
 	message.css("margin-left", adjX +"%");
 	
@@ -469,7 +496,8 @@ function getDarkMessage()
 	//message.append("<br/>");
 
     var msgBody = "";
-	
+
+	//returns a random demon message
 	msgBody = (demonMessages[Math.floor(Math.random()*demonMessages.length)]);
     
 /*     if(spamType=="positive")
@@ -500,10 +528,31 @@ function getDarkMessage()
 
 
 
+//----------------------------------------------------
+// Sound FX Functions
+//----------------------------------------------------
+
+
+function audioPlay(audio,vol) {;
+	audio.volume = vol;
+	audio.play();
+}
+
+	var a_timer,audio = 0;
+
+function audioFadeOut(audio, dur){
+    audio[0].volume = 0.1;
+    audio.animate({volume: 0.0}, dur);
+}
+
+function audioFadeIn(audio, dur){
+    audio[0].volume = 0.0;
+    audio.animate({volume: 0.1}, dur);
+}
 
 
 //----------------------------------------------------
-// FX Modules
+// Visual FX Modules
 //----------------------------------------------------
 
 
@@ -511,6 +560,13 @@ function objTransform(obj, transIn, duration, transOut){
 	// scale effect
 	var webcamvideo = document.getElementsByTagName('video')[1];		
 	webcamvideo.classList.add("scale-up-element");
+}
+
+
+function translates (el, wait){
+	var tl = new TimelineMax({onComplete:el.remove()}) ;
+	//tl.to(elem, 0.2, {left:200});	
+	tl.fromTo(el, 0.6, { x: 0, opacity: 1 }, {x: 100, opacity:0, delay:0 });	
 }
 
 
@@ -588,53 +644,25 @@ function objTransform(obj, transIn, duration, transOut){
                 }
             });
         }
+/* 		,
+        flyOut: function(element, options) {
+			var to = 0;			
+            this.animate({
+                duration: options.duration,
+                delta: function(progress) {
+                    progress = this.progress;
+                    return FX.easing.swing(progress);
+                },
+                complete: options.complete,
+                step: function(delta) {
+                    //element.style.transform = ("translateX(100%)");
+				element.style.transform = ("rotate(60deg ) skewX(20deg ) skewY(10deg)");					
+                }
+            });
+        } */	
     };
     window.FX = FX;
 })()
-
-
-
-//----------------------------------------------------
-// Sound Module	
-//----------------------------------------------------
-
-
-function Sound(source, volume, loop)
-{
-    this.source = source;
-    this.volume = volume;
-    this.loop = loop;
-    var son;
-    this.son = son;
-    this.finish = false;
-    this.stop = function()
-    {
-        document.body.removeChild(this.son);
-    }
-    this.start = function()
-    {
-        if (this.finish) return false;
-        this.son = document.createElement("embed");
-        this.son.setAttribute("src", this.source);
-        this.son.setAttribute("hidden", "true");
-        this.son.setAttribute("volume", this.volume);
-        this.son.setAttribute("autostart", "true");
-        this.son.setAttribute("loop", this.loop);
-        document.body.appendChild(this.son);
-    }
-    this.remove = function()
-    {
-        document.body.removeChild(this.son);
-        this.finish = true;
-    }
-    this.init = function(volume, loop)
-    {
-        this.finish = false;
-        this.volume = volume;
-        this.loop = loop;
-    }
-}
-
 
 
 
@@ -645,7 +673,7 @@ function Sound(source, volume, loop)
 var spamming = false;
 var darkMode = false;
 var spamType = "positive";
-var spamSpeed = 2000;
+var spamSpeed = 2400;
 
 
 var usernamePrefixes = ["scary", "spooky", "sick", "insane", "cool", "revenge_of_", "mad", "generic", "Cpt", "nice", "xxx", "Dan", "VAC", "SWE", "Wizard", "faceless", "olof","best_", "daddy", "boo", "mister_", "davai", "Nick", "da_", "the_", "iAm", "Loungin", "extra", "BOT", "dirty", "shoutout_to_", "devil", "Only"];
@@ -704,13 +732,24 @@ function writeMessage()
 	}
 	cutTopOfChat();
     scrollToBottom();
+	
 /* 	var snd = new Sound("../snd/fx/bubble_pop.mp3", 10, false); 
 	snd.start(); */
 }
 
+
+	//var snd_bubble = new Audio('../snd/fx/bubble.mp3');
+
 //returns a random message
 function getMessage()
-{
+{	
+	var snd_bubble = new Audio('../snd/fx/bubble.mp3');
+	audioPlay(snd_bubble, 0.05);
+	
+	snd_bubble.onended = function() {
+		snd_bubble.remove();
+	};
+	
     var message = $('<div id="chatbubble"></div>');
 	message.attr("class", "fade-in-element");	
 	message.append(getUserName());	
