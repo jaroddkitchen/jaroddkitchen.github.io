@@ -189,21 +189,6 @@ video
 
 /* Chat stream elements */
 
-#chatcontainer
-{
-}
-
-#chat
-{
-    position: fixed;
-    width: 100%;
-    height: 100%;
-	right: 0%;
-	bottom: 0%;
-	
-	z-index: 4;	
-}
-
 
 #abovechat
 {
@@ -217,6 +202,22 @@ video
 	text-shadow: 2px 2px #000000;
 	
 	z-index: 5;	
+}
+
+#chatcontainer
+{
+}
+
+
+#chat
+{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+	right: 0%;
+	bottom: 0%;
+	
+	z-index: 4;	
 }
 
 
@@ -290,9 +291,8 @@ video
 #belowchat
 {
     position: absolute;
-	width: 16%;
+	width: 21%;
 	height: 15%;
-	min-height: 6vw;
 	bottom: 0%;
 	right: 0.5%;
 
@@ -304,7 +304,7 @@ video
 #textfield-container
 {
     position: absolute;
-    height: 3vw;
+    height: 6.5vh;
 	width:95%;
 	left: 2.5%;
 	top: 0%;
@@ -322,29 +322,34 @@ video
 
 #textfield
 {
-    position: relative;
-    height: 2vw;
-	width:92.5%;
-	top:0vw;
+    position: inherit;
+    height: 4vh;
+	width:75%;
+	left: 1vh;
+	float:left;
 
 	border: solid;
 	border-style: normal;
 	border-color: rgb(255, 255, 255, 0.25);
 	border-width:0.15vw;
-	border-radius: 1vw;
+	border-radius: 2vw;
 	outline: none;
 	
 	background-color: black;	
-	font-size: 0.75vw;
+	font-size: 1vw;
 	color: white;
 }
 
 input[type = text]
 {
-	width: 100%;
+/* 	width: 100%;
 	padding: 10px 15px;
 	margin: 5px 0;
-	box-sizing: border-box;
+	box-sizing: border-box; */
+	padding: 1vw 1vh;
+	margin: 0.5vw 0vh;
+	margin-right: 0.5vw;
+	box-sizing: border-box;	
 }
 
 
@@ -353,12 +358,9 @@ input[type = text]
 
 #chatButton-container
 {
-	position: relative;
-    height: 3vw;
-    width: 25%;
-	bottom: -3.5vw;
-	right: 3.5%;
-	float:right;	
+	position: inherit;
+	width: 15%;
+	right: 5%;	
 
 	display: flex;
 	justify-content: center;
@@ -381,11 +383,8 @@ input[type = text]
 #chatButton
 {
 	position: inherit;
-	height:0vw;
-	width:0vw;
 	border: none;
 	background-color: transparent;
-
 }
 
 #chatButtonIcon
@@ -394,7 +393,6 @@ input[type = text]
 	fill: #866767;
 	fill: #d4b8b8;
 	fill: #3f3131ff;
-	height:100%;
 }
 
 #chatButtonIconTxt
@@ -402,7 +400,6 @@ input[type = text]
 	position: absolute;
 	fill: #866767;
 	fill: #1a1414;
-	height:100%;
 }
 
 
@@ -411,49 +408,85 @@ input[type = text]
 
 #chatbubble
 {
-	width:15%;
+	width:20vw;
 	
-	margin-top: 1%;
-	margin-bottom: 1%;
-	margin-left: 85%;	
-    padding: 1%;
+	margin-top: 1vw;
+	margin-bottom: 1vw;
+	margin-left: 79vw;	
+    padding: 1vw;
 	
 	font-family: Roboto;
 	color: #222222;
-	font-size: 0.85em;
+	font-size: 1.0vw;
 	font-weight: normal;
-	text-shadow: 0.15em 0.15em 0.25em #FFFFFF;
+	text-shadow: 0.15vw 0.15vw 0.25vw #FFFFFF;
 	vertical-align: text-top;
 	word-wrap: break-word;
 
-	line-height: 1.5em;
+	line-height: 1.5vw;
 	
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
 	border-radius: 1.25vw;
 	
-	box-shadow: inset 0 0.5em 0.5em 0px rgb(255, 255, 255, 0.5),inset 0 0.5em 0.5em 0px rgb(255, 255, 255, 0.5);
-	background: rgba(255, 255, 255, 0.7);	
+	/* transform-origin: top right; */
+	
+}
+
+#chatbubble.scalingbubble
+{
+	overflow: hidden;
+	text-overflow:ellipsis;	
+}
+
+/* #chatbubble.nudgedbubble
+{
+	margin-left: 79vw;
+}
+ */
+#chatbubble.userbubble
+{	
+	box-shadow: inset 0 0.5vw 0.5vw 0px rgb(255, 255, 255, 0.5),inset 0 0.5vw 0.5vw 0px rgb(255, 255, 255, 0.5);
+	background: rgba(255, 255, 255, 0.7);		
 }
 
 
 #chatbubble.darkbubble
 {
+	/* transform-origin: top right; */
     transform: translateX(200%);
     -webkit-transform: translateX(200%);
 
+    padding: 1%;
+
 	font-family: Courier;
 	color: white;
-	font-size: 0.85em;
-	text-shadow: 0.15em 0.15em 0.25em #000000;
-	line-height: 1.5em;
+	font-size: 0.85vw;
+	text-shadow: 0.15vw 0.15vw 0.25vw #000000;
+	line-height: 1.5vw;
 	
 	border-radius: 0.75vw;
-	
+
+	box-shadow: none;	
 	background-color: rgb(0, 0, 0, 0.75);
-	box-shadow: none;
 	background: rgba(0, 0, 0, 1.0);
 }
+
+
+#chatbubble.playerbubble
+{	
+	font-family: Roboto;
+	font-weight: bold;
+	
+    color: #1f180e;
+    background-color: #FFFFFF;
+    text-shadow: 0.05em 0.05em 0em rgba(255,255,255,.5); /* 50% white from bottom */
+	font-size: 1.0vw;
+
+	background: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 0%, #9f7928 0%, #8A6E2F 30%, transparent 80%),
+                radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);	
+}
+
 
 #chatbubble.imgbubble
 {	
@@ -462,6 +495,7 @@ input[type = text]
 	background: none;
 	box-shadow: none;
 	vertical-align: middle;
+	/* transform-origin: top right;	 */
 /* 	cool effect
 	height: 100%;
 	vertical-align: top; */
@@ -473,31 +507,6 @@ input[type = text]
   /* OLD VALUE example: circle(245px, 140px, 50px); */
   /* Yep, even the new clip-path has deprecated stuff. */
 }
-
-
-#chatbubble.playerbubble
-{	
-	font-family: Roboto;
-	font-weight: bold;
-	
-	line-height: 1.5em;
-	
-    color: #1f180e;
-    background-color: #FFFFFF;
-    text-shadow: 1px 1px 0px rgba(255,255,255,.5); /* 50% white from bottom */
-	font-size: 9pt;
-	
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-
-	vertical-align: text-top;
-	
-	border-radius: 15px;
-
-	background: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 0%, #9f7928 0%, #8A6E2F 30%, transparent 80%),
-                radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);	
-}
-
 
 img.emoticon
 {
@@ -529,6 +538,11 @@ img.pic
 	/* vertical-align: bottom; */
 }
 
+.bigchat
+{
+	font-size: 1.25vw;
+	font-weight: bold;
+}
 
 .username
 {
@@ -546,21 +560,21 @@ img.pic
 .playername
 {
 	
-    font-size: 11pt;
+    font-size: 1.25vw;
 	font-weight: bold;
 	text-align: left;
 	/* text-decoration: underline wavy;	 */
 
     color: #1f180e;
-    text-shadow: 1px 1px 0px rgba(255,255,255,.5); /* 50% white from bottom */
+    text-shadow: 0.05em 0.05em 0em rgba(255,255,255,.5); /* 50% white from bottom */
 }
 
 
 .playertext
 {
-	margin-left: 16px;
-	margin-top: 8px;
-	padding-bottom: 4px;
+	margin-left: 1.5vw;
+	margin-top: 0.5vw;
+	padding-bottom: 0.5vw;
 }
 
 
@@ -568,14 +582,14 @@ img.pic
 
 #chattext::-webkit-scrollbar
 {
-    width: 1em;
-    border-radius: 0.5em;
+    width: 1vw;
+    border-radius: 0.5vw;
 }
 
 #chattext::-webkit-scrollbar-thumb
 {
     background-color: rgba(128,128,128,0.75);
-	border-radius: 0.5em;
+	border-radius: 0.5vw;
 }
 
 #chattext::-webkit-scrollbar-track-piece {
@@ -587,13 +601,13 @@ img.pic
   background-color: #ffffff;
   display: block;
   border-style: solid;
-  width: 16px;
+  width: 1vw;
 }
 /* Up */
 ::-webkit-scrollbar-button:single-button:vertical:decrement {
-  border-width: 0 8px 8px 8px;
+  border-width: 0 0.5vw  0.5vw  0.5vw ;
   border-color: transparent transparent transparent transparent;
-  height: 65px;
+  height: 1.5vw;
   background-color: transparent;
 }
 
@@ -603,7 +617,7 @@ img.pic
 }
 /* Down */
 ::-webkit-scrollbar-button:single-button:vertical:increment {
-  border-width: 8px 8px 0 8px;
+  border-width: 0.5vw 0.5vw 0 0.5vw;
   border-color: rgba(128,128,128,0.75) transparent transparent transparent;
   background-color: transparent;
 }
@@ -618,7 +632,7 @@ img.pic
 }
 
 .y-scroll .element {
-  margin-bottom: 10px;
+  margin-bottom: 1.5vw;
 }
 
 
@@ -1195,6 +1209,18 @@ input[type=range]:focus::-webkit-slider-runnable-track {
   /* Similar syntax to box-shadow */
   text-shadow: -0.05vw -0.05vw 0.35vw #000000;
 }
+
+.shadow-rev {
+  -webkit-filter: drop-shadow(
+	0.-15vw 0.-15vw 0vw rgba(0, 0, 0, 1.0)
+	);
+  filter: drop-shadow(
+	0.-15vw 0.-15vw 0vw rgba(0, 0, 0, 1.0)
+	);
+  /* Similar syntax to box-shadow */
+  text-shadow: 0.05vw 0.05vw 0.35vw #000000;
+}
+
 
 
 .stroked {

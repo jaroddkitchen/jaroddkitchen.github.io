@@ -291,9 +291,25 @@ setInterval(function() {
 
 
 var timedEvents = [
-	[true, 1,	0, [function(){summon_Darkness(8000)}, function(){summon_Sound('music/Ice_Demon.mp3',8000)}, function(){summon_Chat(8000)}] ],
-	[true, 20,	0, [function(){summon_Darkness(15000)}, function(){summon_Tentacle(15000)}, function(){summon_Chat(15000)}] ],
-	[true, 50,	0, [function(){summon_Darkness(17000)}, function(){summon_Chat(18000)}, function(){summon_Tentacle(30000)}] ],	
+	[true, 3,	0,
+		[
+		function(){summon_Darkness(8000)},
+		function(){summon_Sound('music/twinkle_twinkle.mp3',"#audio0", 0.05, 0.5, 10000)},
+		function(){summon_Sound('music/Ice_Demon.mp3',"#audio1", 0.025, 1.0, 10000)},
+		function(){summon_dChat(8000)}]
+		],
+	[true, 20,	0,
+		[
+		function(){summon_Darkness(15000)},
+		function(){summon_Tentacle(15000)},
+		function(){summon_dChat(15000)}]
+		],
+	[false, 50,	0,
+		[
+		function(){summon_Darkness(17000)},
+		function(){summon_dChat(18000)},
+		function(){summon_Tentacle(30000)}] 
+		],	
 ];
 
 var pastEvents = [];
@@ -304,43 +320,20 @@ var pastEvents = [];
 // Demon functions
 //----------------------------------------------------
 
-function log_dark(num){
-	console.log("empty function " + num);
-}
-
-
-//--------------------------
-// Demon Sounds
-//--------------------------
-
-	//var music_twnk = new Audio('../snd/music/twinkle_twinkle.mp3');
-	//$("#audio1").css("src", '../snd/music/twinkle_twinkle.mp3');
-	//music.src = '../snd/music/Ice_Demon.mp3';
-
-	var s_timer = 5000;
-
-function summon_Sound(snd, timeout){
-	var music_player = $("#audio1");
-	var music = $("#audio1")[0];
-	music.volume = 0.05;
-	music.src = '../snd/' + snd;	
-	music.play();
-	audioFadeIn(music_player, 3500);
-	clearTimeout(s_timer);
-	s_timer =  window.setTimeout(banish_Sound, timeout);		
-}
-
-function banish_Sound(){
-	var audio = $("#audio1");
-	audioFadeOut(audio, 3500);
-}
-
-
 //--------------------------
 // Demon Filters
 //--------------------------
 
 var d_timer = 5000;
+var ov0_alpha = 0.5;
+var ov0_speed = 3000;
+
+var ov1_alpha = 0.5;
+var ov1_speed = 3000;
+
+var ov2_alpha = 0.5;
+var ov2_speed = 3000;
+
 
 function summon_Darkness(timeout){
 	$("#cameraiconbox").css("z-index", "3");	
@@ -377,6 +370,37 @@ function banish_Darkness(){
 
 
 //--------------------------
+// Demon Sounds
+//--------------------------
+
+	var s_timer = 5000;
+	var vol = 0.05;
+	var pbr = 0.5;
+	var snd_plyr = "#audio0";
+
+function summon_Sound(snd, snd_plyr, vol, pbr, timeout){
+	var music_player = $(snd_plyr);
+	var music = $(snd_plyr)[0];
+	music.volume = vol;
+	music.src = '../snd/' + snd;	
+	music.play();
+	audioFadeIn(music_player, 3500);
+	music.playbackRate = pbr;
+	
+	clearTimeout(s_timer);
+	s_timer =  window.setTimeout(function(){banish_Sound()}, timeout);		
+}
+
+function banish_Sound(){
+	var audio = $("#audio0");
+	audioFadeOut(audio, 3500);
+	var audio = $("#audio1");
+	audioFadeOut(audio, 3500);	
+}
+
+
+
+//--------------------------
 // Demon Manifestations
 //--------------------------
 
@@ -406,28 +430,38 @@ function banish_Tentacle(){
 	var c_timer = 5000;
 	var lastSpamType = "positive";
 
-function summon_Chat(timeout){	
+function summon_dChat(timeout){	
 	lastSpamType = spamType;
 	spamType="demon";
 	demonMsgCount = 0;
 
+	$("#chattext").css("overflow", "hidden");
+
+/* 	elements = document.querySelectorAll('#chatbubble.userbubble');
+	for (i = 0; i < elements.length; ++i) {
+		var element = elements[i];
+		//element.classList.add('nudgedbubble');
+	} */
+
 	console.log("demon speaks");
 
 	clearTimeout(c_timer);
-	c_timer =  window.setTimeout(banish_Chat, timeout);		
+	c_timer =  window.setTimeout(banish_dChat, timeout);		
 }
 
-function banish_Chat(){
+function banish_dChat(){
 	spamType=lastSpamType;
 	spamming = false;
 
     var element = $("#chattext");
-	elements = document.querySelectorAll('#chatbubble.darkbubble');
+	elements = document.querySelectorAll('#chatbubble.darkbubble, #chatbubble.imgbubble');
 	
-	for (i=0; i<demonMsgCount; i++){		
-		var element = elements[i]; 		
-		delayedFade(i,element);
-		scrollToBottom();		
+	for (i=0; i<demonMsgCount; i++){
+		//var lastDMsg = demonMsgCount-1; 		
+		var element = elements[i];
+		element.classList.add('scalingbubble');
+		delayedFade(i,element);	
+		scrollToBottom();	
 	}
 	restoreChat();
 	
@@ -435,12 +469,39 @@ function banish_Chat(){
 }
 
 function delayedFade(i, el){
-	var wait = i * 0.125;
-	var myTween = new TweenMax.fromTo(el, 0.4, { x: 0, opacity: 1 }, {x: 0, opacity:0, delay:wait, onComplete:removeEl, onCompleteParams:[el]});
+	var wait = i * 0.1;	
+	var tl = new TimelineMax();
+	//tl.to(el, 1, { css{scaleX: 0.1, scaleY:0.1,}, force3D:true,  transformOrigin:"top right", delay:wait, onComplete:removeEl, onCompleteParams:[el]});
+
+	tl.to(el, 1, {
+		  force3D:true,
+		  delay:wait,
+		  onComplete:removeEl,
+		  onCompleteParams:[el,i],
+		  css: { 
+			width: 0.0,
+			height: 0.0,
+			transformOrigin:"top right",
+		  }
+	});
+	//tl.to(el, 1, { height: 0, width:0, force3D:true,  transformOrigin:"top right", delay:wait, onComplete:removeEl, onCompleteParams:[el]});	
+	//tl.to(el, 1, { height: 0, yPercent: 0, scale:0, opacity: 0, delay:wait, onComplete:removeEl, onCompleteParams:[el]});
+	//tl.to(el, 1, { height: 0, width:0, delay:wait, onComplete:removeEl, onCompleteParams:[el]});
+/* 	css: { 
+        scaleX: 0.1,
+        scaleY: 0.1, 
+      } */
 }
 
-function removeEl (el){
+
+function removeEl (el,i){	
 	el.remove();
+	if (i === (demonMsgCount-1)){
+		//console.log("lastddemonMsg");
+		$("#chattext").css("overflow-y", "auto");	
+		$("#chattext").css("overflow", "scroll");
+		$("#chattext").css("overflow-x", "hidden");		
+	}		
 }
 
 
@@ -474,7 +535,7 @@ function getDemonName()
 
 
 //returns a demon message
-	var demonMsgOriginX = 85;
+	var demonMsgOriginX = 80;
 	var demonMsgCount = 0;
 
 function getDarkMessage()
@@ -485,12 +546,12 @@ function getDarkMessage()
 		snd_heartbeat.remove();
 	};
 	
-	var message = $('<div id="chatbubble" margin-left="' + adjX + '" ></div>');
+	var message = $('<div id="chatbubble"></div>');
 	message.attr("class", "fly-in-element darkbubble");
 
 	var randomX = Math.floor(Math.random()*3.5);
 	var adjX = demonMsgOriginX - randomX;
-	message.css("margin-left", adjX +"%");
+	message.css("margin-left", adjX +"vw");
 	
 	//message.append(getDemonName());
 	//message.append("<br/>");
@@ -682,11 +743,11 @@ var usernameSuffixes = ["Kappa", "Sniper", "maniac", "shipwreck", "M", "LULZ", "
 
 var usernameColors = ["red", "green", "#40b7b5", "blue", "purple", "#aa9929"];
 
-var positiveMessages = ["vvv_HEARTS_vvv", "HEY YOOOO GUYZ!!", "best eppie evah", "LIZZY LUV", "I can't feel my lungs", "<== feels all the feels", "gettin goosebumps now", "WTF", "LUL", "holy shit", "SAVED", "ez", "GG", "Kappa", "LOVE THIS SHOW!!!", "WHAT", "Smash Like Button Peasants", "PogChamp PogChamp PogChamp PogChamp PogChamp", "anyone like pasta?", "awesome clawsome", "Freddy has powerful swim swims", "Mark is my spirit animal", "KAT GREED", "The enemy of my enemy is my Freddy", "The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top"];
+var positiveMessages = ["&#129505;&#129505;&#129505;&#129505;&#129505;", "<div class='bigchat'>HEY YOOOO GUYZ!</div>", "best eppie evah", "LIZZY LUV", "I can't feel my lungs", "&#128072; feels all the feels", "gettin goosebumps now &#128123;", "WTF", "LUL", "holy shit", "SAVED &#128512;", "ez", "GG", "&#128512;", "<div class='bigchat'>LOVE THIS SHOW!!!</div>", "WHAT", "Smash LIKE BUTTON, Peasants!", "&#128512;&#128512;&#128512;&#128512;&#128512;", "anyone like pasta?", "awesome clawsome", "Freddy has powerful swim swims", "Mark is my spirit animal", "KAT GREED", "The enemy of my enemy is my Freddy", "The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top", "&#128512;&#128512;&#128512;&#129505;&#129505;&#129505;","&#128077;"];
 
-var negativeMessages = ["BOT", "WTF LMAO", "Stop moving your head! gettin dizzy", "dizzy", "VOLUME UP, PREEZ!", "NA CS", "LOL this ridic", "WTF", "LUL", "HAHAHAHA", "OMG", "LMAO", "so bad omg", "xD", "FAKE", "fake", "fake as fxxk", "FAKE FAKE FAKE", "WutFace", "NotLikeThis", "4Head", "KAT GREED", "salty peanuts yum yum", "Lizzy already won this debate, move along", "PALPATINE'S BEHIND IT ALL!!!"];
+var negativeMessages = ["BOT", "WTF LMAO", "Stop moving your head! gettin dizzy", "dizzy", "&#128577; VOLUME UP, PREEZ!", "NA CS", "LOL this ridic", "WTF", "LUL", "HAHAHAHA", "OMG", "LMAO&#129315;&#129315;&#129315;", "so bad omg &#128577;", "xD", "FAKE &#128078;", "fakey-fake &#128580;", "fake as fxxk", "FAKE FAKE FAKE", "WutFace", "NotLikeThis", "4Head", "KAT GREED", "salty peanuts yum yum", "Lizzy already won this debate, move along", "PALPATINE'S BEHIND IT ALL!!!","&#128577;","&#128078;&#128078;&#128078;&#128078;"];
 
-var scaredMessages = ["OMG WTF is was that?", "GET OUTTA THERE!", "Run, Forrest, Run!", "dizzy", "Noooooooo", "OMFG", "just crapped my pantaloons", "WTF", "this is my worst nightmare", "OMG run", "OMG", "LMAO", "so bad omg", "xD", "FAKE", "fake", "can't take this", "please jesus god no more jump scares", "", "NotLikeThis", "...", "<=== IS SCARED", "heart palpittashuns"];
+var scaredMessages = ["OMG WTF is was that?", "GET OUTTA THERE!", "&#128128;", "Run, Forrest, Run!", "dizzy", "Noooooooo", "OMFG", "just crapped my pantaloons", "WTF", "this is my worst nightmare", "OMG run", "OMG", "LMAO", "so bad omg", "xD", "FAKE", "fake", "can't take this", "please jesus god no more jump scares", "&#128123;&#128577;", "NotLikeThis", "...", "<=== IS SCARED &#128556;", "heart palpittashuns","&#128123;&#128123;&#128123;&#128123;&#128123;&#128123;&#128123;","&#128552;&#128552;&#128552;&#128552;&#128552;&#128552;&#128552;&#128552;&#128552;","&#128552;","&#128552;","&#128552;"];
 
 var weirdMessages = ["The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top", "RUINED", "SAVED", "RUINED", "CoolStoryMan"];
 
@@ -751,7 +812,7 @@ function getMessage()
 	};
 	
     var message = $('<div id="chatbubble"></div>');
-	message.attr("class", "fade-in-element");	
+	message.attr("class", "fade-in-element userbubble");	
 	message.append(getUserName());	
 	message.append("&nbsp;&#58;&nbsp;");
 
@@ -972,7 +1033,7 @@ document.addEventListener('scroll', function (event) {
 			var messageHeight = (element.clientHeight)/2;
 
 			if (scrollDir === "down"){
-				if (positionFromBottom < topOfScroll + 32)
+				if (positionFromBottom < topOfScroll + messageHeight)
 				{
 					element.classList.remove('fade-in-element');
 					element.classList.add('fade-out-element');

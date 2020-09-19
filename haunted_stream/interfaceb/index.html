@@ -70,8 +70,8 @@
 	</div>
 	
 	<div id="audio_tracks">
+		<audio id="audio0" src=""></audio>
 		<audio id="audio1" src=""></audio>
-		<audio id="audio2" src=""></audio>
 	</div>
 	
 	<div id="videoframe">
@@ -146,14 +146,13 @@
 				<form onsubmit="return false">
 					<div" id="textfield-container" class="shadow">
 						<input type="text" id="textfield" maxlength="200" autocomplete="off" placeholder="send a message">
-					</div>
-					<div" id="chatButton-container" class="" type="submit" id="chatButtonIcon" onclick="chat()" value="">
+<div" id="chatButton-container" class="" type="submit" id="chatButtonIcon" onclick="chat()" value="">
 						<input type="submit" id="chatButton" class="" onclick="chat()" value="" onkeypress="checkForEnter(event)">
 						<svg class="shadow" xmlns="http://www.w3.org/2000/svg"
 								 width="0.644444in" height="0.566667in"
 								 viewBox="0 0 58 51">						 
 								  <path id="chatButtonIcon"
-										fill="none" stroke="none" stroke-width="1"
+										fill="none" stroke="#000" stroke-width="1"
 										d="M 5.00,0.00
 										   C 2.28,0.00 0.00,2.26 0.00,4.96
 											 0.00,4.96 0.00,37.69 0.00,37.69
@@ -194,6 +193,7 @@
 											 43.00,18.36 43.00,18.36 43.00,18.36 Z" />													 
 							</svg>
 						<!-- <img src="../img/art/svg/chat_icon.svg" type="submit" id="chatButtonIcon" onclick="chat()" value="" onkeypress="checkForEnter(event)"> -->
+					</div>						
 					</div>
 				</form>
 			</div>		
