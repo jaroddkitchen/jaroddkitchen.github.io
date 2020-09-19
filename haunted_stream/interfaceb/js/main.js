@@ -293,20 +293,21 @@ setInterval(function() {
 var timedEvents = [
 	[true, 3,	0,
 		[
-		function(){summon_Darkness(8000)},
-		function(){summon_Sound('music/twinkle_twinkle.mp3',"#audio0", 0.05, 0.5, 10000)},
-		function(){summon_Sound('music/Ice_Demon.mp3',"#audio1", 0.025, 1.0, 10000)},
+		function(){summon_Layer(0, 3000, 3000, 0.5, 8000)},
+		function(){summon_Layer(1, 5000, 3000, 0.5, 8000)},		
+		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 0.05, 0.5, 10000)},
+		function(){summon_Sound('music/Ice_Demon.mp3', 1, 0.025, 1.0, 10000)},
 		function(){summon_dChat(8000)}]
 		],
 	[true, 20,	0,
 		[
-		function(){summon_Darkness(15000)},
+		function(){summon_Layer(0,3000, 1000, 0.5, 15000)},
 		function(){summon_Tentacle(15000)},
 		function(){summon_dChat(15000)}]
 		],
 	[false, 50,	0,
 		[
-		function(){summon_Darkness(17000)},
+		function(){summon_Layer(0,3000, 1000, 0.5, 17000)},
 		function(){summon_dChat(18000)},
 		function(){summon_Tentacle(30000)}] 
 		],	
@@ -325,46 +326,21 @@ var pastEvents = [];
 //--------------------------
 
 var d_timer = 5000;
-var ov0_alpha = 0.5;
-var ov0_speed = 3000;
-
-var ov1_alpha = 0.5;
-var ov1_speed = 3000;
-
-var ov2_alpha = 0.5;
-var ov2_speed = 3000;
 
 
-function summon_Darkness(timeout){
+function summon_Layer(layernum, speedin, speedout, alpha, timeout){
 	$("#cameraiconbox").css("z-index", "3");	
 	$("#timer-text").css("z-index", "3");
 
-	$("#overlay0").fadeTo( 3000, 0.5, function(){
+	$("#overlay"+layernum).fadeTo( speedin, alpha, function(){
 	});
-
-	$("#overlay1").fadeTo( 3000, 0.5, function(){
-	});		
-
-	$("#overlay2").fadeTo( 3000, 0.5, function(){
-	});	
 	
-	clearTimeout(d_timer);
-	d_timer =  window.setTimeout(banish_Darkness, timeout);
+	clearTimeout(d_timer[layernum]);
+	d_timer[layernum] =  window.setTimeout(function(){banish_Darkness(layernum, speedout)}, timeout);
 }
 
-function banish_Darkness(){
-	$("#overlay0").fadeTo( 3000, 0.0, function(){
-		//$("#overlay0").classList.add('hidden');
-	});
-
-	$("#overlay1").fadeTo( 3000, 0.0, function(){
-		//$("#overlay1").classList.add('hidden');		
-	});	
-
-	$("#overlay2").fadeTo( 3000, 0.0, function(){
-		//$("#overlay2").classList.add('hidden');
-		$("#cameraiconbox").css("z-index", "5");
-		$("#timer-text").css("z-index", "4");		
+function banish_Darkness(layernum, speedout){
+	$("#overlay"+layernum).fadeTo( speedout, 0.0, function(){
 	});
 }
 
@@ -376,26 +352,26 @@ function banish_Darkness(){
 	var s_timer = 5000;
 	var vol = 0.05;
 	var pbr = 0.5;
-	var snd_plyr = "#audio0";
+	var snd_plyr = 0;
 
 function summon_Sound(snd, snd_plyr, vol, pbr, timeout){
-	var music_player = $(snd_plyr);
-	var music = $(snd_plyr)[0];
+	var music_player = $("#audio" + snd_plyr);
+	var music = $("#audio" + snd_plyr)[0];
 	music.volume = vol;
 	music.src = '../snd/' + snd;	
 	music.play();
 	audioFadeIn(music_player, 3500);
 	music.playbackRate = pbr;
 	
-	clearTimeout(s_timer);
-	s_timer =  window.setTimeout(function(){banish_Sound()}, timeout);		
+	clearTimeout(s_timer[snd_plyr]);
+	s_timer[snd_plyr] =  window.setTimeout(function(){banish_Sound(snd_plyr)}, timeout);		
 }
 
-function banish_Sound(){
-	var audio = $("#audio0");
+function banish_Sound(snd_plyr){
+	var audio = $("#audio"+snd_plyr);
 	audioFadeOut(audio, 3500);
-	var audio = $("#audio1");
-	audioFadeOut(audio, 3500);	
+	//var audio = $("#audio1");
+	//audioFadeOut(audio, 3500);	
 }
 
 
