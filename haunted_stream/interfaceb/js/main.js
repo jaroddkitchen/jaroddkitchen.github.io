@@ -4,7 +4,6 @@
 var chatTarget = "webcam";
 
 
-
 //is called automatically when the html page is loaded
 /* var wshshell=new ActiveXObject("wscript.shell");
 var username=wshshell.ExpandEnvironmentStrings("%username%"); */
@@ -145,489 +144,6 @@ function showInterface()
 
 
 
-//--------------------------
-// Camera Controls	
-//--------------------------
-
-
-var videoplaylist = [
-	["chapel", "https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4"],
-	["pennhurst", "https://video.wixstatic.com/video/bde2cd_29fc09fb61cd469fa5e1de604ddd8be6/720p/mp4/file.mp4"],
-	["desert", "https://video.wixstatic.com/video/bde2cd_0b465ccc294f4786bd45df5fa6edee4d/720p/mp4/file.mp4"]
-];
-
-var webcamplaylist = [
-		["Ms5K", "https://video.wixstatic.com/video/bde2cd_f447f30577a74aba829138597bb3f323/720p/mp4/file.mp4"],
-		["Wimpy", "https://video.wixstatic.com/video/bde2cd_7935ef80ed5d44e09380e36140265934/720p/mp4/file.mp4"],
-		["Ryan", "https://video.wixstatic.com/video/bde2cd_385539cd85ff4cb0a0eff3967da87bf2/720p/mp4/file.mp4"]
-];
-
-/* var videoplaylist = [
-	["chapel", "../video_src/Chapel to Cellar.mp4"],
-	["pennhurst", "../video_src/Penhurst Explorers.mp4"],
-	["desert", "../video_src/Biker Explorer.mp4"]
-];
-
-var webcamplaylist = [
-		["Ms5K", "../video_src/Face-cams1.mp4"],
-		["Wimpy", "../video_src/Face-cams2.mp4"],
-		["Ryan", "../video_src/Face-cams3.mp4"]
-];
- */
-
-var videostart = false;
-
-function initWebcam()
-{
-	var myWebcam = document.getElementsByTagName('video')[1];
-	myWebcam.currentTime = 37;
-}
-
-function toggleCamera(n){
-	var camera = n;
-	console.log("camera " + camera);
-	
-	var myPlayer = document.getElementsByTagName('video')[0];
-	var curtime = myPlayer.currentTime;
-	myPlayer.setAttribute("src", videoplaylist[n][1]);
-	myPlayer.setAttribute("type", "video/mp4");
-	myPlayer.currentTime = curtime;
-
-/* 	var myWebcam = document.getElementsByTagName('video')[1];
-	myWebcam.setAttribute("src", webcamplaylist[n][1]);
-	myWebcam.setAttribute("type", "video/mp4");
-	myWebcam.currentTime = curtime; */
-	
-	if(videostart){
-		myPlayer.play();
-		//myPlayer.load();
-		//myWebcam.play();
-		
-		//hideInterface();		
-	}
-	
-	var curButton = "#" + event.srcElement.id;
-	var curName = "#" + event.srcElement.name;
-	var curText = "#" + "cameraText" + event.srcElement.name;
-	console.log(curText);
-
-	
-	if (!camera){
-		camera = 0;
-		curButton = "#" + "cameraButton1";
-		curText = "#" + "cameraText0";		
-	}	
-	
-	$('.cameraIconButton').css("background-color", "transparent");
-	$('.cameraIconButton').attr("src", "../img/art/svg/camera_off.svg");
-	$('.cameraIconText').css("color", "#3f3131ff");
-
-	
-    $(curButton).css("background-color", "transparent");
-	$(curButton).attr("src", "../img/art/svg/camera_on.svg");	
-    
-    if($(curButton).css('display') == 'none')
-    {
-        $(curButton).css("background-color", "transparent");
-		$(curButton).attr("src", "../img/art/svg/camera_off.svg");
-		$(curText).css("color", "#3f3131ff");		
-		
-    }
-    else
-    {
-        $(curButton).css("background-color", "transparent");
-		$(curButton).attr("src", "../img/art/svg/camera_on.svg");
-		$(curText).css("color", "#866767ff");		
-    }
-}
-
-
-//--------------------------
-// Video Control	
-//--------------------------
-
-//jump to time
-function jumpToTime(landTime)
-{
-	// var player = VideoJS.setup("current_video");
-	var video = document.getElementsByTagName('video')[0];	
-	
-	video.currentTime = landTime;
-	video.play();
-}
-
-
-//--------------------------
-// Global Timer Object	
-//--------------------------
-
-var minutes = 0;
-var seconds = 0;
-
-setInterval(function() {
-    var video = videojs('main-video');
-    var curTime = video.currentTime();
-    minutes = Math.floor(curTime  / 60);   
-    seconds = Math.floor(curTime - minutes * 60)
-    var x = minutes < 10 ? "0" + minutes : minutes;
-    var y = seconds < 10 ? "0" + seconds : seconds;
-
-// check for scheduled events
-	var eventTime = Math.floor(curTime);
-	var eventsLength = timedEvents.length;
-	if (eventsLength>0){
-		if (eventTime===timedEvents[0][1])
-		{
-			if (timedEvents[0][0]){
-				for (i=0; i< timedEvents[0][3].length; i++){					
-					timedEvents[0][3][i]();
-				}
-				pastEvents.push(timedEvents[0]);
-				timedEvents.splice(0,1);
-				console.log(pastEvents);
-			} else {
-				timedEvents.splice(0,1);
-				console.log("event skipped");
-			}
-		}
-	}
-    document.getElementById("timer").innerHTML = x + ":" + y;	
-}, 400);
-
-
-
-var timedEvents = [
-	[true, 2,	0,
-		[
-		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 8000)},
-		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 8000)},		
-		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 0.05, 0.5, 10000)},
-		function(){summon_Sound('music/Ice_Demon.mp3', 1, 0.025, 1.0, 10000)},
-		function(){summon_dChat("rant", "vicious", 1000, 12000)}]
-		],
-	[true, 20,	0,
-		[
-		function(){summon_Layer(0, "colorbox hidden", 2000, 2000, 0.7, 8000)},
-		function(){summon_Layer(1, "textures hidden", 2000, 2000, 0.7, 8000)},	
-		function(){summon_Tentacle(15000)},
-		function(){summon_dChat("random", "vicious", 1000, 15000)}]
-		],
-	[false, 50,	0,
-		[
-		function(){summon_Layer(0,3000, 1000, 0.5, 17000)},
-		function(){summon_dChat("random", "vicious", 2000, 18000)},
-		function(){summon_Tentacle(30000)}] 
-		],	
-];
-
-var pastEvents = [];
-
-
-
-//"url('../img/fx/static_2.gif')"
-
-//----------------------------------------------------
-// Demon functions
-//----------------------------------------------------
-
-//--------------------------
-// Demon Filters
-//--------------------------
-
-var d_timer = 5000;
-
-function summon_Layer(layernum, layertype, bckcolor, bckimg, speedin, speedout, alpha, timeout){
-	$("#cameraiconbox").css("z-index", "3");	
-	$("#timer-text").css("z-index", "3");
-	
-	var targetLayer = $("#overlay"+layernum);
-	
-	targetLayer.attr("class", layertype);
-	targetLayer.css("background-color", bckcolor);
-	if (bckimg != null){
-		targetLayer.css("background-image", "url('"+ bckimg +"')");
-	}	
-	
-	targetLayer.fadeTo( speedin, alpha, function(){
-	});
-	
-	clearTimeout(d_timer[layernum]);
-	d_timer[layernum] =  window.setTimeout(function(){banish_Darkness(layernum, speedout)}, timeout);
-}
-
-function banish_Darkness(layernum, speedout){
-	$("#overlay"+layernum).fadeTo( speedout, 0.0, function(){
-	});
-}
-
-
-//--------------------------
-// Demon Sounds
-//--------------------------
-
-	var s_timer = 5000;
-	var vol = 0.05;
-	var pbr = 0.5;
-	var snd_plyr = 0;
-
-function summon_Sound(snd, snd_plyr, vol, pbr, timeout){
-	var music_player = $("#audio" + snd_plyr);
-	var music = $("#audio" + snd_plyr)[0];
-	music.volume = vol;
-	music.src = '../snd/' + snd;	
-	music.play();
-	audioFadeIn(music_player, 3500);
-	music.playbackRate = pbr;
-	
-	clearTimeout(s_timer[snd_plyr]);
-	s_timer[snd_plyr] =  window.setTimeout(function(){banish_Sound(snd_plyr)}, timeout);		
-}
-
-function banish_Sound(snd_plyr){
-	var audio = $("#audio"+snd_plyr);
-	audioFadeOut(audio, 3500);	
-}
-
-
-//--------------------------
-// Demon Manifestations
-//--------------------------
-
-	var t_timer = 5000;
-
-function summon_Tentacle(timeout){
-	if (!tentacleInit)
-	{
-		initTentacle();
-	}
-	tentacleIsActive = true;
-	console.log("tentacle has arrived");
-	
-	clearTimeout(t_timer);
-	t_timer =  window.setTimeout(banish_Tentacle, timeout);	
-}
-
-function banish_Tentacle(){
-	tentacleIsActive = false;	
-}
-
-
-//--------------------------
-// Demon Communications
-//--------------------------
-
-	var dSpamming = false;
-	var dSpamType = "";
-	var dSpamMood = "";
-	var dSpamSpeed = 500;
-
-	var c_timer = 5000;
-
-function summon_dChat(type, mood, speed, timeout){	
-	spamming = false;
-	chatTarget = "demon";
-	dSpamType = type;
-	dSpamMood = mood;
-	dSpamSpeed = speed;
-	demonMsgCount = 0;
-	
-	dSpam();
-
-	$("#chattext").css("overflow", "hidden");
-
-	clearTimeout(c_timer);
-	c_timer =  window.setTimeout(banish_dChat, timeout);
-	
-	console.log("demon speaks");	
-}
-
-function banish_dChat(){
-	if (dSpamming === true){	
-		dSpamming = false;
-
-		var element = $("#chattext");
-		elements = document.querySelectorAll('#chatbubble.darkbubble, #chatbubble.imgbubble');
-		
-		for (i=0; i<demonMsgCount; i++){
-			//var lastDMsg = demonMsgCount-1; 		
-			var element = elements[i];
-			element.classList.add('scalingbubble');
-			delayedFade(i,element);
-			scrollToBottom();
-		}
-		restoreChat();
-		
-		console.log("demon is silent");
-	}
-}
-
-
-function delayedFade(i, el){
-	var wait = i * 0.1;	
-	var tl = new TimelineMax();
-	tl.to(el, 1, {
-		  force3D:true,
-		  delay:wait,
-		  onComplete:removeDemonMsg,
-		  onCompleteParams:[el,i],
-		  css: { 
-			width: 0.0,
-			height: 0.0,
-			transformOrigin:"top right",
-		  }
-	});
-}
-
-function removeDemonMsg (el,i){	
-	el.remove();
-	if (i === (demonMsgCount-1)){
-		$("#chattext").css("overflow-y", "auto");	
-		$("#chattext").css("overflow", "scroll");
-		$("#chattext").css("overflow-x", "hidden");		
-	}		
-}
-
-
-function restoreChat(){
-	elements = document.querySelectorAll('#chatbubble');
-	for (var i = 0; i < elements.length; i++){
-		var element = elements[i];	
-		element.classList.remove('fade-out-element');
-		element.classList.add('fade-in-element');
-	}
-	chatTarget = "webcam";
-	spam();
-}
-
-
-//writes a random message in the chat
-function writeDarkMessage()
-{
-    var element = $("#chattext");
-	element.append(getDarkMessage());
-	cutTopOfChat();
-    scrollToBottom();
-}
-
-
-//returns a demon name
-function getDemonName()
-{
-    var username = $('<span></span>');
-    username.attr("class", "demonname");
-	username.append("000:");
-    
-    return username;	
-}
-
-
-	var demonMsgOriginX = 80;
-	var demonMsgCount = 0;
-
-//returns a demon message
-function getDarkMessage()
-{
-	var snd_heartbeat = new Audio('../snd/fx/heartbeat.mp3');	
-	audioPlay(snd_heartbeat,0.7);
-	snd_heartbeat.onended = function() {
-		snd_heartbeat.remove();
-	};
-	
-	var message = $('<div id="chatbubble"></div>');
-	message.attr("class", "fly-in-element darkbubble");
-
-	var randomX = Math.floor(Math.random()*3.5);
-	var adjX = demonMsgOriginX - randomX;
-	message.css("margin-left", adjX +"vw");
-	
-	//message.append(getDemonName());
-	//message.append("<br/>");
-
-    var msgBody = "";
-
-	//returns a random demon message
-	//msgBody = (demonMessag es[Math.floor(Math.random()*randomMessages.length)]);
-    
-    if(dSpamType=="random"){
-		if (dSpamMood=="vicious")
-			msgBody = (viciousMessages[Math.floor(Math.random()*viciousMessages.length)]);
-		else if(dSpamMood=="personal")
-			msgBody = (personalMessages[Math.floor(Math.random()*personalMessages.length)]);
-		else if(dSpamMood=="playful")
-			msgBody = (playfulMessages[Math.floor(Math.random()*playfulMessages.length)]);
-		else if(dSpamMood=="vengeful")
-			msgBody = (vengefulMessages[Math.floor(Math.random()*vengefulMessages.length)]);
-			//loadRandomImg(message);
-	}
-	if(dSpamType=="rant"){
-		//msgBody = timedEvents[0][2].toString();
-		msgBody = demonRants[timedEvents[0][2]][demonMsgCount];
-	}			
-
-    msgBody = replace_emotes(msgBody);
-    msgBody = replace_pics(msgBody);
-	if (imgMsg){
-		message.attr("class", "fly-in-element darkbubble imgbubble");
-	}
-	
-	message.append(msgBody);
-	demonMsgCount++;
-    //console.log(demonMsgCount);
-	
-    return message;
-}
-
-
-//starts spamming, calls dKeepSpamming()
-function dSpam()
-{   
-    if(dSpamming)
-    {
-        dSpamming = false;
-    }
-    else
-    {
-		dSpamming = true;
-		dKeepSpamming();
-    }
-}
-
-
-//recursive function that writes a message every 0-249ms
-function dKeepSpamming()
-{
-    if(dSpamming)
-    {
-		if(dSpamType=="rant"){
-			if (demonMsgCount < demonRants[timedEvents[0][2]].length){
-				writeDarkMessage();
-				//setTimeout(function() {dKeepSpamming(); }, Math.floor(Math.random() * spamSpeed));
-				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);;
-			}else{
-				banish_dChat();
-			}
-		} else {
-		writeDarkMessage();
-		//setTimeout(function() {dKeepSpamming(); }, Math.floor(Math.random() * spamSpeed));
-		setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
-		}
-    }
-}
-
-
-var demonRants =
-[
-	["hello world","hows it hanging?","im right over here ------>","do you wanna meet me?","i wanna meet you"]
-];
-
-var viciousMessages = ["i can see you", "i can hear you breathing", "im right over here ------>", "do you wanna meet me?", "do you wanna see my face?", "everbody hates you", "i can smell you", "i cant taste you", "chosen 4 whut?", "la diablo estas vivanta ene de mia korpo", "mi sangas pro la vundoj de inferaj trancxoj", "mi glutos vian animon","ni vekigu la lordon de la abismo", "im coming for you", "7:31", "mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon", "naw im just fukkin around with you chosen one", "we breathe chocolate over here", "guess what's for dinner?", "i want to show you something", "these people are already dead. their blood is on your hands", "did you ever think about ending things?","i know things", "i know your secret","i can do things","do you wanna see whut i can do","_eye1","_eye2","_eye3","_eye4","_burn_girl","_face1","_face2","_face3","_face4","_face5","_face6","_face7","_face8","_face9"];
-
-
-
-
-
-
-
 //----------------------------------------------------
 // Sound FX Functions
 //----------------------------------------------------
@@ -750,6 +266,562 @@ function translates (el, wait){
 
 
 
+
+//--------------------------
+// Camera Controls	
+//--------------------------
+
+
+var videoplaylist = [
+	["chapel", "https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4"],
+	["pennhurst", "https://video.wixstatic.com/video/bde2cd_29fc09fb61cd469fa5e1de604ddd8be6/720p/mp4/file.mp4"],
+	["desert", "https://video.wixstatic.com/video/bde2cd_0b465ccc294f4786bd45df5fa6edee4d/720p/mp4/file.mp4"]
+];
+
+var webcamplaylist = [
+		["Ms5K", "https://video.wixstatic.com/video/bde2cd_f447f30577a74aba829138597bb3f323/720p/mp4/file.mp4"],
+		["Wimpy", "https://video.wixstatic.com/video/bde2cd_7935ef80ed5d44e09380e36140265934/720p/mp4/file.mp4"],
+		["Ryan", "https://video.wixstatic.com/video/bde2cd_385539cd85ff4cb0a0eff3967da87bf2/720p/mp4/file.mp4"]
+];
+
+/* var videoplaylist = [
+	["chapel", "../video_src/Chapel to Cellar.mp4"],
+	["pennhurst", "../video_src/Penhurst Explorers.mp4"],
+	["desert", "../video_src/Biker Explorer.mp4"]
+];
+
+var webcamplaylist = [
+		["Ms5K", "../video_src/Face-cams1.mp4"],
+		["Wimpy", "../video_src/Face-cams2.mp4"],
+		["Ryan", "../video_src/Face-cams3.mp4"]
+];
+ */
+
+var videostart = false;
+
+function initWebcam()
+{
+	var myWebcam = document.getElementsByTagName('video')[1];
+	myWebcam.currentTime = 37;
+}
+
+function toggleCamera(n){
+	var camera = n;
+	console.log("camera " + camera);
+	
+	var myPlayer = document.getElementsByTagName('video')[0];
+	var curtime = myPlayer.currentTime;
+	myPlayer.setAttribute("src", videoplaylist[n][1]);
+	myPlayer.setAttribute("type", "video/mp4");
+	myPlayer.currentTime = curtime;
+
+/* 	var myWebcam = document.getElementsByTagName('video')[1];
+	myWebcam.setAttribute("src", webcamplaylist[n][1]);
+	myWebcam.setAttribute("type", "video/mp4");
+	myWebcam.currentTime = curtime; */
+	
+	if(videostart){
+		myPlayer.play();
+		//myPlayer.load();
+		//myWebcam.play();
+		
+		//hideInterface();		
+	}
+	
+	var curButton = "#" + event.srcElement.id;
+	var curName = "#" + event.srcElement.name;
+	var curText = "#" + "cameraText" + event.srcElement.name;
+	console.log(curText);
+
+	
+	if (!camera){
+		camera = 0;
+		curButton = "#" + "cameraButton1";
+		curText = "#" + "cameraText0";		
+	}	
+	
+	$('.cameraIconButton').css("background-color", "transparent");
+	$('.cameraIconButton').attr("src", "../img/art/svg/camera_off.svg");
+	$('.cameraIconText').css("color", "#3f3131ff");
+
+	
+    $(curButton).css("background-color", "transparent");
+	$(curButton).attr("src", "../img/art/svg/camera_on.svg");	
+    
+    if($(curButton).css('display') == 'none')
+    {
+        $(curButton).css("background-color", "transparent");
+		$(curButton).attr("src", "../img/art/svg/camera_off.svg");
+		$(curText).css("color", "#3f3131ff");		
+		
+    }
+    else
+    {
+        $(curButton).css("background-color", "transparent");
+		$(curButton).attr("src", "../img/art/svg/camera_on.svg");
+		$(curText).css("color", "#866767ff");		
+    }
+}
+
+
+//--------------------------
+// Video Control	
+//--------------------------
+
+//jump to time
+function jumpToTime(landTime)
+{
+	// var player = VideoJS.setup("current_video");
+	var video = document.getElementsByTagName('video')[0];	
+	
+	video.currentTime = landTime;
+	video.play();
+}
+
+
+
+//--------------------------
+// Global Timer Object	
+//--------------------------
+
+var minutes = 0;
+var seconds = 0;
+
+setInterval(function() {
+    var video = videojs('main-video');
+    var curTime = video.currentTime();
+    minutes = Math.floor(curTime  / 60);   
+    seconds = Math.floor(curTime - minutes * 60)
+    var x = minutes < 10 ? "0" + minutes : minutes;
+    var y = seconds < 10 ? "0" + seconds : seconds;
+
+// check for scheduled events
+	var eventTime = Math.floor(curTime);
+	var eventsLength = timedEvents.length;
+	if (eventsLength>0){
+		if (eventTime===timedEvents[0][1])
+		{
+			if (timedEvents[0][0]){
+				for (i=0; i< timedEvents[0][3].length; i++){					
+					timedEvents[0][3][i]();
+				}
+				pastEvents.push(timedEvents[0]);
+				timedEvents.splice(0,1);
+				console.log(pastEvents);
+			} else {
+				timedEvents.splice(0,1);
+				console.log("event skipped");
+			}
+		}
+	}
+    document.getElementById("timer").innerHTML = x + ":" + y;	
+}, 400);
+
+
+
+var timedEvents = [
+	[true, 2,	0,
+		[
+		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 20000)},
+		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 20000)},		
+		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 0.05, 0.5, 20000)},
+		function(){summon_Sound('music/Ice_Demon.mp3', 1, 0.025, 1.0, 20000)},
+		function(){summon_dChat("conversation", "vicious", 1000, 20000)}]
+		],
+	[false, 20,	0,
+		[
+		function(){summon_Layer(0, "colorbox hidden", 2000, 2000, 0.7, 8000)},
+		function(){summon_Layer(1, "textures hidden", 2000, 2000, 0.7, 8000)},	
+		function(){summon_Tentacle(15000)},
+		function(){summon_dChat("random", "vicious", 1000, 15000)}]
+		],
+	[false, 50,	0,
+		[
+		function(){summon_Layer(0,3000, 1000, 0.5, 17000)},
+		function(){summon_dChat("random", "vicious", 2000, 18000)},
+		function(){summon_Tentacle(30000)}] 
+		],	
+];
+
+var pastEvents = [];
+
+
+
+
+//------------------------------------------------------------------------------
+// Demon - Main Programming 
+//------------------------------------------------------------------------------
+
+//----------------------------------------------------
+// Demon Communications
+//----------------------------------------------------
+
+	var dSpamming = false;
+	var dSpamType = "";
+	var dSpamMood = "";
+	var dSpamSpeed = 0;
+
+	var demonMsgCount = 0;
+	var demonDialogueCount = 0;
+	var demonDialogueNode = 0;
+	var dTaunt = false;
+	
+	var c_timer = 0;
+
+//--------------------------
+// Init Demon Chat Module
+//--------------------------
+
+function summon_dChat(type, mood, speed, timeout){	
+	spamming = false;
+	chatTarget = "demon";
+	dSpamType = type;
+	dSpamMood = mood;
+	dSpamSpeed = speed;
+
+	demonMsgCount = 0;
+	demonDialogueCount = 0;
+	demonDialogueNode = 0;
+	dTaunt = false;
+	
+	dSpam();
+
+	$("#chattext").css("overflow", "hidden");
+
+	clearTimeout(c_timer);
+	c_timer =  window.setTimeout(banish_dChat, timeout);
+	
+	console.log("demon speaks");	
+}
+
+//--------------------------
+// Exit Demon Chat 
+//--------------------------
+
+function banish_dChat(){
+	if (dSpamming === true){	
+		dSpamming = false;
+
+		var element = $("#chattext");
+		elements = document.querySelectorAll('#chatbubble.darkbubble, #chatbubble.imgbubble');
+		
+		for (i=0; i<demonMsgCount; i++){
+			//var lastDMsg = demonMsgCount-1; 		
+			var element = elements[i];
+			element.classList.add('scalingbubble');
+			delayedFade(i,element);
+			scrollToBottom();
+		}
+		restoreChat();
+		
+		console.log("demon is silent");
+	}
+}
+
+// erase all demon messages 
+function delayedFade(i, el){
+	var wait = i * 0.1;	
+	var tl = new TimelineMax();
+	tl.to(el, 1, {
+		  force3D:true,
+		  delay:wait,
+		  onComplete:removeDemonMsg,
+		  onCompleteParams:[el,i],
+		  css: { 
+			width: 0.0,
+			height: 0.0,
+			transformOrigin:"top right",
+		  }
+	});
+}
+function removeDemonMsg (el,i){	
+	el.remove();
+	if (i === (demonMsgCount-1)){
+		$("#chattext").css("overflow-y", "auto");	
+		$("#chattext").css("overflow", "scroll");
+		$("#chattext").css("overflow-x", "hidden");		
+	}		
+}
+
+// return to normal chat mode
+function restoreChat(){
+	elements = document.querySelectorAll('#chatbubble');
+	for (var i = 0; i < elements.length; i++){
+		var element = elements[i];	
+		element.classList.remove('fade-out-element');
+		element.classList.add('fade-in-element');
+	}
+	chatTarget = "webcam";
+	spam();
+}
+
+
+//--------------------------
+// Chat Functions
+//--------------------------
+
+//writes a random message in the chat
+function writeDarkMessage()
+{
+    var element = $("#chattext");
+	element.append(getDarkMessage());
+	cutTopOfChat();
+    scrollToBottom();
+}
+
+
+//returns a demon name
+function getDemonName()
+{
+    var username = $('<span></span>');
+    username.attr("class", "demonname");
+	username.append("000:");
+    
+    return username;	
+}
+
+
+//returns a demon message
+	var demonMsgOriginX = 80;
+
+function getDarkMessage()
+{
+	// get the sound effect
+	var snd_heartbeat = new Audio('../snd/fx/heartbeat.mp3');	
+	audioPlay(snd_heartbeat,0.7);
+	snd_heartbeat.onended = function() {
+		snd_heartbeat.remove();
+	};
+	//style the bubble
+	var message = $('<div id="chatbubble"></div>');
+	message.attr("class", "fly-in-element darkbubble");
+	var randomX = Math.floor(Math.random()*3.5);
+	var adjX = demonMsgOriginX - randomX;
+	message.css("margin-left", adjX +"vw");
+	//append a name
+	//message.append(getDemonName());
+	//message.append("<br/>");
+	var curEventId = timedEvents[0][2];
+	// start assembling the message
+    var msgBody = "";
+	
+	if(dSpamType=="rant"){
+		msgBody = demonRants[curEventId][demonMsgCount];
+	}
+	if(dSpamType=="conversation"){
+		msgBody = demonDialogues[curEventId][demonDialogueNode][demonDialogueCount];
+		demonDialogueCount++;
+	}
+    if ((dSpamType=="random") || (dTaunt)){
+		if (dSpamMood=="vicious")
+			msgBody = (viciousMessages[Math.floor(Math.random()*viciousMessages.length)]);
+		else if(dSpamMood=="personal")
+			msgBody = (personalMessages[Math.floor(Math.random()*personalMessages.length)]);
+		else if(dSpamMood=="playful")
+			msgBody = (playfulMessages[Math.floor(Math.random()*playfulMessages.length)]);
+		else if(dSpamMood=="vengeful")
+			msgBody = (vengefulMessages[Math.floor(Math.random()*vengefulMessages.length)]);
+			//loadRandomImg(message);		
+	}
+    if (dTaunt){
+		if (dSpamMood=="vicious")
+			msgBody = (viciousTaunts[Math.floor(Math.random()*viciousTaunts.length)]);
+		else if(dSpamMood=="personal")
+			msgBody = (personalTaunts[Math.floor(Math.random()*personalTaunts.length)]);
+		else if(dSpamMood=="playful")
+			msgBody = (playfulTaunts[Math.floor(Math.random()*playfulTaunts.length)]);
+		else if(dSpamMood=="vengeful")
+			msgBody = (vengefulTaunts[Math.floor(Math.random()*vengefulTaunts.length)])
+	}
+    msgBody = replace_emotes(msgBody);
+    msgBody = replace_pics(msgBody);
+	if (imgMsg){
+		message.attr("class", "fly-in-element darkbubble imgbubble");
+	}
+	message.append(msgBody);
+	demonMsgCount++;
+    return message;
+}
+
+
+//starts spamming, calls dKeepSpamming()
+function dSpam()
+{   
+    if(dSpamming){
+        dSpamming = false;
+    }else{
+		dSpamming = true;
+		dKeepSpamming();
+    }
+}
+
+
+//recursive function that writes a message every 0-249ms
+function dKeepSpamming()
+{
+    if(dSpamming){
+		var curEventId = timedEvents[0][2];
+		if (dSpamType=="rant") {
+			if (demonMsgCount < demonRants[curEventId].length){
+				writeDarkMessage();
+				//setTimeout(function() {dKeepSpamming(); }, Math.floor(Math.random() * spamSpeed));
+				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
+			}
+			else
+			{
+				banish_dChat();
+			}
+		}
+		if (dSpamType=="conversation"){
+			if (demonDialogueCount < demonDialogues[curEventId][demonDialogueNode].length){
+				writeDarkMessage();
+				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
+			}
+			else
+			{
+				if (dSpamming){
+					dTaunt = false;
+					demonWaitsForResponse();
+				}
+			}
+		}
+		if (dSpamType=="random"){
+			writeDarkMessage();
+			//setTimeout(function() {dKeepSpamming(); }, Math.floor(Math.random() * spamSpeed));
+			setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
+		}
+    }
+}
+
+
+//--------------------------
+// Listening For Response
+//--------------------------
+
+	var dResponse_timer = 0;
+	var w_timeout = 1500;
+
+function demonWaitsForResponse(){
+	console.log("demon is listening...");
+	clearTimeout(dResponse_timer);
+	dResponse_timer =  window.setTimeout(writeDarkTaunt, w_timeout);
+}
+
+function writeDarkTaunt(){
+	if (dSpamming){
+		dTaunt = true;
+		writeDarkMessage();
+		demonWaitsForResponse();
+	}
+}
+
+
+//--------------------------
+// Chat Array Objects
+//--------------------------
+
+var demonRants =
+[
+	["hello world","hows it hanging?","im right over here ------>","do you wanna meet me?","i wanna meet you"]
+];
+
+var demonDialogues =
+[
+	[
+		["hello world","i can see you","im right over here ------>","i wanna meet you","do you wanna meet me?"],
+		["that's not a very good answer"]
+	]	
+];
+
+var viciousMessages = ["i can see you", "i can hear you breathing", "im right over here ------>", "do you wanna meet me?", "do you wanna see my face?", "everbody hates you", "i can smell you", "i cant taste you", "chosen 4 whut?", "la diablo estas vivanta ene de mia korpo", "mi sangas pro la vundoj de inferaj trancxoj", "mi glutos vian animon","ni vekigu la lordon de la abismo", "im coming for you", "7:31", "mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon", "naw im just fukkin around with you chosen one", "we breathe chocolate over here", "guess what's for dinner?", "i want to show you something", "these people are already dead. their blood is on your hands", "did you ever think about ending things?","i know things", "i know your secret","i can do things","do you wanna see whut i can do","_eye1","_eye2","_eye3","_eye4","_burn_girl","_face1","_face2","_face3","_face4","_face5","_face6","_face7","_face8","_face9"];
+
+var viciousTaunts = ["&quot; answer the question, claire!&quot;", "just answer the question", "cmon, chosen one. times-a-wastin", "answer me", "i need an answer. now.", "_just_answer", "_still_waiting", "_answer_me", "_answer_the_question", "_use_your_voice", "_finding_his_voice", "_anyone_there", "..."];
+
+
+//--------------------------
+// Demon Filters
+//--------------------------
+
+var d_timer = 5000;
+
+function summon_Layer(layernum, layertype, bckcolor, bckimg, speedin, speedout, alpha, timeout){
+	$("#cameraiconbox").css("z-index", "3");	
+	$("#timer-text").css("z-index", "3");
+	
+	var targetLayer = $("#overlay"+layernum);
+	
+	targetLayer.attr("class", layertype);
+	targetLayer.css("background-color", bckcolor);
+	if (bckimg != null){
+		targetLayer.css("background-image", "url('"+ bckimg +"')");
+	}	
+	
+	targetLayer.fadeTo( speedin, alpha, function(){
+	});
+	
+	clearTimeout(d_timer[layernum]);
+	d_timer[layernum] =  window.setTimeout(function(){banish_Darkness(layernum, speedout)}, timeout);
+}
+
+function banish_Darkness(layernum, speedout){
+	$("#overlay"+layernum).fadeTo( speedout, 0.0, function(){
+	});
+}
+
+
+//--------------------------
+// Demon Sounds
+//--------------------------
+
+	var s_timer = 5000;
+	var vol = 0.05;
+	var pbr = 0.5;
+	var snd_plyr = 0;
+
+function summon_Sound(snd, snd_plyr, vol, pbr, timeout){
+	var music_player = $("#audio" + snd_plyr);
+	var music = $("#audio" + snd_plyr)[0];
+	music.volume = vol;
+	music.src = '../snd/' + snd;	
+	music.play();
+	audioFadeIn(music_player, 3500);
+	music.playbackRate = pbr;
+	
+	clearTimeout(s_timer[snd_plyr]);
+	s_timer[snd_plyr] =  window.setTimeout(function(){banish_Sound(snd_plyr)}, timeout);		
+}
+
+function banish_Sound(snd_plyr){
+	var audio = $("#audio"+snd_plyr);
+	audioFadeOut(audio, 3500);	
+}
+
+
+//--------------------------
+// Demon Manifestations
+//--------------------------
+
+	var t_timer = 5000;
+
+function summon_Tentacle(timeout){
+	if (!tentacleInit)
+	{
+		initTentacle();
+	}
+	tentacleIsActive = true;
+	console.log("tentacle has arrived");
+	
+	clearTimeout(t_timer);
+	t_timer =  window.setTimeout(banish_Tentacle, timeout);	
+}
+
+function banish_Tentacle(){
+	tentacleIsActive = false;	
+}
+
+
+
+
 //--------------------------
 // AutoChat module
 //--------------------------
@@ -799,7 +871,15 @@ var pics = [
     ["_face6", "girlcry3.gif"],
     ["_face7", "babyface.gif"],
     ["_face8", "monsterwoman.gif"],
-    ["_face9", "mirrorgirl.gif"]
+    ["_face9", "mirrorgirl.gif"],
+	["_just_answer", "just_answer.gif"],
+	["_cant_ignore", "cant_ignore_me.gif"],
+	["_answer_me", "answer_me.gif"],
+	["_answer_the_question", "answer_the_question.gif"],
+	["_still_waiting", "still_waiting.gif"],
+	["_use_your_voice", "use_your_voice.gif"],
+	["_finding_his_voice", "finding_his_voice.gif"],
+	["_anyone_there", "anyone_there.gif"]
 ];
 
 
@@ -858,7 +938,6 @@ function replace_emotes(message)
     for(var i=0;i<emotes.length;i++){
         message = message.replace(new RegExp(emotes[i][0], 'g'), "<img src='../img/emotes/"+emotes[i][1]+"' class='emoticon' alt='"+emotes[i][0]+"' vertical-align='bottom'>");
     } 
-
     return message;
 }
 
@@ -875,10 +954,8 @@ function replace_pics(message)
 		if (n >=0) { 
 			imgMsg = true;
 		}
-		message = message.replace(new RegExp(pics[i][0], 'g'), "<img src='../img/pics/"+pics[i][1]+"' class='pic' alt='"+pics[i][0]+"'>");	
-		//message = message.replace(new RegExp(pics[i][0], 'g'), "<img src='../img/pics/eyered2.gif' class='pic' alt='"+pics[i][0]+"'>");	
+		message = message.replace(new RegExp(pics[i][0], 'g'), "<img loading='eager' onload='scrollToBottom()' src='../img/pics/"+pics[i][1]+"' class='pic' alt='"+pics[i][0]+"'>");	
     }
-
     return message;
 }
 
