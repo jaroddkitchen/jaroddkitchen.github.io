@@ -1,3 +1,10 @@
+//--------------------------
+// Global Vars
+//--------------------------
+var chatTarget = "webcam";
+
+
+
 //is called automatically when the html page is loaded
 /* var wshshell=new ActiveXObject("wscript.shell");
 var username=wshshell.ExpandEnvironmentStrings("%username%"); */
@@ -250,7 +257,6 @@ function jumpToTime(landTime)
 }
 
 
-
 //--------------------------
 // Global Timer Object	
 //--------------------------
@@ -291,24 +297,25 @@ setInterval(function() {
 
 
 var timedEvents = [
-	[true, 3,	0,
+	[true, 2,	0,
 		[
-		function(){summon_Layer(0, 3000, 3000, 0.5, 8000)},
-		function(){summon_Layer(1, 5000, 3000, 0.5, 8000)},		
+		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 8000)},
+		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 8000)},		
 		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 0.05, 0.5, 10000)},
 		function(){summon_Sound('music/Ice_Demon.mp3', 1, 0.025, 1.0, 10000)},
-		function(){summon_dChat(8000)}]
+		function(){summon_dChat("rant", "vicious", 1000, 12000)}]
 		],
 	[true, 20,	0,
 		[
-		function(){summon_Layer(0,3000, 1000, 0.5, 15000)},
+		function(){summon_Layer(0, "colorbox hidden", 2000, 2000, 0.7, 8000)},
+		function(){summon_Layer(1, "textures hidden", 2000, 2000, 0.7, 8000)},	
 		function(){summon_Tentacle(15000)},
-		function(){summon_dChat(15000)}]
+		function(){summon_dChat("random", "vicious", 1000, 15000)}]
 		],
 	[false, 50,	0,
 		[
 		function(){summon_Layer(0,3000, 1000, 0.5, 17000)},
-		function(){summon_dChat(18000)},
+		function(){summon_dChat("random", "vicious", 2000, 18000)},
 		function(){summon_Tentacle(30000)}] 
 		],	
 ];
@@ -316,6 +323,8 @@ var timedEvents = [
 var pastEvents = [];
 
 
+
+//"url('../img/fx/static_2.gif')"
 
 //----------------------------------------------------
 // Demon functions
@@ -327,12 +336,19 @@ var pastEvents = [];
 
 var d_timer = 5000;
 
-
-function summon_Layer(layernum, speedin, speedout, alpha, timeout){
+function summon_Layer(layernum, layertype, bckcolor, bckimg, speedin, speedout, alpha, timeout){
 	$("#cameraiconbox").css("z-index", "3");	
 	$("#timer-text").css("z-index", "3");
-
-	$("#overlay"+layernum).fadeTo( speedin, alpha, function(){
+	
+	var targetLayer = $("#overlay"+layernum);
+	
+	targetLayer.attr("class", layertype);
+	targetLayer.css("background-color", bckcolor);
+	if (bckimg != null){
+		targetLayer.css("background-image", "url('"+ bckimg +"')");
+	}	
+	
+	targetLayer.fadeTo( speedin, alpha, function(){
 	});
 	
 	clearTimeout(d_timer[layernum]);
@@ -369,11 +385,8 @@ function summon_Sound(snd, snd_plyr, vol, pbr, timeout){
 
 function banish_Sound(snd_plyr){
 	var audio = $("#audio"+snd_plyr);
-	audioFadeOut(audio, 3500);
-	//var audio = $("#audio1");
-	//audioFadeOut(audio, 3500);	
+	audioFadeOut(audio, 3500);	
 }
-
 
 
 //--------------------------
@@ -403,56 +416,59 @@ function banish_Tentacle(){
 // Demon Communications
 //--------------------------
 
-	var c_timer = 5000;
-	var lastSpamType = "positive";
+	var dSpamming = false;
+	var dSpamType = "";
+	var dSpamMood = "";
+	var dSpamSpeed = 500;
 
-function summon_dChat(timeout){	
-	lastSpamType = spamType;
-	spamType="demon";
+	var c_timer = 5000;
+
+function summon_dChat(type, mood, speed, timeout){	
+	spamming = false;
+	chatTarget = "demon";
+	dSpamType = type;
+	dSpamMood = mood;
+	dSpamSpeed = speed;
 	demonMsgCount = 0;
+	
+	dSpam();
 
 	$("#chattext").css("overflow", "hidden");
 
-/* 	elements = document.querySelectorAll('#chatbubble.userbubble');
-	for (i = 0; i < elements.length; ++i) {
-		var element = elements[i];
-		//element.classList.add('nudgedbubble');
-	} */
-
-	console.log("demon speaks");
-
 	clearTimeout(c_timer);
-	c_timer =  window.setTimeout(banish_dChat, timeout);		
+	c_timer =  window.setTimeout(banish_dChat, timeout);
+	
+	console.log("demon speaks");	
 }
 
 function banish_dChat(){
-	spamType=lastSpamType;
-	spamming = false;
+	if (dSpamming === true){	
+		dSpamming = false;
 
-    var element = $("#chattext");
-	elements = document.querySelectorAll('#chatbubble.darkbubble, #chatbubble.imgbubble');
-	
-	for (i=0; i<demonMsgCount; i++){
-		//var lastDMsg = demonMsgCount-1; 		
-		var element = elements[i];
-		element.classList.add('scalingbubble');
-		delayedFade(i,element);	
-		scrollToBottom();	
+		var element = $("#chattext");
+		elements = document.querySelectorAll('#chatbubble.darkbubble, #chatbubble.imgbubble');
+		
+		for (i=0; i<demonMsgCount; i++){
+			//var lastDMsg = demonMsgCount-1; 		
+			var element = elements[i];
+			element.classList.add('scalingbubble');
+			delayedFade(i,element);
+			scrollToBottom();
+		}
+		restoreChat();
+		
+		console.log("demon is silent");
 	}
-	restoreChat();
-	
-	console.log("demon is silent");
 }
+
 
 function delayedFade(i, el){
 	var wait = i * 0.1;	
 	var tl = new TimelineMax();
-	//tl.to(el, 1, { css{scaleX: 0.1, scaleY:0.1,}, force3D:true,  transformOrigin:"top right", delay:wait, onComplete:removeEl, onCompleteParams:[el]});
-
 	tl.to(el, 1, {
 		  force3D:true,
 		  delay:wait,
-		  onComplete:removeEl,
+		  onComplete:removeDemonMsg,
 		  onCompleteParams:[el,i],
 		  css: { 
 			width: 0.0,
@@ -460,20 +476,11 @@ function delayedFade(i, el){
 			transformOrigin:"top right",
 		  }
 	});
-	//tl.to(el, 1, { height: 0, width:0, force3D:true,  transformOrigin:"top right", delay:wait, onComplete:removeEl, onCompleteParams:[el]});	
-	//tl.to(el, 1, { height: 0, yPercent: 0, scale:0, opacity: 0, delay:wait, onComplete:removeEl, onCompleteParams:[el]});
-	//tl.to(el, 1, { height: 0, width:0, delay:wait, onComplete:removeEl, onCompleteParams:[el]});
-/* 	css: { 
-        scaleX: 0.1,
-        scaleY: 0.1, 
-      } */
 }
 
-
-function removeEl (el,i){	
+function removeDemonMsg (el,i){	
 	el.remove();
 	if (i === (demonMsgCount-1)){
-		//console.log("lastddemonMsg");
 		$("#chattext").css("overflow-y", "auto");	
 		$("#chattext").css("overflow", "scroll");
 		$("#chattext").css("overflow-x", "hidden");		
@@ -488,15 +495,19 @@ function restoreChat(){
 		element.classList.remove('fade-out-element');
 		element.classList.add('fade-in-element');
 	}
-	spamming = true;
+	chatTarget = "webcam";
+	spam();
 }
 
-/* 	var delay_timer = 0;
 
-function delayedExit(i,el) {	
-	clearTimeout(delay_timer);
-	delay_timer = window.setTimeout(delayedFade(i, el), 5000);	 
-} */
+//writes a random message in the chat
+function writeDarkMessage()
+{
+    var element = $("#chattext");
+	element.append(getDarkMessage());
+	cutTopOfChat();
+    scrollToBottom();
+}
 
 
 //returns a demon name
@@ -510,10 +521,10 @@ function getDemonName()
 }
 
 
-//returns a demon message
 	var demonMsgOriginX = 80;
 	var demonMsgCount = 0;
 
+//returns a demon message
 function getDarkMessage()
 {
 	var snd_heartbeat = new Audio('../snd/fx/heartbeat.mp3');	
@@ -535,19 +546,23 @@ function getDarkMessage()
     var msgBody = "";
 
 	//returns a random demon message
-	msgBody = (demonMessages[Math.floor(Math.random()*demonMessages.length)]);
+	//msgBody = (demonMessag es[Math.floor(Math.random()*randomMessages.length)]);
     
-/*     if(spamType=="positive")
-        msgBody = (positiveMessages[Math.floor(Math.random()*positiveMessages.length)]);
-    else if(spamType=="negative")
-        msgBody = (negativeMessages[Math.floor(Math.random()*negativeMessages.length)]);
-    else if(spamType=="scared")
-        msgBody = (scaredMessages[Math.floor(Math.random()*scaredMessages.length)]);
-	else if(spamType=="weird")
-        msgBody = (weirdMessages[Math.floor(Math.random()*weirdMessages.length)]);
-	else if(spamType=="demon")
-		msgBody = (demonMessages[Math.floor(Math.random()*demonMessages.length)]); */
-		//loadRandomImg(message);
+    if(dSpamType=="random"){
+		if (dSpamMood=="vicious")
+			msgBody = (viciousMessages[Math.floor(Math.random()*viciousMessages.length)]);
+		else if(dSpamMood=="personal")
+			msgBody = (personalMessages[Math.floor(Math.random()*personalMessages.length)]);
+		else if(dSpamMood=="playful")
+			msgBody = (playfulMessages[Math.floor(Math.random()*playfulMessages.length)]);
+		else if(dSpamMood=="vengeful")
+			msgBody = (vengefulMessages[Math.floor(Math.random()*vengefulMessages.length)]);
+			//loadRandomImg(message);
+	}
+	if(dSpamType=="rant"){
+		//msgBody = timedEvents[0][2].toString();
+		msgBody = demonRants[timedEvents[0][2]][demonMsgCount];
+	}			
 
     msgBody = replace_emotes(msgBody);
     msgBody = replace_pics(msgBody);
@@ -556,12 +571,60 @@ function getDarkMessage()
 	}
 	
 	message.append(msgBody);
-	
 	demonMsgCount++;
     //console.log(demonMsgCount);
 	
     return message;
 }
+
+
+//starts spamming, calls dKeepSpamming()
+function dSpam()
+{   
+    if(dSpamming)
+    {
+        dSpamming = false;
+    }
+    else
+    {
+		dSpamming = true;
+		dKeepSpamming();
+    }
+}
+
+
+//recursive function that writes a message every 0-249ms
+function dKeepSpamming()
+{
+    if(dSpamming)
+    {
+		if(dSpamType=="rant"){
+			if (demonMsgCount < demonRants[timedEvents[0][2]].length){
+				writeDarkMessage();
+				//setTimeout(function() {dKeepSpamming(); }, Math.floor(Math.random() * spamSpeed));
+				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);;
+			}else{
+				banish_dChat();
+			}
+		} else {
+		writeDarkMessage();
+		//setTimeout(function() {dKeepSpamming(); }, Math.floor(Math.random() * spamSpeed));
+		setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
+		}
+    }
+}
+
+
+var demonRants =
+[
+	["hello world","hows it hanging?","im right over here ------>","do you wanna meet me?","i wanna meet you"]
+];
+
+var viciousMessages = ["i can see you", "i can hear you breathing", "im right over here ------>", "do you wanna meet me?", "do you wanna see my face?", "everbody hates you", "i can smell you", "i cant taste you", "chosen 4 whut?", "la diablo estas vivanta ene de mia korpo", "mi sangas pro la vundoj de inferaj trancxoj", "mi glutos vian animon","ni vekigu la lordon de la abismo", "im coming for you", "7:31", "mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon", "naw im just fukkin around with you chosen one", "we breathe chocolate over here", "guess what's for dinner?", "i want to show you something", "these people are already dead. their blood is on your hands", "did you ever think about ending things?","i know things", "i know your secret","i can do things","do you wanna see whut i can do","_eye1","_eye2","_eye3","_eye4","_burn_girl","_face1","_face2","_face3","_face4","_face5","_face6","_face7","_face8","_face9"];
+
+
+
+
 
 
 
@@ -681,22 +744,6 @@ function translates (el, wait){
                 }
             });
         }
-/* 		,
-        flyOut: function(element, options) {
-			var to = 0;			
-            this.animate({
-                duration: options.duration,
-                delta: function(progress) {
-                    progress = this.progress;
-                    return FX.easing.swing(progress);
-                },
-                complete: options.complete,
-                step: function(delta) {
-                    //element.style.transform = ("translateX(100%)");
-				element.style.transform = ("rotate(60deg ) skewX(20deg ) skewY(10deg)");					
-                }
-            });
-        } */	
     };
     window.FX = FX;
 })()
@@ -707,10 +754,10 @@ function translates (el, wait){
 // AutoChat module
 //--------------------------
 
-var spamming = false;
-var darkMode = false;
-var spamType = "positive";
-var spamSpeed = 2400;
+	var spamming = false;
+	var spamType = "positive";
+	var spamSpeed = 2400;
+	var darkMode = false;
 
 
 var usernamePrefixes = ["scary", "spooky", "sick", "insane", "cool", "revenge_of_", "mad", "generic", "Cpt", "nice", "xxx", "Dan", "VAC", "SWE", "Wizard", "faceless", "olof","best_", "daddy", "boo", "mister_", "davai", "Nick", "da_", "the_", "iAm", "Loungin", "extra", "BOT", "dirty", "shoutout_to_", "devil", "Only"];
@@ -727,8 +774,6 @@ var scaredMessages = ["OMG WTF is was that?", "GET OUTTA THERE!", "&#128128;", "
 
 var weirdMessages = ["The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top", "RUINED", "SAVED", "RUINED", "CoolStoryMan"];
 
-var demonMessages = ["i can see you", "i can hear you breathing", "im right over here ==->", "do you wanna meet me?", "do you wanna see my face?", "everbody hates you", "i can smell you", "i cant taste you", "chosen 4 whut?", "la diablo estas vivanta ene de mia korpo", "mi sangas pro la vundoj de inferaj trancxoj", "mi glutos vian animon","ni vekigu la lordon de la abismo", "im coming for you", "7:31", "mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon", "naw im just fukkin around with you chosen one", "we breathe chocolate over here", "guess what's for dinner?", "i want to show you something", "these people are already dead. their blood is on your hands", "did you ever think about ending things?","i know things", "i know your secret","i can do things","do you wanna see whut i can do","_eye1","_eye2","_eye3","_eye4","_face1","_face2","_face3","_face4","_face5","_face6","_face7","_face8","_face9"];
-
 
 var emotes = [
     ["Kappa", "kappa.png"],
@@ -744,9 +789,10 @@ var pics = [
     ["_eye1", "eyescan.gif"],
     ["_eye2", "eyebug.gif"],
     ["_eye3", "eyered.gif"],
-    ["_eye4", "eyeblood.gif"],	
+    ["_eye4", "eyeblood.gif"],
+    ["_burn_girl", "burning_girl.gif"],	
     ["_face1", "facetougues.gif"],
-    ["_face2", "facebald.gif"],
+    ["_face2", "face_flower.gif"],
     ["_face3", "girlmad.gif"],
     ["_face4", "girlcry1.gif"],
     ["_face5", "girlcry2.gif"],
@@ -762,27 +808,17 @@ var pics = [
 function writeMessage()
 {
     var element = $("#chattext");
-    if (spamType=="demon"){
-		element.append(getDarkMessage());
-	} else {
-		element.append(getMessage());
-	}
+	element.append(getMessage());
 	cutTopOfChat();
     scrollToBottom();
-	
-/* 	var snd = new Sound("../snd/fx/bubble_pop.mp3", 10, false); 
-	snd.start(); */
 }
 
-
-	//var snd_bubble = new Audio('../snd/fx/bubble.mp3');
 
 //returns a random message
 function getMessage()
 {	
 	var snd_bubble = new Audio('../snd/fx/bubble.mp3');
 	audioPlay(snd_bubble, 0.05);
-	
 	snd_bubble.onended = function() {
 		snd_bubble.remove();
 	};
@@ -873,12 +909,6 @@ function getUsernameColor()
 }
 
 
-/* $("#chattext" ).scroll(function() {
-  cleanUpScroll();
-}); */
-
-
-
 //checks to see if the chat is too long and cuts the top elements if it is
 function cutTopOfChat()
 {
@@ -927,7 +957,6 @@ function keepSpamming()
         setTimeout(function() {keepSpamming(); }, Math.floor(Math.random() * spamSpeed));
     }
 }
-
 
 
 //random web image
@@ -1218,37 +1247,39 @@ function findWord(letters) {
 
 
 function assembleResponse(word)
-{	
-	if (triggersWords.length > 0) {
-		var speechBubble = $('<div id="response"></div>');
-		speechBubble.attr("class", "fade-in-element dialoguebubble");	
+{
+	if (chatTarget == "webcam"){	
+		if (triggersWords.length > 0) {
+			var speechBubble = $('<div id="response"></div>');
+			speechBubble.attr("class", "fade-in-element dialoguebubble");	
+			
+			var speechBody = "Okay, let's look at the " + word + ".";
+			speechBubble.append(speechBody);	
+			
+			console.log('"' + word + '" will trigger a game action.');	
+			
+			//console.log("keywords=" + triggersWords.length);		
+			
+			//invalidWords.push(wordRaw);		
+			//jumpToTime(keytimes[pos]);
+			//responsiveVoice.speak("Okay, let's look at the " + commandNoun,$('#voiceselection').val());
+		}
+		else
+		{
+			//findWord(word);
+			curResponse = 0;
+			console.log('This word does not affect the game');
+			
+			var speechBubble = $('<div id="response"></div>');
+			speechBubble.attr("class", "fade-in-element dialoguebubble");			
+			
+			var speechBody = "I don't see anything like that around here.";
+			speechBubble.append(speechBody);		
+		}
 		
-		var speechBody = "Okay, let's look at the " + word + ".";
-		speechBubble.append(speechBody);	
-		
-		console.log('"' + word + '" will trigger a game action.');	
-		
-		//console.log("keywords=" + triggersWords.length);		
-		
-		//invalidWords.push(wordRaw);		
-		//jumpToTime(keytimes[pos]);
-		//responsiveVoice.speak("Okay, let's look at the " + commandNoun,$('#voiceselection').val());
+		speak(speechBody);
+		loadResponse(speechBubble);
 	}
-	else
-	{
-		//findWord(word);
-		curResponse = 0;
-		console.log('This word does not affect the game');
-		
-		var speechBubble = $('<div id="response"></div>');
-		speechBubble.attr("class", "fade-in-element dialoguebubble");			
-		
-		var speechBody = "I don't see anything like that around here.";
-		speechBubble.append(speechBody);		
-	}
-	
-	speak(speechBody);
-	loadResponse(speechBubble);
 }
 
 
@@ -1391,7 +1422,7 @@ function darkmode()
         darkMode = false;
 		$("#darkModeButton").css("background-color", "#FFFFFF");
 		$("#darkModeButton").css("color", "#000000");
-		banish_Chat();
+		banish_dChat();
     }
     else
     {
