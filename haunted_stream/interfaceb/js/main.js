@@ -490,7 +490,7 @@ function timer(callback, delay) {
 
 	var dMsgCount = 0;
 	var dDialogueCount = 0;
-	var demonDialogueNode = 0;
+	var dDialogueNode = 0;
 
 	var c_array = [];
 	var c_timer = 0;
@@ -528,7 +528,7 @@ function summon_dChat(array, mem, mood, speed, timeout)
 	dSpamMood = mood;
 	dSpamSpeed = speed;
 	
-	demonDialogueNode = 0;
+	dDialogueNode = 0;
 	dDialogueCount = 0;
 
 	dTaunt = false;
@@ -644,7 +644,7 @@ function restoreChat(){
 //--------------------------
 
 function dWaitsForResponse(){	
-	if (plReply!=null){;
+/* 	if (plReply!=null){;
 		banish_dChat();
 		plReply=null;
 		dTauntTimeLeft = 0;
@@ -654,7 +654,7 @@ function dWaitsForResponse(){
 		dDialogueNode++;
 		dKeepSpamming();
 		return;
-	}
+	} */
 
 	if (!dListen){
 		console.log("demon stopped listening." + dSpamType);
@@ -692,13 +692,14 @@ function dWaitsForResponse(){
 
 function writeDarkTaunt(){
 	if (plReply!=null){;
-		banish_dChat();
-		plReply=null;
+		//banish_dChat();
 		dTauntTimeLeft = 0;
 		dListen = false;
-		dTaunt = false;	
-		clearInterval();
+		dTaunt = false;
+		plReply=null;
+		dDialogueCount = 0;
 		dDialogueNode++;
+		dSpamming = true;
 		dKeepSpamming();
 		return;
 	} else {
@@ -734,7 +735,7 @@ function dKeepSpamming()
     if(dSpamming){
 		//curEventId = timedEvents[0][2];
 		if (dSpamType=="rant") {
-			if (dMsgCount < c_array[demonDialogueNode].length){
+			if (dMsgCount < c_array[dDialogueNode].length){
 				writeDarkMessage();
 				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
 			}
@@ -744,7 +745,7 @@ function dKeepSpamming()
 			}
 		}
 		if (dSpamType=="conversation"){			
-			if (dDialogueCount < c_array[demonDialogueNode].length){
+			if (dDialogueCount < c_array[dDialogueNode].length){
 				writeDarkMessage();
 				dDialogueCount++;
 				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
@@ -827,16 +828,16 @@ function getDarkMessage()
 	var msgBody = "";
 	
 	if(dSpamType=="rant"){
-		msgBody = c_array[demonDialogueNode][dMsgCount];
+		msgBody = c_array[dDialogueNode][dMsgCount];
 	}
 	if(dSpamType=="conversation"){
-		msgBody = c_array[demonDialogueNode][dDialogueCount];
+		msgBody = c_array[dDialogueNode][dDialogueCount];
 	}
     if (dTaunt){
 		msgBody = (dTaunts[Math.floor(Math.random()*dTaunts.length)]);
 		if (dRepeatQuestion){
 			var curQuestion = dDialogueCount-1;
-			msgBody = c_array[demonDialogueNode][curQuestion];
+			msgBody = c_array[dDialogueNode][curQuestion];
 		}
 	}
 	
