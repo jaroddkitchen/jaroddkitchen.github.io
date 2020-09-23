@@ -1,0 +1,90 @@
+//----------------------------------------------------
+// Timed Event Objects	
+//----------------------------------------------------
+
+// summon_Layer(layernum, layertype, bckcolor, bckimg, speedin, speedout, alpha, timeout)
+// summon_Sound(snd, snd_plyr, vol, pbr, timeout)
+// summon_Apparition(speed, scale, timeout)
+// summon_dChat(array, mem, mood, speed, timeout)
+
+
+var timedEvents = [
+	[true,  2,	"HelloWorld",
+		[
+		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 30000)},
+		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 30000)},		
+		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 0.05, 0.5, 30000)},
+		function(){summon_Sound('music/Ice_Demon.mp3', 1, 0.025, 1.0, 30000)},
+		function(){summon_dChat(HelloWorld, null, "vicious", 500, 6000)}
+		]
+	],	
+	[true, 17,	0,
+		[
+		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 1000)},
+		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 1000)},		
+		function(){summon_Apparition(10, 1, 30000)},	
+		function(){summon_dChat(Randomness, null, "vicious", 2000, 10000)},		
+		] 
+	],		
+	[true, 35,	1,
+		[
+		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 8000)},
+		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static_2.gif", 3000, 3000, 0.5, 8000)},		
+		function(){summon_Apparition(8000)},
+		function(){summon_dChat(JarodSucks, null, "vicious", 1000, 8000)}
+		]
+	],
+	[true, 55,	1,
+		[
+		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 8000)},
+		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static_2.gif", 3000, 3000, 0.5, 8000)},		
+		function(){summon_Apparition(8000)},
+		function(){summon_dChat(ThePictureGame, null, "vicious", 1000, 8000)}
+		]
+	],		
+];
+
+var pastEvents = [];
+
+//----------------------------------------------------
+// Demon Interactions
+//----------------------------------------------------
+
+////////////////////////
+var HelloWorld =
+[
+	["hello world","i can see you","im right over here ------>","i wanna meet you","do you wanna meet me?"],  
+	["that's not a very good answer"]
+];
+	HelloWorld.name = "Hello World!";
+	HelloWorld.type = "conversation";
+	HelloWorld.exit = "banishAll";
+
+
+////////////////////////
+var ThePictureGame =
+[
+	["im bored","lets play a game","if you win, i will loan you a gift","if you lose, you get...", "well", "lets just call it a little surprise", "r u reddy to play?"],  
+	["fantastic"]
+];
+	ThePictureGame.name = "The Picture Game";
+	ThePictureGame.type = "conversation";
+	ThePictureGame.exit = "none";
+
+////////////////////////
+var JarodSucks =
+[
+	["im not a big fan of you-know-who","too arrogant for my tastss","im sure hes been bragging about this thing for weeks","taking all the credit","did he ever tell you his virus theory. all that shit about &quot;housecats&quot;?", "bet he did"]
+];
+	JarodSucks.name = "My Creator Sucks";
+	JarodSucks.type = "rant";
+	JarodSucks.exit = "none";
+
+////////////////////////
+var Randomness =
+[
+	[""]
+];	
+	Randomness.name = "Randomness";
+	Randomness.type = "random";
+	Randomness.exit = "banishAll";

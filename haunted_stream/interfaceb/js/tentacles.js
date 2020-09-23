@@ -1,5 +1,6 @@
 var tentacleRootX = 200;
 var tentacleRootY = 1;
+
 var tentacleNodeSize = 12;
 var tentacleFlex = 6;
 var tentacleMinLength = 100;
@@ -7,7 +8,7 @@ var tentacleFreq = 0.15;
 var tentacleAmp = 0.02;
 var tentacleVel = 4;
 var tentacleAlpha = 1.0;
-var tentacleScale = 0;
+var tentacleScale = 2;
 var numTentacles = 1;
 
 var tentacleInit = false;
@@ -92,7 +93,16 @@ function initTentacle()
 				const dy = tentSpawnY - head.y;
 				const dist = Math.sqrt(dx * dx + dy * dy);
 				this.dir = Math.atan2(dy, dx);
-				this.vel = 1 + dist * 0.05;				
+				this.vel = 1 + dist * 0.05;
+				
+				//this.remove();
+
+/* 				for (let i = 2; i < this.length; i++) {
+					if(nodes.length == 0){
+						this.remove();
+					}					
+					this.nodes[i].remove();
+				} */
 			}
 			
 			this.vDir += 0.05 * (Math.random() - Math.random());
@@ -144,10 +154,10 @@ function initTentacle()
 				ctx.rotate(this.a + 0.4);
 				ctx.drawImage(		
 					this.img,					
-					-this.size * 0.5,
-					-this.size * 0.5,
-					this.size,
-					this.size
+					-this.size * 0.5 * tentacleScale,
+					-this.size * 0.5 * tentacleScale,
+					this.size * tentacleScale,
+					this.size * tentacleScale
 				);
 				ctx.restore();
 		}
@@ -197,10 +207,12 @@ function initTentacle()
 		requestAnimationFrame(run);
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		for (const tentacle of tentacles) {
-			//if (darkMode) {
+			//if (tentacleIsActive){
 				tentacle.move();
-			//}
-		}
+			//}				
+		}	
 	};
+	//if (tentacleIsActive){
 	run();
+	//}
 }

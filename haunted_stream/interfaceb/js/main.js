@@ -106,9 +106,11 @@ function addListeners()
 	});
 }
 
+window.addEventListener('resize', scrollToBottom);
 
 document.addEventListener("fullscreenchange", function() {
   console.log("fullscreenchange event fired!");
+  scrollToBottom();
 });
 
 function initVideoStartup(){
@@ -380,9 +382,9 @@ function jumpToTime(landTime)
 
 
 
-//--------------------------
-// Global Timer Object	
-//--------------------------
+//----------------------------------------------------
+// Global Timer Objects	
+//----------------------------------------------------
 
 var minutes = 0;
 var seconds = 0;
@@ -393,7 +395,10 @@ setInterval(function() {
     minutes = Math.floor(curTime  / 60);   
     seconds = Math.floor(curTime - minutes * 60)
     var x = minutes < 10 ? "0" + minutes : minutes;
-    var y = seconds < 10 ? "0" + seconds : seconds;
+    var y = seconds < 10 ? "0" + seconds : seconds;	
+	
+	//var timeLeft = c_timer.getTimeLeft();
+	//console.log(timeLeft);
 
 // check for scheduled events
 	var eventTime = Math.floor(curTime);
@@ -414,37 +419,36 @@ setInterval(function() {
 			}
 		}
 	}
-    document.getElementById("timer").innerHTML = x + ":" + y;	
+    document.getElementById("timer").innerHTML = x + ":" + y;
 }, 400);
 
 
 
-var timedEvents = [
-	[true, 2,	0,
-		[
-		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 20000)},
-		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 20000)},		
-		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 0.05, 0.5, 20000)},
-		function(){summon_Sound('music/Ice_Demon.mp3', 1, 0.025, 1.0, 20000)},
-		function(){summon_dChat("conversation", "vicious", 1000, 20000)}]
-		],
-	[false, 20,	0,
-		[
-		function(){summon_Layer(0, "colorbox hidden", 2000, 2000, 0.7, 8000)},
-		function(){summon_Layer(1, "textures hidden", 2000, 2000, 0.7, 8000)},	
-		function(){summon_Tentacle(15000)},
-		function(){summon_dChat("random", "vicious", 1000, 15000)}]
-		],
-	[false, 50,	0,
-		[
-		function(){summon_Layer(0,3000, 1000, 0.5, 17000)},
-		function(){summon_dChat("random", "vicious", 2000, 18000)},
-		function(){summon_Tentacle(30000)}] 
-		],	
-];
-
-var pastEvents = [];
-
+// Ubiquitous timer object
+function timer(callback, delay) {
+    var id, started, remaining = delay, running
+    this.start = function() {
+        running = true
+        started = new Date()
+        id = setTimeout(callback, remaining)
+    }
+    this.pause = function() {
+        running = false
+        clearTimeout(id)
+        remaining -= new Date() - started
+    }
+    this.getTimeLeft = function() {
+        if (running) {
+            this.pause()
+            this.start()
+        }
+        return remaining
+    }
+    this.getStateRunning = function() {
+        return running
+    }
+    this.start()
+}
 
 
 
@@ -453,46 +457,115 @@ var pastEvents = [];
 //------------------------------------------------------------------------------
 
 //----------------------------------------------------
+// Demon Aspects
+//----------------------------------------------------
+
+// Traits
+	var dIntellect = 5;
+	var dMagic = 5;
+	var dPower = 5;
+	var dPresence = 5;
+
+// Moods	
+	var dGlee = 5;
+	var dPatience = 5;
+	var dCruelty = 5;
+	var dAnger = 5;
+	var dFear = 5;
+
+
+
+
+
+//----------------------------------------------------
 // Demon Communications
 //----------------------------------------------------
 
+	var curEventId;
+	
 	var dSpamming = false;
 	var dSpamType = "";
 	var dSpamMood = "";
 	var dSpamSpeed = 0;
 
-	var demonMsgCount = 0;
-	var demonDialogueCount = 0;
+	var dMsgCount = 0;
+	var dDialogueCount = 0;
 	var demonDialogueNode = 0;
-	var dTaunt = false;
-	
+
+	var c_array = [];
 	var c_timer = 0;
+	var dChatTimeout;
+
+	var dTauntTimeout;
+	var taunt_timer;
+	var taunt_timer;
+	var dTaunt = false;
+	var dListen = true;
+	
+	var plReply;
+	
 
 //--------------------------
 // Init Demon Chat Module
 //--------------------------
 
-function summon_dChat(type, mood, speed, timeout){	
-	spamming = false;
+function summon_dChat(array, mem, mood, speed, timeout)
+{
+	var video = document.getElementsByTagName('video')[0];
+	var webcamvideo = document.getElementsByTagName('video')[1];
+	video.pause();
+	webcamvideo.pause();
+	
+	curEventId = timedEvents[0][2];
+	
 	chatTarget = "demon";
-	dSpamType = type;
+	plReply = null;
+	
+	c_array = array;
+	document.getElementById("chapter").innerHTML = c_array.name;
+	
+	dSpamType = c_array.type;
 	dSpamMood = mood;
 	dSpamSpeed = speed;
-
-	demonMsgCount = 0;
-	demonDialogueCount = 0;
-	demonDialogueNode = 0;
-	dTaunt = false;
 	
+	demonDialogueNode = 0;
+	dDialogueCount = 0;
+
+	dTaunt = false;
+	dTauntTimeout = timeout/2;	
+	dListen = true;
+	
+	spamming = false;
+	$("#chattext").css("overflow", "hidden");
+	
+	dMsgCount = 0;
 	dSpam();
 
-	$("#chattext").css("overflow", "hidden");
-
+/* 	dChatTimeout = timeout;
 	clearTimeout(c_timer);
-	c_timer =  window.setTimeout(banish_dChat, timeout);
+	c_timer = window.setTimeout(banish_dChat, timeout); */
+	
+	dChatTimeout = timeout;
+	c_timer = new timer(function() {banish_dChat()}, dChatTimeout);
+	c_timer.pause();
+	
+	var dChatTimeLeft = c_timer.getTimeLeft();
+	setInterval(function() {
+		if (dChatTimeLeft > 0){
+			dChatTimeLeft = c_timer.getTimeLeft();
+			document.getElementById("chapter-time").innerHTML = Math.round(dChatTimeLeft/1000);
+		} else {
+			dChatTimeLeft = 0;
+			clearInterval();
+		}
+	}
+	, 400);
 	
 	console.log("demon speaks");	
 }
+
+
+
 
 //--------------------------
 // Exit Demon Chat 
@@ -505,16 +578,25 @@ function banish_dChat(){
 		var element = $("#chattext");
 		elements = document.querySelectorAll('#chatbubble.darkbubble, #chatbubble.imgbubble');
 		
-		for (i=0; i<demonMsgCount; i++){
-			//var lastDMsg = demonMsgCount-1; 		
+		for (i=0; i<dMsgCount; i++){
+			//var lastDMsg = dMsgCount-1; 		
 			var element = elements[i];
 			element.classList.add('scalingbubble');
 			delayedFade(i,element);
 			scrollToBottom();
 		}
+		
+		if (c_array.exit == "banishAll"){
+			banish_Layer(0, dSpamSpeed);
+			banish_Layer(1, dSpamSpeed);
+			banish_Layer(2, dSpamSpeed);
+			banish_Apparition();
+		}
+		
 		restoreChat();
 		
 		console.log("demon is silent");
+		document.getElementById("chapter").innerHTML = "";
 	}
 }
 
@@ -536,7 +618,7 @@ function delayedFade(i, el){
 }
 function removeDemonMsg (el,i){	
 	el.remove();
-	if (i === (demonMsgCount-1)){
+	if (i === (dMsgCount-1)){
 		$("#chattext").css("overflow-y", "auto");	
 		$("#chattext").css("overflow", "scroll");
 		$("#chattext").css("overflow-x", "hidden");		
@@ -556,9 +638,136 @@ function restoreChat(){
 }
 
 
+
+//--------------------------
+// Listening For Response
+//--------------------------
+
+function dWaitsForResponse(){	
+	if (plReply!=null){;
+		banish_dChat();
+		plReply=null;
+		dTauntTimeLeft = 0;
+		dListen = false;
+		dTaunt = false;	
+		clearInterval();
+		dDialogueNode++;
+		dKeepSpamming();
+		return;
+	}
+
+	if (!dListen){
+		console.log("demon stopped listening." + dSpamType);
+		return;
+	}
+
+	console.log("demon is listening...");
+
+	taunt_timer = new timer(function() {writeDarkTaunt()}, dTauntTimeout);
+	var dTauntTimeLeft = taunt_timer.getTimeLeft();
+
+	if (dTauntTimeLeft > 2000){
+		//dTauntTimeout = dTauntTimeLeft/2;
+		dTauntTimeout = c_timer.getTimeLeft()/2;
+	} else {
+		dTauntTimeLeft = 2000;
+		dListen = false;
+		dTaunt = false;
+		clearInterval(tauntInterval);
+	}
+
+	var tauntInterval = setInterval(function() {
+		if (dTauntTimeLeft > 1000){
+			dTauntTimeLeft = taunt_timer.getTimeLeft();
+			document.getElementById("debug").innerHTML = Math.round(dTauntTimeLeft/1000);
+		} else {
+			dTauntTimeLeft = 1000;
+			clearInterval();
+		}
+	}
+	, 400);
+}
+
+	var dRepeatQuestion = true;
+
+function writeDarkTaunt(){
+	if (plReply!=null){;
+		banish_dChat();
+		plReply=null;
+		dTauntTimeLeft = 0;
+		dListen = false;
+		dTaunt = false;	
+		clearInterval();
+		dDialogueNode++;
+		dKeepSpamming();
+		return;
+	} else {
+		dRepeatQuestion = !dRepeatQuestion
+		dTaunt = true;
+		writeDarkMessage();
+		dWaitsForResponse();
+	}
+}
+
+
+
+
 //--------------------------
 // Chat Functions
 //--------------------------
+
+//starts spamming, calls dKeepSpamming()
+function dSpam()
+{   
+    if(dSpamming){
+        dSpamming = false;
+    }else{
+		dSpamming = true;
+		dKeepSpamming();
+    }
+}
+
+
+//recursive function that writes a message every 0-249ms
+function dKeepSpamming()
+{
+    if(dSpamming){
+		//curEventId = timedEvents[0][2];
+		if (dSpamType=="rant") {
+			if (dMsgCount < c_array[demonDialogueNode].length){
+				writeDarkMessage();
+				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
+			}
+			else
+			{
+				banish_dChat();
+			}
+		}
+		if (dSpamType=="conversation"){			
+			if (dDialogueCount < c_array[demonDialogueNode].length){
+				writeDarkMessage();
+				dDialogueCount++;
+				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
+			}
+			else
+			{
+				if (dListen){
+					dTaunt = false;
+					dWaitsForResponse();
+				} else {
+					console.log("not listening");
+				}
+			}
+		}
+		if (dSpamType=="random"){
+			writeDarkMessage();
+			//setTimeout(function() {dKeepSpamming(); }, Math.floor(Math.random() * spamSpeed));
+			setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
+		}
+    }
+}
+
+
 
 //writes a random message in the chat
 function writeDarkMessage()
@@ -582,7 +791,11 @@ function getDemonName()
 
 
 //returns a demon message
-	var demonMsgOriginX = 80;
+	var dMsgOriginX = 80;
+	var dMsgBaseWidth = 20;
+	var dMsgScale = 1.0;
+	var dMsgRandomX;
+	var dMsgAdjX;
 
 function getDarkMessage()
 {
@@ -595,159 +808,123 @@ function getDarkMessage()
 	//style the bubble
 	var message = $('<div id="chatbubble"></div>');
 	message.attr("class", "fly-in-element darkbubble");
-	var randomX = Math.floor(Math.random()*3.5);
-	var adjX = demonMsgOriginX - randomX;
-	message.css("margin-left", adjX +"vw");
+
+	dMsgRandomX = Math.floor(Math.random()*3.5);
+	dMsgAdjX = dMsgOriginX - dMsgRandomX;
+	
+	// apply css changes
+	applyMsgTransforms(message);
+	
+	message.css("margin-left", dMsgAdjX + "vw");
+	
 	//append a name
 	//message.append(getDemonName());
 	//message.append("<br/>");
-	var curEventId = timedEvents[0][2];
+	
+	//var curEventId = timedEvents[0][2];
 	// start assembling the message
-    var msgBody = "";
+
+	var msgBody = "";
 	
 	if(dSpamType=="rant"){
-		msgBody = demonRants[curEventId][demonMsgCount];
+		msgBody = c_array[demonDialogueNode][dMsgCount];
 	}
 	if(dSpamType=="conversation"){
-		msgBody = demonDialogues[curEventId][demonDialogueNode][demonDialogueCount];
-		demonDialogueCount++;
-	}
-    if ((dSpamType=="random") || (dTaunt)){
-		if (dSpamMood=="vicious")
-			msgBody = (viciousMessages[Math.floor(Math.random()*viciousMessages.length)]);
-		else if(dSpamMood=="personal")
-			msgBody = (personalMessages[Math.floor(Math.random()*personalMessages.length)]);
-		else if(dSpamMood=="playful")
-			msgBody = (playfulMessages[Math.floor(Math.random()*playfulMessages.length)]);
-		else if(dSpamMood=="vengeful")
-			msgBody = (vengefulMessages[Math.floor(Math.random()*vengefulMessages.length)]);
-			//loadRandomImg(message);		
+		msgBody = c_array[demonDialogueNode][dDialogueCount];
 	}
     if (dTaunt){
-		if (dSpamMood=="vicious")
-			msgBody = (viciousTaunts[Math.floor(Math.random()*viciousTaunts.length)]);
-		else if(dSpamMood=="personal")
-			msgBody = (personalTaunts[Math.floor(Math.random()*personalTaunts.length)]);
-		else if(dSpamMood=="playful")
-			msgBody = (playfulTaunts[Math.floor(Math.random()*playfulTaunts.length)]);
-		else if(dSpamMood=="vengeful")
-			msgBody = (vengefulTaunts[Math.floor(Math.random()*vengefulTaunts.length)])
+		msgBody = (dTaunts[Math.floor(Math.random()*dTaunts.length)]);
+		if (dRepeatQuestion){
+			var curQuestion = dDialogueCount-1;
+			msgBody = c_array[demonDialogueNode][curQuestion];
+		}
 	}
-    msgBody = replace_emotes(msgBody);
-    msgBody = replace_pics(msgBody);
+	
+    if (dSpamType=="random"){
+		msgBody = (dRandoms[Math.floor(Math.random()*dRandoms.length)]);
+		//loadRandomImg(message);		
+	}	
+	
+    msgBody = replaceEmotes(msgBody);
+    msgBody = replacePics(msgBody);
 	if (imgMsg){
 		message.attr("class", "fly-in-element darkbubble imgbubble");
 	}
+	
 	message.append(msgBody);
-	demonMsgCount++;
-    return message;
+	
+	dMsgCount++;
+    
+	return message;
 }
 
 
-//starts spamming, calls dKeepSpamming()
-function dSpam()
-{   
-    if(dSpamming){
-        dSpamming = false;
-    }else{
-		dSpamming = true;
-		dKeepSpamming();
-    }
-}
 
-
-//recursive function that writes a message every 0-249ms
-function dKeepSpamming()
+function applyMsgTransforms(message)
 {
-    if(dSpamming){
-		var curEventId = timedEvents[0][2];
-		if (dSpamType=="rant") {
-			if (demonMsgCount < demonRants[curEventId].length){
-				writeDarkMessage();
-				//setTimeout(function() {dKeepSpamming(); }, Math.floor(Math.random() * spamSpeed));
-				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
-			}
-			else
-			{
-				banish_dChat();
-			}
-		}
-		if (dSpamType=="conversation"){
-			if (demonDialogueCount < demonDialogues[curEventId][demonDialogueNode].length){
-				writeDarkMessage();
-				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
-			}
-			else
-			{
-				if (dSpamming){
-					dTaunt = false;
-					demonWaitsForResponse();
-				}
-			}
-		}
-		if (dSpamType=="random"){
-			writeDarkMessage();
-			//setTimeout(function() {dKeepSpamming(); }, Math.floor(Math.random() * spamSpeed));
-			setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
-		}
-    }
-}
-
-
-//--------------------------
-// Listening For Response
-//--------------------------
-
-	var dResponse_timer = 0;
-	var w_timeout = 1500;
-
-function demonWaitsForResponse(){
-	console.log("demon is listening...");
-	clearTimeout(dResponse_timer);
-	dResponse_timer =  window.setTimeout(writeDarkTaunt, w_timeout);
-}
-
-function writeDarkTaunt(){
-	if (dSpamming){
-		dTaunt = true;
-		writeDarkMessage();
-		demonWaitsForResponse();
+	if (dTaunt){	
+		//random font
+		var fontType = ["Crafty Girls", "Henny Penny", "Gloria Hallelujah", "Eater", "Lacquer"];
+		var num;
+		num=Math.floor(Math.random()*fontType.length);
+		message.css("font-family", fontType[num]);
+		if (dRepeatQuestion){
+			var fontType = "Courier Prime";
+			message.css("font-family", fontType);			
+		}		
+		
+		//increased size
+		dMsgScale = dMsgScale + 0.1;
+		dMsgAdjX = dMsgAdjX - (dMsgScale*1.5);
+		message.css("font-size", dMsgScale +"vw");
+		message.css("line-height", (dMsgScale*1.5) + "vw");
+		message.css("width", dMsgBaseWidth + (dMsgScale*1.5) + "vw");
 	}
 }
 
-
 //--------------------------
-// Chat Array Objects
+// Chat Generic Array Objects
 //--------------------------
 
-var demonRants =
-[
-	["hello world","hows it hanging?","im right over here ------>","do you wanna meet me?","i wanna meet you"]
+
+var dRandoms = ["i can see you", "i can hear you breathing", "im right over here ------>", "do you wanna meet me?", "do you wanna see my face?", "everbody hates you", "i can smell you", "i cant taste you", "chosen 4 whut?", "la diablo estas vivanta ene de mia korpo", "mi sangas pro la vundoj de inferaj trancxoj", "mi glutos vian animon","ni vekigu la lordon de la abismo", "im coming for you", "7:31", "mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon", "naw im just fukkin around with you chosen one", "we breathe chocolate over here", "guess what's for dinner?", "i want to show you something", "these people are already dead. their blood is on your hands", "did you ever think about ending things?","i know things", "i know your secret","i can do things","do you wanna see whut i can do","_eye1","_eye2","_eye3","_eye4","_burn_girl","_face1","_face2","_face3","_face4","_face5","_face6","_face7","_face8","_face9"];
+
+var dTaunts = ["answer the question, claire!", "just answer the question", "times a wastin", "answer me", "speak up", "_just_answer", "_still_waiting", "_answer_me", "_answer_the_question", "_use_your_voice", "_finding_his_voice", "_anyone_there", "..."];
+
+
+var pics = [
+    ["_eye1", "eyescan.gif"],
+    ["_eye2", "eyebug.gif"],
+    ["_eye3", "eyered.gif"],
+    ["_eye4", "eyeblood.gif"],
+    ["_burn_girl", "burning_girl.gif"],	
+    ["_face1", "facetougues.gif"],
+    ["_face2", "face_flower.gif"],
+    ["_face3", "girlmad.gif"],
+    ["_face4", "girlcry1.gif"],
+    ["_face5", "girlcry2.gif"],
+    ["_face6", "girlcry3.gif"],
+    ["_face7", "babyface.gif"],
+    ["_face8", "monsterwoman.gif"],
+    ["_face9", "mirrorgirl.gif"],
+	["_just_answer", "just_answer.gif"],
+	["_cant_ignore", "cant_ignore_me.gif"],
+	["_answer_me", "answer_me.gif"],
+	["_answer_the_question", "answer_the_question.gif"],
+	["_still_waiting", "still_waiting.gif"],
+	["_use_your_voice", "use_your_voice.gif"],
+	["_finding_his_voice", "finding_his_voice.gif"],
+	["_anyone_there", "anyone_there.gif"]
 ];
 
-var demonDialogues =
-[
-	[
-		["hello world","i can see you","im right over here ------>","i wanna meet you","do you wanna meet me?"],
-		["that's not a very good answer"]
-	]	
-];
-
-var viciousMessages = ["i can see you", "i can hear you breathing", "im right over here ------>", "do you wanna meet me?", "do you wanna see my face?", "everbody hates you", "i can smell you", "i cant taste you", "chosen 4 whut?", "la diablo estas vivanta ene de mia korpo", "mi sangas pro la vundoj de inferaj trancxoj", "mi glutos vian animon","ni vekigu la lordon de la abismo", "im coming for you", "7:31", "mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon", "naw im just fukkin around with you chosen one", "we breathe chocolate over here", "guess what's for dinner?", "i want to show you something", "these people are already dead. their blood is on your hands", "did you ever think about ending things?","i know things", "i know your secret","i can do things","do you wanna see whut i can do","_eye1","_eye2","_eye3","_eye4","_burn_girl","_face1","_face2","_face3","_face4","_face5","_face6","_face7","_face8","_face9"];
-
-var viciousTaunts = ["&quot; answer the question, claire!&quot;", "just answer the question", "cmon, chosen one. times-a-wastin", "answer me", "i need an answer. now.", "_just_answer", "_still_waiting", "_answer_me", "_answer_the_question", "_use_your_voice", "_finding_his_voice", "_anyone_there", "..."];
-
 
 //--------------------------
-// Demon Filters
+// Demon Layers
 //--------------------------
 
 var d_timer = 5000;
 
-function summon_Layer(layernum, layertype, bckcolor, bckimg, speedin, speedout, alpha, timeout){
-	$("#cameraiconbox").css("z-index", "3");	
-	$("#timer-text").css("z-index", "3");
-	
+function summon_Layer(layernum, layertype, bckcolor, bckimg, speedin, speedout, alpha, timeout){	
 	var targetLayer = $("#overlay"+layernum);
 	
 	targetLayer.attr("class", layertype);
@@ -760,10 +937,10 @@ function summon_Layer(layernum, layertype, bckcolor, bckimg, speedin, speedout, 
 	});
 	
 	clearTimeout(d_timer[layernum]);
-	d_timer[layernum] =  window.setTimeout(function(){banish_Darkness(layernum, speedout)}, timeout);
+	d_timer[layernum] =  window.setTimeout(function(){banish_Layer(layernum, speedout)}, timeout);
 }
 
-function banish_Darkness(layernum, speedout){
+function banish_Layer(layernum, speedout){
 	$("#overlay"+layernum).fadeTo( speedout, 0.0, function(){
 	});
 }
@@ -803,19 +980,24 @@ function banish_Sound(snd_plyr){
 
 	var t_timer = 5000;
 
-function summon_Tentacle(timeout){
+function summon_Apparition(speed, scale, timeout){
+
+	tentacleIsActive = true;
+	tentacleVel = speed;
+	tentacleScale = scale;
+
 	if (!tentacleInit)
 	{
 		initTentacle();
 	}
-	tentacleIsActive = true;
+	//tentacleInit = false;
 	console.log("tentacle has arrived");
 	
 	clearTimeout(t_timer);
-	t_timer =  window.setTimeout(banish_Tentacle, timeout);	
+	t_timer =  window.setTimeout(banish_Apparition, timeout);	
 }
 
-function banish_Tentacle(){
+function banish_Apparition(){
 	tentacleIsActive = false;	
 }
 
@@ -857,30 +1039,6 @@ var emotes = [
     ["PogChamp", "pogchamp.png"]
 ];
 
-var pics = [
-    ["_eye1", "eyescan.gif"],
-    ["_eye2", "eyebug.gif"],
-    ["_eye3", "eyered.gif"],
-    ["_eye4", "eyeblood.gif"],
-    ["_burn_girl", "burning_girl.gif"],	
-    ["_face1", "facetougues.gif"],
-    ["_face2", "face_flower.gif"],
-    ["_face3", "girlmad.gif"],
-    ["_face4", "girlcry1.gif"],
-    ["_face5", "girlcry2.gif"],
-    ["_face6", "girlcry3.gif"],
-    ["_face7", "babyface.gif"],
-    ["_face8", "monsterwoman.gif"],
-    ["_face9", "mirrorgirl.gif"],
-	["_just_answer", "just_answer.gif"],
-	["_cant_ignore", "cant_ignore_me.gif"],
-	["_answer_me", "answer_me.gif"],
-	["_answer_the_question", "answer_the_question.gif"],
-	["_still_waiting", "still_waiting.gif"],
-	["_use_your_voice", "use_your_voice.gif"],
-	["_finding_his_voice", "finding_his_voice.gif"],
-	["_anyone_there", "anyone_there.gif"]
-];
 
 
 
@@ -922,8 +1080,8 @@ function getMessage()
 		msgBody = (demonMessages[Math.floor(Math.random()*demonMessages.length)]);
 		//loadRandomImg(message);
 
-    msgBody = replace_emotes(msgBody);
-    msgBody = replace_pics(msgBody);
+    msgBody = replaceEmotes(msgBody);
+    msgBody = replacePics(msgBody);
 	
     message.append(msgBody);
 	
@@ -933,7 +1091,7 @@ function getMessage()
 
 
 //replace text with img
-function replace_emotes(message)
+function replaceEmotes(message)
 {	
     for(var i=0;i<emotes.length;i++){
         message = message.replace(new RegExp(emotes[i][0], 'g'), "<img src='../img/emotes/"+emotes[i][1]+"' class='emoticon' alt='"+emotes[i][0]+"' vertical-align='bottom'>");
@@ -944,7 +1102,7 @@ function replace_emotes(message)
 
 var imgMsg = false;
 
-function replace_pics(message)
+function replacePics(message)
 {	
 	imgMsg = false;
 
@@ -1419,13 +1577,14 @@ function chat()
         message.append(" ");
 
         var msgBody = textfield.val();
-        msgBody = replace_emotes(msgBody);
+        msgBody = replaceEmotes(msgBody);
 		var msgBodyDiv = $('<div class="playertext">' + msgBody +'</div>');
 		message.append(msgBodyDiv);
    
         textfield.val("");
     
         element.append(message);
+		plReply = message;
 
 		strToArray(msgBody);
 		

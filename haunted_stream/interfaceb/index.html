@@ -23,8 +23,11 @@
 	 <!-- importing the jQuery library  -->
     <script src="./js/jquery.min.js"></script>
     
-	<!-- importing main js files -->
-    <script src="./js/main.js"></script>	
+	<!-- importing system js files -->
+    <script src="./js/events.js"></script>
+    <script src="./js/main.js"></script>
+
+	<!-- importing third-party files -->	
 	<script src="./js/TweenMax.min.js"></script>
     <!-- <script src="./js/youtube.js"></script> -->
 	
@@ -35,8 +38,15 @@
 
 	
 	<!-- importing my own style -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Courier+Prime">	
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Crafty+Girls">	
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Henny+Penny">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Eater">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lacquer">
     <link rel="stylesheet" type="text/css" href="./css/main.css">
-    <link rel="stylesheet" type="text/css" href="./css/styles.css">
+    <link rel="stylesheet" type="text/css" href="./css/styles.css">	
 	<link rel="stylesheet" href="./css/tentacles-style.css">	
     <!-- <link rel="stylesheet" type="text/css" href="./css/animate.css">	 -->
 	
@@ -60,10 +70,12 @@
 <body onload="init()">
 	
 	<div id="overlays">
-		<div id="overlay0" class="hidden"></div>
-		<div id="overlay1" class="hidden"></div>
-		<div id="overlay2" class="apparitions hidden">
-			<img id="node" src="../img/fx/dot.png" alt="">
+		<div id="overlay0" class="visual slave hidden"></div>
+		<div id="overlay1" class="visual slave hidden"></div>
+		<div id="overlay2" class="visual slave hidden"></div>
+		<div id="overlay3" class="apparitions slave hidden">
+			<img id="node" src="../img/fx/dot_min.png" alt="">
+			<!-- <img id="node" src="../img/art/svg/vamp_front.svg" alt=""> -->
 			<!-- <img id="nodeb" src="../img/fx/dot_simple.png" alt=""> -->
 			<script  src="./js/tentacles.js"></script>			
 		</div>
@@ -91,7 +103,7 @@
       >
     </p>
 	</video>		
-    </div>	
+    </div>
 	
 	<div id="webcamframe">
 		<div id="webcam-wrapper">
@@ -99,7 +111,7 @@
 			<source src="https://video.wixstatic.com/video/bde2cd_f447f30577a74aba829138597bb3f323/720p/mp4/file.mp4" type="video/mp4" />
 			</video>
 			<div id="timer-text">
-				<!-- <div id="timer-header">time elapsed:</div> -->
+				<div id="timer-header">time elapsed:</div>
 				<div id="timer"></div>	
 			</div>		
 		</div>
@@ -196,6 +208,9 @@
 					</div>						
 					</div>
 				</form>
+				<div id="chapter"></div>
+				<div id="chapter-time"></div>
+				<div id="debug">~</div>
 			</div>		
 		</div>		
 	</div>
