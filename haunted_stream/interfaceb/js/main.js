@@ -657,6 +657,7 @@ function dWaitsForResponse(){
 
 	taunt_timer = new timer(function() {writeDarkTaunt()}, dTauntTimeout);
 	var dTauntTimeLeft = taunt_timer.getTimeLeft();
+	dTauntTimeout = c_timer.getTimeLeft()/2;
 
 	if (dTauntTimeLeft > 2000){
 		dTauntTimeout = c_timer.getTimeLeft()/2;
@@ -718,17 +719,19 @@ function dStrToArray(str)
 	var newStr = str;
 	newStr = newStr.replace(/[.*+\-!^${}()|[\]\\]/gi, "");
 	newStr = newStr.replace(/\?/gi, " ? ");
-	newStr = newStr.replace(/yes|yeah|okay|ok|yup|yep|agree|affirmative/gi, "ACCEPT");
-	newStr = newStr.replace(/no|nope|nay|nah|naw|negative|disagree|noop/gi, "DECLINE");
+	newStr = newStr.replace(/yes|yeah|okay|ok|yup|yep|agree|affirmative|always/gi, "ACCEPT");
+	newStr = newStr.replace(/noop|nope|no|nay|nah|naw|negative|disagree|never/gi, "DECLINE");
 	
     // Convert to uppercase
-	let strUpper = newStr.toUpperCase();
+	//let strUpper = newStr.toUpperCase();
+	let strUpper = newStr;
 
     // Get an array of all the words	
     playerwords = strUpper.split( " " );
 	
 	// Eliminate removal words
-	const removeWords = ["A", "AS", "THE", "TO", "OF", "", " "]; 
+	//const removeWords = ["A", "AS", "THE", "TO", "OF", "", " "]; 
+	const removeWords = ["", " "];
 	playerwords = playerwords.filter( ( el ) => !removeWords.includes( el ) );	
 
 	triggerWords = [];
@@ -744,13 +747,8 @@ function dStrToArray(str)
 }
 
 
-/* 	var curResponse = 0;
-	var r_timer = null;
-	var triggerWords = [];
-	var keynouns = [];
-	var keytimes = [];
-	var pos; */
 
+	var wordRaw;
 
 // Search for keyword triggers
 function dSearchCommands(word)
@@ -780,15 +778,61 @@ function dSearchCommands(word)
     }
 }
 
+
+
+	var lastWord;
+	var letters;
+	var wiki = "";
+
+// Conduct a dictionary search
+function findWord(letters) {
+	
+	//let searchword = letters.toLowerCase();
+	let searchword = letters;
+	//searchword = searchword.replace(/\s+/g, '');
+
+	// search for verbs
+	var v = verbs.includes(searchword);	
+	if (v==true){
+		console.log(searchword + " is a verb!");
+		var lastWord = verbs.length - 1;
+	} else {
+		//console.log("No! " + searchword + " is NOT a word!");
+		var lastWord = verbs.length - 1;
+	}
+
+	
+	// search for nouns	
+	var n = nouns.includes(searchword);
+	if (n==true){
+		console.log(searchword + " is a noun!");
+		var lastWord = nouns.length - 1;
+	} else {
+		//console.log("No! " + searchword + " is NOT a word!");
+		var lastWord = nouns.length - 1;	
+	}
+	
+	// neither a noun or a verb
+	if (!v){
+		if(!n){
+			console.log(searchword + " is not a noun or a verb!");
+		}
+	}
+	
+	wiki = searchword;
+}
+
+
+// Trigger a reply function
 function dAssembleResponse(word)
 {
 	if (triggerWords.length > 0) {		
 		console.log('"' + word + '" will trigger a game action.');
 		keyactions[pos]();
 	} else {
-		//findWord(word);
 		curResponse = 0;
 		console.log('This word does not affect the game');
+		fetchWiki(wiki);
 	}
 }
 
@@ -805,6 +849,77 @@ function dJumpToDialogueNode(num){
 	dSpamming = true;
 	dKeepSpamming();
 }
+
+
+
+//An approch to getting the summary / leading paragraphs / section 0 out of Wikipedia articlies within the browser using JSONP with the Wikipedia API: http://en.wikipedia.org/w/api.php
+
+
+
+		var wikiText = null;
+
+function fetchWiki(searchword){
+
+//var url = "http://en.wikipedia.org/wiki/Stack_Overflow";
+//var title = url.split("/");
+
+//title = title[title.length - 1];
+title = searchword;
+console.log("The title is " + title);
+
+	//Get Leading paragraphs (section 0)
+	$.getJSON("http://en.wikipedia.org/w/api.php?action=parse&page=" + title + "&prop=text&section=0&format=json&callback=?", function (data) {
+		for (text in data.parse.text) {
+			var text = data.parse.text[text].split("<p>");
+			var wikiText = "";
+
+			for (p in text) {
+				//Remove html comment
+				text[p] = text[p].split("<!--");
+				if (text[p].length > 1) {
+					text[p][0] = text[p][0].split(/\r\n|\r|\n/);
+					text[p][0] = text[p][0][0];
+					text[p][0] += "</p> ";
+				}
+				text[p] = text[p][0];
+
+				//Construct a string from paragraphs
+				//if (text[p].indexOf("</p>") == text[p].length - 5) {
+				if (text[p].indexOf("</p>") == text[p].length - 4) {
+					var htmlStrip = text[p].replace(/<(?:.|\n)*?>/gm, '') //Remove HTML
+					var splitNewline = htmlStrip.split(/\r\n|\r|\n/); //Split on newlines
+					for (newline in splitNewline) {
+						if (splitNewline[newline].substring(0, 11) != "Cite error:") {
+							wikiText += splitNewline[newline];
+							wikiText += "<br>";
+						}
+					}
+				}
+			}
+			
+			wikiText = wikiText.substring(0, wikiText.length - 2); //Remove extra newline
+			wikiText = wikiText.split("<br>"); 
+			wikiText = wikiText[0];
+			//wikiText = wikiText.replace(/\[\d+\]/g, ""); //Remove reference tags (e.x. [1], [4], etc)
+			wikiText = wikiText.replace(/\[\d+\]/g, ""); //Remove reference tags (e.x. [1], [4], etc)
+			//document.getElementById('textarea').value = wikiText
+			//document.getElementById('chapter').innerHTML = wikiText
+			dPostArticle(wikiText);
+		}
+	});
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -874,6 +989,17 @@ function writeDarkMessage()
     scrollToBottom();
 }
 
+//writes a random message in the chat
+function dPostArticle(wikiText)
+{
+	dTaunt = false;
+    var element = $("#chattext");
+	element.append(getDarkWiki(wikiText));
+	cutTopOfChat();
+    scrollToBottom();
+	dTaunt = true;
+}
+
 
 //returns a demon name
 function getDemonName()
@@ -884,6 +1010,8 @@ function getDemonName()
     
     return username;	
 }
+
+
 
 
 //returns a demon message
@@ -912,13 +1040,6 @@ function getDarkMessage()
 	applyMsgTransforms(message);
 	
 	message.css("margin-left", dMsgAdjX + "vw");
-	
-	//append a name
-	//message.append(getDemonName());
-	//message.append("<br/>");
-	
-	//var curEventId = timedEvents[0][2];
-	// start assembling the message
 
 	var msgBody = "";
 	
@@ -945,6 +1066,42 @@ function getDarkMessage()
     msgBody = replacePics(msgBody);
 	if (imgMsg){
 		message.attr("class", "fly-in-element darkbubble imgbubble");
+		message.css("padding", "0vw");	
+	}
+	
+	message.append(msgBody);
+	
+	dMsgCount++;
+    
+	return message;
+}
+
+
+
+function getDarkWiki(txt)
+{
+	// get the sound effect
+	var snd_heartbeat = new Audio('../snd/fx/heartbeat.mp3');	
+	audioPlay(snd_heartbeat,0.7);
+	snd_heartbeat.onended = function() {
+		snd_heartbeat.remove();
+	};
+	//style the bubble
+	var message = $('<div id="chatbubble"></div>');
+	message.attr("class", "fly-in-element darkbubble");
+
+	dMsgRandomX = Math.floor(Math.random()*3.5);
+	dMsgAdjX = dMsgOriginX - dMsgRandomX;
+	
+	// apply css changes
+	applyMsgTransforms(message);
+	
+	message.css("margin-left", dMsgAdjX + "vw");
+	
+	if (txt == ""){
+		msgBody = (dRefusals[Math.floor(Math.random()*dRefusals.length)]);
+	} else {
+		msgBody = txt;
 	}
 	
 	message.append(msgBody);
@@ -960,13 +1117,13 @@ function applyMsgTransforms(message)
 {
 	if (dTaunt){	
 		//random font
-		var fontType = ["Crafty Girls", "Henny Penny", "Gloria Hallelujah", "Eater", "Lacquer"];
+		var fontType = ["Crafty Girls", "Henny Penny", "Gloria Hallelujah", "Eater", "Lacquer", "Homemade Apple"];
 		var num;
 		num=Math.floor(Math.random()*fontType.length);
 		message.css("font-family", fontType[num]);
 		if (dRepeatQuestion){
 			var fontType = "Courier Prime";
-			message.css("font-family", fontType);			
+			message.css("font-family", fontType);		
 		}		
 		
 		//increased size
@@ -974,6 +1131,7 @@ function applyMsgTransforms(message)
 		dMsgAdjX = dMsgAdjX - (dMsgScale*1.5);
 		message.css("font-size", dMsgScale +"vw");
 		message.css("line-height", (dMsgScale*1.5) + "vw");
+		message.css("padding", (dMsgScale*1.5) + "vw");			
 		message.css("width", dMsgBaseWidth + (dMsgScale*1.5) + "vw");
 	}
 }
@@ -985,7 +1143,10 @@ function applyMsgTransforms(message)
 
 var dRandoms = ["i can see you", "i can hear you breathing", "im right over here ------>", "do you wanna meet me?", "do you wanna see my face?", "everbody hates you", "i can smell you", "i cant taste you", "chosen 4 whut?", "la diablo estas vivanta ene de mia korpo", "mi sangas pro la vundoj de inferaj trancxoj", "mi glutos vian animon","ni vekigu la lordon de la abismo", "im coming for you", "7:31", "mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon", "naw im just fukkin around with you chosen one", "we breathe chocolate over here", "guess what's for dinner?", "i want to show you something", "these people are already dead. their blood is on your hands", "did you ever think about ending things?","i know things", "i know your secret","i can do things","do you wanna see whut i can do","_eye1","_eye2","_eye3","_eye4","_burn_girl","_face1","_face2","_face3","_face4","_face5","_face6","_face7","_face8","_face9"];
 
-var dTaunts = ["answer the question, claire!", "just answer the question", "times a wastin", "answer me", "speak up", "_just_answer", "_still_waiting", "_answer_me", "_answer_the_question", "_use_your_voice", "_finding_his_voice", "_anyone_there", "..."];
+var dTaunts = ["answer the question, claire!", "just answer the question", "times a wastin", "answer me", "speak up", "_just_answer", "_still_waiting", "_answer_me", "_answer_the_question", "_use_your_voice", "_finding_his_voice", "_anyone_there", "answer", "say something", "speak","use ur words", "i need answers", "..."];
+
+var dRefusals = ["i dont care about that", "who gives a fux about that?", "snore", "zzzzzzzzz", "is that your deep dark fantasy?", "only losers care about that", "stop trying to change the subject", "dont make me come over there"];
+
 
 
 var pics = [
@@ -1536,45 +1697,6 @@ function searchCommands(word)
 	// a creepy tree is over there
 }
 
-
-// Conduct a dictionary search
-function findWord(letters) {
-	
-	let searchword = letters.toLowerCase();
-	//searchword = searchword.replace(/\s+/g, '');
-
-	// search for verbs
-	var v = verbs.includes(searchword);	
-	if (v==true){
-		console.log(searchword + " is a verb!");
-		var lastWord = verbs.length - 1;
-	}
-	else
-	{
-		//console.log("No! " + searchword + " is NOT a word!");
-		var lastWord = verbs.length - 1;
-	}
-
-	
-	// search for nouns	
-	var n = nouns.includes(searchword);
-	if (n==true){
-		console.log(searchword + " is a noun!");
-		var lastWord = nouns.length - 1;
-	}
-	else
-	{
-		//console.log("No! " + searchword + " is NOT a word!");
-		var lastWord = nouns.length - 1;	
-	}
-	
-	// neither a noun or a verb
-	if (!v){
-		if(!n){
-			console.log(searchword + " is not a noun or a verb!");
-		}
-	}
-}
 
 
 function assembleResponse(word)

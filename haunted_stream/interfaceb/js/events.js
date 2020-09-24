@@ -15,7 +15,7 @@ var timedEvents = [
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 30000)},		
 		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 0.05, 0.5, 30000)},
 		function(){summon_Sound('music/Ice_Demon.mp3', 1, 0.025, 1.0, 30000)},
-		function(){summon_dChat(HelloWorld, null, "vicious", 500, 6000)}
+		function(){summon_dChat(HelloWorld, null, "vicious", 500, 8000)}
 		]
 	],	
 	[true, 17,	0,
