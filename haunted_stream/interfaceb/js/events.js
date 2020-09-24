@@ -53,8 +53,19 @@ var pastEvents = [];
 ////////////////////////
 var HelloWorld =
 [
-	["hello world","i can see you","im right over here ------>","i wanna meet you","do you wanna meet me?"],  
-	["that's not a very good answer"]
+		["hello world","i can see you","im right over here ------>","i wanna meet you","do you wanna meet me?",
+			[ 
+				["none",null],
+				["ACCEPT",function(){dJumpToDialogueNode(3)}],
+				["DECLINE",function(){dJumpToDialogueNode(2)}],
+				["MAYBE",function(){dJumpToDialogueNode(1)}]
+			]
+		],
+		["thats not a grate answer", "in fact that answers a peace of shit. just like u r", "lets try that again shall we?",
+			[ ["none",null], ["ACCEPT",3], ["DECLINE",2], ["MAYBE",1] ]
+		],
+		["that sux", "im a grate one to meet", "a true blue merican hero. ", "maybe i will meet u anyway", ""],
+		["fantastic", "but im not rdy to meet u yet", "may be ur not rdy 2", "but i will keep that in mind"]
 ];
 	HelloWorld.name = "Hello World!";
 	HelloWorld.type = "conversation";

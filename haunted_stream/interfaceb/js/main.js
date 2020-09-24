@@ -530,6 +530,7 @@ function summon_dChat(array, mem, mood, speed, timeout)
 	
 	dDialogueNode = 0;
 	dDialogueCount = 0;
+	dDialogueStop = c_array[dDialogueNode].length - 1;
 
 	dTaunt = false;
 	dTauntTimeout = timeout/2;	
@@ -643,19 +644,10 @@ function restoreChat(){
 // Listening For Response
 //--------------------------
 
-function dWaitsForResponse(){	
-/* 	if (plReply!=null){;
-		banish_dChat();
-		plReply=null;
-		dTauntTimeLeft = 0;
-		dListen = false;
-		dTaunt = false;	
-		clearInterval();
-		dDialogueNode++;
-		dKeepSpamming();
-		return;
-	} */
-
+function dWaitsForResponse(){
+	
+	plReply = null;
+	
 	if (!dListen){
 		console.log("demon stopped listening." + dSpamType);
 		return;
@@ -667,7 +659,6 @@ function dWaitsForResponse(){
 	var dTauntTimeLeft = taunt_timer.getTimeLeft();
 
 	if (dTauntTimeLeft > 2000){
-		//dTauntTimeout = dTauntTimeLeft/2;
 		dTauntTimeout = c_timer.getTimeLeft()/2;
 	} else {
 		dTauntTimeLeft = 2000;
@@ -692,16 +683,8 @@ function dWaitsForResponse(){
 
 function writeDarkTaunt(){
 	if (plReply!=null){;
-		//banish_dChat();
-		dTauntTimeLeft = 0;
-		dListen = false;
-		dTaunt = false;
-		plReply=null;
-		dDialogueCount = 0;
-		dDialogueNode++;
-		dSpamming = true;
-		dKeepSpamming();
-		return;
+		dParseReply();
+		dWaitsForResponse();
 	} else {
 		dRepeatQuestion = !dRepeatQuestion
 		dTaunt = true;
@@ -710,6 +693,118 @@ function writeDarkTaunt(){
 	}
 }
 
+
+function dParseReply(){
+	//banish_dChat();
+	dStrToArray(plReply);
+	//dTauntTimeLeft = 0;
+	//dListen = false;
+	//dTaunt = false;
+	plReply=null;
+	
+/* 	dDialogueCount = 0;
+	dDialogueNode=1;
+	dDialogueStop = c_array[dDialogueNode].length - 1;
+
+	dSpamming = true;
+	dKeepSpamming(); */
+	return;
+}
+
+
+
+function dStrToArray(str)
+{
+	var newStr = str;
+	newStr = newStr.replace(/[.*+\-!^${}()|[\]\\]/gi, "");
+	newStr = newStr.replace(/\?/gi, " ? ");
+	newStr = newStr.replace(/yes|yeah|okay|ok|yup|yep|agree|affirmative/gi, "ACCEPT");
+	newStr = newStr.replace(/no|nope|nay|nah|naw|negative|disagree|noop/gi, "DECLINE");
+	
+    // Convert to uppercase
+	let strUpper = newStr.toUpperCase();
+
+    // Get an array of all the words	
+    playerwords = strUpper.split( " " );
+	
+	// Eliminate removal words
+	const removeWords = ["A", "AS", "THE", "TO", "OF", "", " "]; 
+	playerwords = playerwords.filter( ( el ) => !removeWords.includes( el ) );	
+
+	triggerWords = [];
+	
+	for (var i = 0; i < playerwords.length; i++){	
+		dSearchCommands(playerwords[i]);
+	}
+	
+	var lastValidWord = triggerWords.length - 1;	
+	
+	dAssembleResponse(triggerWords[lastValidWord]);
+	console.log(playerwords);
+}
+
+
+/* 	var curResponse = 0;
+	var r_timer = null;
+	var triggerWords = [];
+	var keynouns = [];
+	var keytimes = [];
+	var pos; */
+
+
+// Search for keyword triggers
+function dSearchCommands(word)
+{
+	let wordRaw = word;
+	keynouns = [];
+	keyverbs = [];
+	keyactions = [];
+
+	var dAnswerNode = c_array[dDialogueNode].length-1;
+	dKeyNode = c_array[dDialogueNode][dAnswerNode];
+	
+	for (var i = 0; i < dKeyNode.length; i++){
+		keynouns.push(dKeyNode[i][0]);
+		keyactions.push(dKeyNode[i][1]);
+		//console.log(dKeyNode[i][0]);
+	}
+	
+	const result = keynouns.includes(wordRaw);
+	pos = keynouns.indexOf(wordRaw);
+	
+	findWord(wordRaw);
+	
+	if (result){
+		curResponse = pos;
+		triggerWords.push(wordRaw);		
+    }
+}
+
+function dAssembleResponse(word)
+{
+	if (triggerWords.length > 0) {		
+		console.log('"' + word + '" will trigger a game action.');
+		keyactions[pos]();
+	} else {
+		//findWord(word);
+		curResponse = 0;
+		console.log('This word does not affect the game');
+	}
+}
+
+
+function dJumpToDialogueNode(num){
+	dTauntTimeLeft = 0;
+	dListen = false;
+	dTaunt = false;		
+
+	dDialogueCount = 0;
+	dDialogueNode = num;
+	dDialogueStop = c_array[dDialogueNode].length - 1;
+
+	dSpamming = true;
+	dKeepSpamming();
+}
 
 
 
@@ -735,7 +830,7 @@ function dKeepSpamming()
     if(dSpamming){
 		//curEventId = timedEvents[0][2];
 		if (dSpamType=="rant") {
-			if (dMsgCount < c_array[dDialogueNode].length){
+			if (dMsgCount < dDialogueStop){
 				writeDarkMessage();
 				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
 			}
@@ -745,7 +840,7 @@ function dKeepSpamming()
 			}
 		}
 		if (dSpamType=="conversation"){			
-			if (dDialogueCount < c_array[dDialogueNode].length){
+			if (dDialogueCount < dDialogueStop){
 				writeDarkMessage();
 				dDialogueCount++;
 				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
@@ -1001,6 +1096,10 @@ function summon_Apparition(speed, scale, timeout){
 function banish_Apparition(){
 	tentacleIsActive = false;	
 }
+
+
+
+
 
 
 
@@ -1347,23 +1446,20 @@ function loadDictionary() {
     words = dict.split( "," );
 	nouns = dict_nouns.split( "," );
 	verbs = dict_verbs.split( "," );
-	
+
     // And add them as properties to the dictionary lookup
     // This will allow for fast lookups later
     for ( var i = 0; i < words.length; i++ ) {
         dict[ words [ i ] ] = true;
-	}
-	
+	}	
     for ( var i = 0; i < nouns.length; i++ ) {
 		dict_nouns[ nouns [ i ] ] = true;
 	}
-	
     for ( var i = 0; i < verbs.length; i++ ) {
 		dict_verbs[ verbs [ i ] ] = true;
 	}
 	
 	//nouns = nouns.filter( ( el ) => !verbs.includes( el ) );	
-
 	var lastVerb = verbs.length - 1;
 	console.log(verbs.length + " verbs loaded: " + verbs[0] + " to " + verbs[lastVerb] );	
 
@@ -1392,25 +1488,25 @@ function strToArray(str)
 	const removeWords = ["A", "AS", "THE", "TO", "OF"]; 
 	playerwords = playerwords.filter( ( el ) => !removeWords.includes( el ) );	
 
-	triggersWords = [];
+	triggerWords = [];
 	
 	for (var i = 0; i < playerwords.length; i++){	
 		searchCommands(playerwords[i]);
 	}
 	
-	var lastValidWord = triggersWords.length - 1;	
+	var lastValidWord = triggerWords.length - 1;	
 	
-	assembleResponse(triggersWords[lastValidWord]);
+	assembleResponse(triggerWords[lastValidWord]);
 	console.log(playerwords);
 }
 
 
-var curResponse = 0;
-var r_timer = null;
-var triggersWords = [];
-var keynouns = [];
-var keytimes = [];
-var pos;
+	var curResponse = 0;
+	var r_timer = null;
+	var triggerWords = [];
+	var keynouns = [];
+	var keytimes = [];
+	var pos;
 
 // Search for keyword triggers
 function searchCommands(word)
@@ -1434,7 +1530,7 @@ function searchCommands(word)
 	if (result)
 	{
 		curResponse = pos;
-		triggersWords.push(wordRaw);		
+		triggerWords.push(wordRaw);		
     }
 	
 	// a creepy tree is over there
@@ -1448,8 +1544,7 @@ function findWord(letters) {
 	//searchword = searchword.replace(/\s+/g, '');
 
 	// search for verbs
-	var v = verbs.includes(searchword);
-	
+	var v = verbs.includes(searchword);	
 	if (v==true){
 		console.log(searchword + " is a verb!");
 		var lastWord = verbs.length - 1;
@@ -1463,7 +1558,6 @@ function findWord(letters) {
 	
 	// search for nouns	
 	var n = nouns.includes(searchword);
-	
 	if (n==true){
 		console.log(searchword + " is a noun!");
 		var lastWord = nouns.length - 1;
@@ -1474,6 +1568,7 @@ function findWord(letters) {
 		var lastWord = nouns.length - 1;	
 	}
 	
+	// neither a noun or a verb
 	if (!v){
 		if(!n){
 			console.log(searchword + " is not a noun or a verb!");
@@ -1485,7 +1580,7 @@ function findWord(letters) {
 function assembleResponse(word)
 {
 	if (chatTarget == "webcam"){	
-		if (triggersWords.length > 0) {
+		if (triggerWords.length > 0) {
 			var speechBubble = $('<div id="response"></div>');
 			speechBubble.attr("class", "fade-in-element dialoguebubble");	
 			
@@ -1494,7 +1589,7 @@ function assembleResponse(word)
 			
 			console.log('"' + word + '" will trigger a game action.');	
 			
-			//console.log("keywords=" + triggersWords.length);		
+			//console.log("keywords=" + triggerWords.length);		
 			
 			//invalidWords.push(wordRaw);		
 			//jumpToTime(keytimes[pos]);
@@ -1585,9 +1680,11 @@ function chat()
         textfield.val("");
     
         element.append(message);
-		plReply = message;
-
-		strToArray(msgBody);
+		plReply = msgBody;
+		
+		if (chatTarget == "webcam"){
+			strToArray(msgBody);
+		}
 		
 		//msgCommand = "the " + msgBody;
 		//searchCommandWords(msgCommand);
