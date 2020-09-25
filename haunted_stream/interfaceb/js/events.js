@@ -11,14 +11,14 @@
 var timedEvents = [
 	[true,  2,	"HelloWorld",
 		[
-		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 30000)},
-		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 30000)},		
-		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 0.05, 0.5, 30000)},
-		function(){summon_Sound('music/Ice_Demon.mp3', 1, 0.025, 1.0, 30000)},
-		function(){summon_dChat(HelloWorld, null, "vicious", 500, 8000)}
+		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 90000)},
+		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 90000)},		
+		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 90000)},
+		function(){summon_Sound('music/Ice_Demon.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
+		function(){summon_dChat(HelloWorld, null, "vicious", 500, 20000)}
 		]
 	],	
-	[true, 17,	0,
+	[false, 17,	0,
 		[
 		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 1000)},
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 1000)},		
@@ -26,7 +26,7 @@ var timedEvents = [
 		function(){summon_dChat(Randomness, null, "vicious", 2000, 10000)},		
 		] 
 	],		
-	[true, 35,	1,
+	[false, 35,	1,
 		[
 		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 8000)},
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static_2.gif", 3000, 3000, 0.5, 8000)},		
@@ -34,7 +34,7 @@ var timedEvents = [
 		function(){summon_dChat(JarodSucks, null, "vicious", 1000, 8000)}
 		]
 	],
-	[true, 55,	1,
+	[false, 55,	1,
 		[
 		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 8000)},
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static_2.gif", 3000, 3000, 0.5, 8000)},		
@@ -64,12 +64,20 @@ var HelloWorld =
 		["thats not a grate answer", "in fact that answers a peace of shit. just like u r", "lets try that again shall we?",
 			[ ["none",null], ["ACCEPT",3], ["DECLINE",2], ["MAYBE",1] ]
 		],
-		["that sux", "im a grate one to meet", "a true blue merican hero. ", "maybe i will meet u anyway", ""],
-		["fantastic", "but im not rdy to meet u yet", "may be ur not rdy 2", "but i will keep that in mind"]
+		["that sux", "im a grate one to meet", "a true blue merican hero. ", "maybe i will meet u anyway",
+			[ function(){banish_dChat()} ]
+		],
+		["fantastic", "but im not rdy to meet u yet", "may be ur not rdy 2", "but i will keep that in mind",
+			[ function(){banish_dChat()} ]
+		]
+		["you will regret this", "you will regret this", "you will regret this",
+			[ function(){banish_allLayers(2000)}, function(){banish_allSounds(2000)} ]
+		]		
 ];
 	HelloWorld.name = "Hello World!";
 	HelloWorld.type = "conversation";
 	HelloWorld.exit = "banishAll";
+	//HelloWorld.exit = "none";
 
 
 ////////////////////////

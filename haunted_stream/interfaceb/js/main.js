@@ -511,10 +511,10 @@ function timer(callback, delay) {
 
 function summon_dChat(array, mem, mood, speed, timeout)
 {
-	var video = document.getElementsByTagName('video')[0];
+/* 	var video = document.getElementsByTagName('video')[0];
 	var webcamvideo = document.getElementsByTagName('video')[1];
 	video.pause();
-	webcamvideo.pause();
+	webcamvideo.pause(); */
 	
 	curEventId = timedEvents[0][2];
 	
@@ -533,7 +533,7 @@ function summon_dChat(array, mem, mood, speed, timeout)
 	dDialogueStop = c_array[dDialogueNode].length - 1;
 
 	dTaunt = false;
-	dTauntTimeout = timeout/2;	
+	dTauntTimeout = timeout/4;	
 	dListen = true;
 	
 	spamming = false;
@@ -548,7 +548,7 @@ function summon_dChat(array, mem, mood, speed, timeout)
 	
 	dChatTimeout = timeout;
 	c_timer = new timer(function() {banish_dChat()}, dChatTimeout);
-	c_timer.pause();
+	//c_timer.pause();
 	
 	var dChatTimeLeft = c_timer.getTimeLeft();
 	setInterval(function() {
@@ -588,9 +588,8 @@ function banish_dChat(){
 		}
 		
 		if (c_array.exit == "banishAll"){
-			banish_Layer(0, dSpamSpeed);
-			banish_Layer(1, dSpamSpeed);
-			banish_Layer(2, dSpamSpeed);
+			banish_allLayers(dSpamSpeed);
+			banish_allSounds(dSpamSpeed);
 			banish_Apparition();
 		}
 		
@@ -600,6 +599,7 @@ function banish_dChat(){
 		document.getElementById("chapter").innerHTML = "";
 	}
 }
+
 
 // erase all demon messages 
 function delayedFade(i, el){
@@ -657,19 +657,29 @@ function dWaitsForResponse(){
 
 	// Taunt at increasing intervals
 	taunt_timer = new timer(function() {writeDarkTaunt()}, dTauntTimeout);
+	
 	var dTauntTimeLeft = taunt_timer.getTimeLeft();
-	dTauntTimeout = c_timer.getTimeLeft()/2;
+	dTauntTimeout = c_timer.getTimeLeft()/4;
 
-	if (dTauntTimeLeft > 2000){
-		dTauntTimeout = c_timer.getTimeLeft()/2;
+	if (dTauntTimeLeft > 1000){
+		dTauntTimeout = c_timer.getTimeLeft()/4;
 	} else {
-		dTauntTimeLeft = 2000;
+		dTauntTimeLeft <= 1000;
 		dListen = false;
 		dTaunt = false;
 		clearInterval(tauntInterval);
+		console.log("taunt timer ran out");
 	}
 
-	var tauntInterval = setInterval(function() {
+/* 	if (plReply){
+		dListen = false;
+		dTaunt = false;		
+		clearInterval();
+		console.log("interrupt");
+	} */
+
+	var tauntInterval = setInterval(function()
+	{
 		if (dTauntTimeLeft > 1000){
 			dTauntTimeLeft = taunt_timer.getTimeLeft();
 			document.getElementById("debug").innerHTML = Math.round(dTauntTimeLeft/1000);
@@ -707,7 +717,7 @@ function writeDarkTaunt(){
 
 	var searchStr;	
 	var wiki = "";
-	var wikiText = null;
+	var wikiText = "";
 	
 	var valid_nouns = [];
 	var valid_verbs = [];
@@ -725,8 +735,11 @@ function dParseReply(){
 	valid_verbs = [];
 	non_words = [];
 	triggerWords = [];	
+	
 	wiki = plReply;
-	wikiText = null;
+/* 	fetchWiki(wiki);
+	if (wikiText == "") { wiki = ""; } */
+	
 	dStrToArray(plReply);
 	plReply=null;
 	return;
@@ -759,6 +772,7 @@ function dStrToArray(str)
 	console.log(playerwords);
 }
 
+
 // Search for keyword triggers
 function dSearchCommands(word)
 {
@@ -772,6 +786,7 @@ function dSearchCommands(word)
 		keywords.push(dKeyNode[i][0]);
 		keyactions.push(dKeyNode[i][1]);
 	}
+	
 	// validate english
 	findWord(word);
 	
@@ -813,9 +828,6 @@ function findWord(letters) {
 			non_words.push(searchword);
 		}
 	}
-	if (wiki == ""){
-		wiki = searchword;
-	}
 }
 
 
@@ -856,14 +868,6 @@ function titleCase(str) {
 //titleCase("I'm a little tea pot");
 
 
-/* function titleCase(str) {
-  str = str.toLowerCase().split(" ");
-  for (var i = 0; i < str.length; i++) {
-    str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1); 
-  }
-  return str.join(" ");
-} */
-
 
 //An approch to getting the summary / leading paragraphs / section 0 out of Wikipedia articlies within the browser using JSONP with the Wikipedia API: http://en.wikipedia.org/w/api.php
 
@@ -897,7 +901,6 @@ console.log("The title is " + title);
 				text[p] = text[p][0];
 
 				//Construct a string from paragraphs
-				//if (text[p].indexOf("</p>") == text[p].length - 5) {
 				if (text[p].indexOf("</p>") == text[p].length - 4) {
 					var htmlStrip = text[p].replace(/<(?:.|\n)*?>/gm, '') //Remove HTML
 					var splitNewline = htmlStrip.split(/\r\n|\r|\n/); //Split on newlines
@@ -911,12 +914,60 @@ console.log("The title is " + title);
 			}
 			
 			wikiText = wikiText.substring(0, wikiText.length - 2); //Remove extra newline
-			wikiText = wikiText.split("<br>"); 
+			wikiText = wikiText.split("."); 
 			wikiText = wikiText[0];
-			//wikiText = wikiText.replace(/\[\d+\]/g, ""); //Remove reference tags (e.x. [1], [4], etc)
 			wikiText = wikiText.replace(/\[\d+\]/g, ""); //Remove reference tags (e.x. [1], [4], etc)
-			//document.getElementById('textarea').value = wikiText
-			//document.getElementById('chapter').innerHTML = wikiText
+			if (wikiText !== ""){
+				dWriteDarkWiki(wikiText);
+			} else {
+				var lastValidNoun = valid_nouns[valid_nouns.length-1];
+				fetchWikiWord(lastValidNoun);
+			}			
+		}
+	});
+}
+
+function fetchWikiWord(wikiStr){
+title = wikiStr;
+title = title.split(' ')
+	.map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
+	.join(' ');
+
+console.log("The title is " + title);
+
+	//Get Leading paragraphs (section 0)
+	$.getJSON("http://en.wikipedia.org/w/api.php?action=parse&page=" + title + "&prop=text&section=0&format=json&callback=?", function (data) {
+		for (text in data.parse.text) {
+			var text = data.parse.text[text].split("<p>");
+			var wikiText = "";
+
+			for (p in text) {
+				//Remove html comment
+				text[p] = text[p].split("<!--");
+				if (text[p].length > 1) {
+					text[p][0] = text[p][0].split(/\r\n|\r|\n/);
+					text[p][0] = text[p][0][0];
+					text[p][0] += "</p> ";
+				}
+				text[p] = text[p][0];
+
+				//Construct a string from paragraphs
+				if (text[p].indexOf("</p>") == text[p].length - 4) {
+					var htmlStrip = text[p].replace(/<(?:.|\n)*?>/gm, '') //Remove HTML
+					var splitNewline = htmlStrip.split(/\r\n|\r|\n/); //Split on newlines
+					for (newline in splitNewline) {
+						if (splitNewline[newline].substring(0, 11) != "Cite error:") {
+							wikiText += splitNewline[newline];
+							wikiText += "<br>";
+						}
+					}
+				}
+			}
+			
+			wikiText = wikiText.substring(0, wikiText.length - 2); //Remove extra newline
+			wikiText = wikiText.split("."); 
+			wikiText = wikiText[0];
+			wikiText = wikiText.replace(/\[\d+\]/g, ""); //Remove reference tags (e.x. [1], [4], etc)
 			dWriteDarkWiki(wikiText);
 		}
 	});
@@ -924,8 +975,44 @@ console.log("The title is " + title);
 
 
 
+// print an article
+function dWriteDarkWiki(wikiText){	
+	var was_taunting = false;
+	if (dTaunt) {dTaunt = false; was_taunting = true}
+		var element = $("#chattext");
+		element.append(getDarkWiki(wikiText));
+		cutTopOfChat();
+		scrollToBottom();
+	if (was_taunting) {dTaunt = true};
+}
 
-
+function getDarkWiki(wikiText)
+{
+	// get the sound effect
+	var snd_heartbeat = new Audio('../snd/fx/scrape.mp3');	
+	audioPlay(snd_heartbeat,0.7);
+	snd_heartbeat.onended = function() {
+		snd_heartbeat.remove();
+	};
+	//style the bubble
+	var message = $('<div id="chatbubble"></div>');
+	message.attr("class", "fly-in-element darkbubble");
+	
+	// apply css changes
+	dApplyMsgTransforms(message);
+	
+	if (wikiText == ""){
+		msgBody = (dRefusals[Math.floor(Math.random()*dRefusals.length)]);
+	} else {
+		msgBody = wikiText;
+	}
+	
+	message.append(msgBody);
+	
+	dMsgCount++;
+    
+	return message;
+}
 
 
 
@@ -980,6 +1067,12 @@ function dKeepSpamming()
 					dWaitsForResponse();
 				} else {
 					console.log("not listening");
+					var dExitNode = c_array[dDialogueNode].length-1;
+					var dExitFunc = c_array[dDialogueNode][dExitNode];
+					console.log(dExitFunc.length);
+					for (i=0; i< dExitFunc.length; i++){
+						dExitFunc[i]();
+					}
 				}
 			}
 		}
@@ -1000,18 +1093,6 @@ function writeDarkMessage()
 	element.append(getDarkMessage());
 	cutTopOfChat();
     scrollToBottom();
-}
-
-//writes a random message in the chat
-function dWriteDarkWiki(wikiText)
-{
-	var was_taunting = false;
-	if (dTaunt) {dTaunt = false; was_taunting = true}
-		var element = $("#chattext");
-		element.append(getDarkWiki(wikiText));
-		cutTopOfChat();
-		scrollToBottom();
-	if (was_taunting) {dTaunt = true};
 }
 
 
@@ -1085,35 +1166,6 @@ function getDarkMessage()
 	return message;
 }
 
-
-
-function getDarkWiki(wikiText)
-{
-	// get the sound effect
-	var snd_heartbeat = new Audio('../snd/fx/heartbeat.mp3');	
-	audioPlay(snd_heartbeat,0.7);
-	snd_heartbeat.onended = function() {
-		snd_heartbeat.remove();
-	};
-	//style the bubble
-	var message = $('<div id="chatbubble"></div>');
-	message.attr("class", "fly-in-element darkbubble");
-	
-	// apply css changes
-	dApplyMsgTransforms(message);
-	
-	if (wikiText == ""){
-		msgBody = (dRefusals[Math.floor(Math.random()*dRefusals.length)]);
-	} else {
-		msgBody = wikiText;
-	}
-	
-	message.append(msgBody);
-	
-	dMsgCount++;
-    
-	return message;
-}
 
 
 
@@ -1211,6 +1263,13 @@ function banish_Layer(layernum, speedout){
 	});
 }
 
+function banish_allLayers(speedout)
+{
+	banish_Layer(0, speedout);
+	banish_Layer(1, speedout);
+	banish_Layer(2, speedout);
+}
+
 
 //--------------------------
 // Demon Sounds
@@ -1221,22 +1280,28 @@ function banish_Layer(layernum, speedout){
 	var pbr = 0.5;
 	var snd_plyr = 0;
 
-function summon_Sound(snd, snd_plyr, vol, pbr, timeout){
+function summon_Sound(snd, snd_plyr, speedin, speedout, vol, pbr, timeout){
 	var music_player = $("#audio" + snd_plyr);
 	var music = $("#audio" + snd_plyr)[0];
 	music.volume = vol;
 	music.src = '../snd/' + snd;	
 	music.play();
-	audioFadeIn(music_player, 3500);
+	audioFadeIn(music_player, speedin);
 	music.playbackRate = pbr;
 	
 	clearTimeout(s_timer[snd_plyr]);
-	s_timer[snd_plyr] =  window.setTimeout(function(){banish_Sound(snd_plyr)}, timeout);		
+	s_timer[snd_plyr] =  window.setTimeout(function(){banish_Sound(snd_plyr, speedout)}, timeout);		
 }
 
-function banish_Sound(snd_plyr){
+function banish_Sound(snd_plyr, speedout){
 	var audio = $("#audio"+snd_plyr);
-	audioFadeOut(audio, 3500);	
+	audioFadeOut(audio, speedout);	
+}
+
+function banish_allSounds(speedout){
+	banish_Sound(0, speedout);
+	banish_Sound(1, speedout);
+	banish_Sound(2, speedout);		
 }
 
 
