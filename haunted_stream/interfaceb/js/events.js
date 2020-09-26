@@ -20,8 +20,8 @@ var timedEvents = [
 	],	
 	[false, 17,	0,
 		[
-		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 90000)},
-		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 90000)},		
+		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.35, 90000)},
+		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.35, 90000)},		
 		function(){summon_Apparition(10, 1, 90000)},	
 		function(){summon_dChat(HelloWorld, null, "vicious", 500, 20000)},		
 		] 
@@ -30,7 +30,7 @@ var timedEvents = [
 		[
 		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 8000)},
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static_2.gif", 3000, 3000, 0.5, 8000)},		
-		function(){summon_Apparition(8000)},
+		function(){summon_Apparition(10, 1, 90000)},
 		function(){summon_dChat(JarodSucks, null, "vicious", 1000, 8000)}
 		]
 	],
@@ -53,24 +53,54 @@ var pastEvents = [];
 ////////////////////////
 var HelloWorld =
 [
+		// Node 0
 		["hello world","i can see you","im right over here ------>","i wanna meet you","do you wanna meet me?",
 			[ 
 				["none",null],
-				["ACCEPT",function(){dJumpToDialogueNode(3)}],
-				["DECLINE",function(){dJumpToDialogueNode(2)}],
-				["MAYBE",function(){dJumpToDialogueNode(1)}]
+				["ACCEPT",
+					[function(){dJumpToDialogueNode(3, false, true)}]
+				],
+				["DECLINE",
+					[function(){summon_Apparition(10, 1, 90000)},function(){dJumpToDialogueNode(2, false, true)}]
+				],
+				["MAYBE",
+					[function(){dJumpToDialogueNode(1, false, true)}]
+				]
 			]
 		],
-		["thats not a grate answer", "in fact that answers a peace of shit. just like u r", "lets try that again shall we?",
-			[ ["none",null], ["ACCEPT",3], ["DECLINE",2], ["MAYBE",1] ]
+		// Node 1		
+		["thats not a grate answer", "in fact that answers a peace of shit. just like u r", "lets try this aggen shall we?",
+			[
+				function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.75, 90000)},
+				function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static_2.gif", 2000, 2000, 0.5, 90000)},			
+				function(){dJumpToDialogueNode(0, true, false)},			
+			]
 		],
+		// Node 2		
 		["that sux", "im a grate one to meet", "a true blue merican hero. ", "maybe i will meet u anyway",
-			[ function(){banish_dChat()} ]
+			[ function(){dJumpToDialogueNode(0, true, true)} ]
 		],
-		["fantastic", "but im not rdy to meet u yet", "may be ur not rdy 2", "but i will keep that in mind",
-			[ function(){banish_dChat()} ]
+		// Node 3		
+		["fantastic", "but im not rdy to meet u", " not yet anywy", "may be ur not rdy 2", "but i will keep it in mind",
+			[ function(){dJumpToDialogueNode(4, true, true)} ]
 		],
-		["you will regret this", "you will regret this", "you will regret this",
+		// Node 4		
+		["hay i gotta nother question","whats the name of ur favorit movie?",
+			[ 
+				["none",null],
+				["ACCEPT",
+					[function(){dJumpToDialogueNode(3, false, true)}]
+				],
+				["DECLINE",
+					[function(){summon_Apparition(10, 1, 90000)},function(){dJumpToDialogueNode(2, false, true)}]
+				],
+				["MAYBE",
+					[function(){dJumpToDialogueNode(1, false, true)}]
+				]
+			]
+		],	
+		// Node 5
+		["so thats how you wanna play it", "the strong silent type", "ok kiddo. be that way", "you will regret this",
 			[ function(){banish_allLayers(2000)}, function(){banish_allSounds(2000)} ]
 		]		
 ];

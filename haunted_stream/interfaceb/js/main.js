@@ -489,7 +489,7 @@ function timer(callback, delay) {
 
 // Moods	
 	var dGlee = 5;
-	var dPatience = 4000;
+	var dPatience = 4;
 	var dCruelty = 5;
 	var dAnger = 5;
 	var dFear = 5;
@@ -515,6 +515,7 @@ function timer(callback, delay) {
 
 	var c_array = [];
 	var c_timer = 0;
+	var dChatTimer;
 	var dChatTimeout;
 	
 	var plReply;
@@ -549,7 +550,7 @@ function summon_dChat(array, mem, mood, speed, timeout)
 
 	dTaunt = false;
 	//dWaitTimeout = timeout/4;
-	dWaitTimeout = dPatience;	
+	dWaitTimeout = dPatience * 1000;	
 	dListen = true;
 	
 	spamming = false;
@@ -567,13 +568,13 @@ function summon_dChat(array, mem, mood, speed, timeout)
 	//c_timer.pause();
 	
 	dChatTimeLeft = c_timer.getTimeLeft();
-	setInterval(function() {
+	var dChatTimer = setInterval(function() {
 		if (dChatTimeLeft > 0){
 			dChatTimeLeft = c_timer.getTimeLeft();
 			document.getElementById("chapter-time").innerHTML = Math.round(dChatTimeLeft/1000);
 		} else {
 			dChatTimeLeft = 0;
-			clearInterval();
+			clearInterval(dChatTimer);
 		}
 	}
 	, 400);
@@ -594,6 +595,8 @@ function banish_dChat(){
 		dTaunt = false;
 		dListen = false;
 		clearInterval(waitInterval);
+		dChatTimeLeft = 0;
+		clearInterval(dChatTimer);		
 
 		var element = $("#chattext");
 		elements = document.querySelectorAll('#chatbubble.darkbubble, #chatbubble.imgbubble');
@@ -665,41 +668,25 @@ function restoreChat(){
 //--------------------------
 
 	var dChatTimeLeft;
-	var dListening_timer;
 	var dListen = true;
 
 	var dWaitTimeout;
-	var dWaitTimeLeft;
 	var dTaunt = false;
 
 	var waitInterval;
 
-function dWaitsForResponse(){
-	
+function dWaitsForResponse()
+{	
 	plReply = null;
-	
 	if (!dListen){
 		console.log("demon stopped listening." + dSpamType);
 		return;
 	}
-
+	
 	console.log("demon is listening...");
 
-	//dListening_timer = new timer(function() {dWriteMore()}, dWaitTimeout);	
-	//dWaitTimeLeft = dListening_timer.getTimeLeft();
-
-	// Taunt at increasing intervals
-/* 	if (plReply == null) {
-		dListening_timer = new timer(function() {dWriteMore()}, dWaitTimeout);	
-		dWaitTimeLeft = dListening_timer.getTimeLeft();
-	} else {
-		dListening_timer = new timer(function() {dWriteMore()}, dWaitTimeout);
-		dWaitTimeLeft = 0;
-		dListen = false;
-		dTaunt = false;
-	} */
-
-	dWaitTimeout = dPatience;
+	//Set wait-time according to demon's patience stat	
+	dWaitTimeout = dPatience * 1000;
 
 	var waitInterval = setInterval(function()
 	{
@@ -714,7 +701,7 @@ function dWaitsForResponse(){
 				dWaitTimeout = dWaitTimeout - 1000;
 				if (dWaitTimeout == 0){
 					dWriteMore();
-					dWaitTimeout = dPatience;
+					dWaitTimeout = dPatience * 1000;
 					stopInterval(waitInterval);
 				}			
 			}
@@ -790,8 +777,11 @@ function dStrToArray(str)
 	var newStr = str;
 	newStr = newStr.replace(/[.*+\-!^${}()|[\]\\]/gi, "");
 	newStr = newStr.replace(/\?/gi, " ? ");
+	newStr = newStr.replace(/'/gi, "");
 	newStr = newStr.replace(/yes|yeah|okay|ok|yup|yep|agree|affirmative|always/gi, "ACCEPT");
 	newStr = newStr.replace(/noop|nope|no|nay|nah|naw|negative|disagree|never/gi, "DECLINE");
+	newStr = newStr.replace(/maybe|dont know|not sure|depends/gi, "MAYBE");
+
 
     // Get an array of all the words	
     playerwords = newStr.split( " " );
@@ -875,7 +865,9 @@ function dAssembleResponse(word)
 {
 	if (triggerWords.length > 0) {		
 		console.log('"' + word + '" will trigger a game action.');
-		keyactions[pos]();
+		for (i=0; i < keyactions[pos].length; i++){
+			keyactions[pos][i]();
+		}
 	} else {
 		curResponse = 0;
 		console.log('This word does not affect the game');
@@ -884,19 +876,22 @@ function dAssembleResponse(word)
 }
 
 
-function dJumpToDialogueNode(num){
-	dWaitTimeLeft = 0;
-	dListen = false;
-	dTaunt = false;		
-
-	dDialogueCount = 0;
+function dJumpToDialogueNode(num, dlis, restart){
+	dListen = dlis;
+	dTaunt = false;
+	
 	dDialogueNode = num;
 	dDialogueStop = c_array[dDialogueNode].length - 1;
+	
+	if (restart){
+		dDialogueCount = 0;
+	} else {
+		dDialogueCount = dDialogueStop;
+	}
 
 	dSpamming = true;
 	dKeepSpamming();
 }
-
 
 
 function titleCase(str) {
@@ -1014,6 +1009,7 @@ console.log("The title is " + title);
 
 
 
+
 // print an article
 function dWriteDarkWiki(wikiText){	
 	var was_taunting = false;
@@ -1058,7 +1054,21 @@ function getDarkWiki(wikiText)
 
 
 
-
+/* Cannot read property 'classList' of undefined
+    at banish_dChat (main.js:604)
+    at main.js:566
+banish_dChat @ main.js:604
+(anonymous) @ main.js:566
+setTimeout (async)
+start @ main.js:454
+getTimeLeft @ main.js:464
+(anonymous) @ main.js:572
+setInterval (async)
+summon_dChat @ main.js:570
+timedEvents @ events.js:18
+(anonymous) @ main.js:411
+setInterval (async)
+(anonymous) @ main.js:392 */
 
 
 
@@ -1122,6 +1132,13 @@ function dKeepSpamming()
 		}
     }
 }
+
+/* main.js:1481 Uncaught TypeError: message.replace is not a function
+    at replaceEmotes (main.js:1481)
+    at getDarkMessage (main.js:1204)
+    at writeDarkMessage (main.js:1142)
+    at dKeepSpamming (main.js:1108)
+    at main.js:1110 */
 
 
 
@@ -1528,10 +1545,11 @@ function cutTopOfChat()
     if(element.children().length > 100)
     {
         var chatMessages = element.children();
-        for(i = 0; i<10; i++)
+		chatMessages[0].remove();
+/*         for(i = 0; i<10; i++)
         {
             chatMessages[i].remove();
-        }
+        } */
     }
 }
 
@@ -1913,16 +1931,6 @@ function chat()
         element.append(message);
 		plReply = msgBody;
 		if (chatTarget == "demon"){
-			//dTaunt = false;
-			//dListen = false;
-			//dWaitsForResponse();
-			//dWaitTimeLeft = 1000;
-			//dListening_timer.pause;
-			//clearInterval(waitInterval);
-			//dTaunt = false;
-			//dListen = false;
-			//dWaitTimeout = c_timer.getTimeLeft()/4;
-			//dWriteMore();
 		}
 		
 		if (chatTarget == "webcam"){
