@@ -15,15 +15,15 @@ var timedEvents = [
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 90000)},		
 		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 90000)},
 		function(){summon_Sound('music/Ice_Demon.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
-		function(){summon_dChat(HelloWorld, null, "vicious", 500, 20000)}
+		function(){summon_dChat(HelloWorld, null, "vicious", 500, 40000)}
 		]
 	],	
 	[false, 17,	0,
 		[
-		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 1000)},
-		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 1000)},		
-		function(){summon_Apparition(10, 1, 30000)},	
-		function(){summon_dChat(Randomness, null, "vicious", 2000, 10000)},		
+		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 90000)},
+		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 90000)},		
+		function(){summon_Apparition(10, 1, 90000)},	
+		function(){summon_dChat(HelloWorld, null, "vicious", 500, 20000)},		
 		] 
 	],		
 	[false, 35,	1,
@@ -69,7 +69,7 @@ var HelloWorld =
 		],
 		["fantastic", "but im not rdy to meet u yet", "may be ur not rdy 2", "but i will keep that in mind",
 			[ function(){banish_dChat()} ]
-		]
+		],
 		["you will regret this", "you will regret this", "you will regret this",
 			[ function(){banish_allLayers(2000)}, function(){banish_allSounds(2000)} ]
 		]		

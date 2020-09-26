@@ -424,6 +424,27 @@ setInterval(function() {
 
 
 
+// Ubiquitous interval object
+function interval(func, wait, times){
+    var interv = function(w, t){
+        return function(){
+            if(typeof t === "undefined" || t-- > 0){
+                setTimeout(interv, w);
+                try{
+                    func.call(null);
+                }
+                catch(e){
+                    t = 0;
+                    throw e.toString();
+                }
+            }
+        };
+    }(wait, times);
+
+    setTimeout(interv, wait);
+};
+
+
 // Ubiquitous timer object
 function timer(callback, delay) {
     var id, started, remaining = delay, running
@@ -468,7 +489,7 @@ function timer(callback, delay) {
 
 // Moods	
 	var dGlee = 5;
-	var dPatience = 5;
+	var dPatience = 4000;
 	var dCruelty = 5;
 	var dAnger = 5;
 	var dFear = 5;
@@ -495,12 +516,6 @@ function timer(callback, delay) {
 	var c_array = [];
 	var c_timer = 0;
 	var dChatTimeout;
-
-	var dTauntTimeout;
-	var taunt_timer;
-	var taunt_timer;
-	var dTaunt = false;
-	var dListen = true;
 	
 	var plReply;
 	
@@ -533,7 +548,8 @@ function summon_dChat(array, mem, mood, speed, timeout)
 	dDialogueStop = c_array[dDialogueNode].length - 1;
 
 	dTaunt = false;
-	dTauntTimeout = timeout/4;	
+	//dWaitTimeout = timeout/4;
+	dWaitTimeout = dPatience;	
 	dListen = true;
 	
 	spamming = false;
@@ -550,7 +566,7 @@ function summon_dChat(array, mem, mood, speed, timeout)
 	c_timer = new timer(function() {banish_dChat()}, dChatTimeout);
 	//c_timer.pause();
 	
-	var dChatTimeLeft = c_timer.getTimeLeft();
+	dChatTimeLeft = c_timer.getTimeLeft();
 	setInterval(function() {
 		if (dChatTimeLeft > 0){
 			dChatTimeLeft = c_timer.getTimeLeft();
@@ -573,8 +589,11 @@ function summon_dChat(array, mem, mood, speed, timeout)
 //--------------------------
 
 function banish_dChat(){
-	if (dSpamming === true){	
+	//if (dSpamming === true){	
 		dSpamming = false;
+		dTaunt = false;
+		dListen = false;
+		clearInterval(waitInterval);
 
 		var element = $("#chattext");
 		elements = document.querySelectorAll('#chatbubble.darkbubble, #chatbubble.imgbubble');
@@ -597,7 +616,8 @@ function banish_dChat(){
 		
 		console.log("demon is silent");
 		document.getElementById("chapter").innerHTML = "";
-	}
+		document.getElementById("chapter-time").innerHTML = "";
+	//}
 }
 
 
@@ -644,6 +664,16 @@ function restoreChat(){
 // Listening For Response
 //--------------------------
 
+	var dChatTimeLeft;
+	var dListening_timer;
+	var dListen = true;
+
+	var dWaitTimeout;
+	var dWaitTimeLeft;
+	var dTaunt = false;
+
+	var waitInterval;
+
 function dWaitsForResponse(){
 	
 	plReply = null;
@@ -655,46 +685,55 @@ function dWaitsForResponse(){
 
 	console.log("demon is listening...");
 
-	// Taunt at increasing intervals
-	taunt_timer = new timer(function() {writeDarkTaunt()}, dTauntTimeout);
-	
-	var dTauntTimeLeft = taunt_timer.getTimeLeft();
-	dTauntTimeout = c_timer.getTimeLeft()/4;
+	//dListening_timer = new timer(function() {dWriteMore()}, dWaitTimeout);	
+	//dWaitTimeLeft = dListening_timer.getTimeLeft();
 
-	if (dTauntTimeLeft > 1000){
-		dTauntTimeout = c_timer.getTimeLeft()/4;
+	// Taunt at increasing intervals
+/* 	if (plReply == null) {
+		dListening_timer = new timer(function() {dWriteMore()}, dWaitTimeout);	
+		dWaitTimeLeft = dListening_timer.getTimeLeft();
 	} else {
-		dTauntTimeLeft <= 1000;
+		dListening_timer = new timer(function() {dWriteMore()}, dWaitTimeout);
+		dWaitTimeLeft = 0;
 		dListen = false;
 		dTaunt = false;
-		clearInterval(tauntInterval);
-		console.log("taunt timer ran out");
-	}
-
-/* 	if (plReply){
-		dListen = false;
-		dTaunt = false;		
-		clearInterval();
-		console.log("interrupt");
 	} */
 
-	var tauntInterval = setInterval(function()
+	dWaitTimeout = dPatience;
+
+	var waitInterval = setInterval(function()
 	{
-		if (dTauntTimeLeft > 1000){
-			dTauntTimeLeft = taunt_timer.getTimeLeft();
-			document.getElementById("debug").innerHTML = Math.round(dTauntTimeLeft/1000);
-		} else {
-			dTauntTimeLeft = 1000;
-			clearInterval();
+		if (dSpamming){
+			if (plReply !== null) {
+				dListen = false;
+				dTaunt = false;
+				stopInterval(waitInterval);
+				console.log("player responded");
+				dWriteMore();			
+			} else {
+				dWaitTimeout = dWaitTimeout - 1000;
+				if (dWaitTimeout == 0){
+					dWriteMore();
+					dWaitTimeout = dPatience;
+					stopInterval(waitInterval);
+				}			
+			}
 		}
+		log("demon waiting"); 
+		document.getElementById("debug").innerHTML = Math.round(dWaitTimeout/1000);				
 	}
-	, 400);
+	, 1000);
 }
+
+function stopInterval(i) { 
+   clearInterval(i);
+   log(i + " was cleared"); 
+} 
 
 
 	var dRepeatQuestion = true;
 
-function writeDarkTaunt(){
+function dWriteMore(){
 	if (plReply!=null){;
 		dParseReply();
 		dWaitsForResponse();
@@ -846,7 +885,7 @@ function dAssembleResponse(word)
 
 
 function dJumpToDialogueNode(num){
-	dTauntTimeLeft = 0;
+	dWaitTimeLeft = 0;
 	dListen = false;
 	dTaunt = false;		
 
@@ -1873,6 +1912,18 @@ function chat()
     
         element.append(message);
 		plReply = msgBody;
+		if (chatTarget == "demon"){
+			//dTaunt = false;
+			//dListen = false;
+			//dWaitsForResponse();
+			//dWaitTimeLeft = 1000;
+			//dListening_timer.pause;
+			//clearInterval(waitInterval);
+			//dTaunt = false;
+			//dListen = false;
+			//dWaitTimeout = c_timer.getTimeLeft()/4;
+			//dWriteMore();
+		}
 		
 		if (chatTarget == "webcam"){
 			strToArray(msgBody);
