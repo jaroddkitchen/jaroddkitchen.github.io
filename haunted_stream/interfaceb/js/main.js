@@ -763,8 +763,7 @@ function dParseReply(){
 	triggerWords = [];	
 	
 	wiki = plReply;
-/* 	fetchWiki(wiki);
-	if (wikiText == "") { wiki = ""; } */
+	//fetchWiki(wiki);
 	
 	dStrToArray(plReply);
 	plReply=null;
@@ -775,6 +774,13 @@ function dParseReply(){
 function dStrToArray(str)
 {
 	var newStr = str;
+	
+/* 	if (wikiText !== ""){
+		newStr = "GOODSEARCH";
+	} else {
+		newStr = "BADSEARCH";
+	} */
+	
 	newStr = newStr.replace(/[.*+\-!^${}()|[\]\\]/gi, "");
 	newStr = newStr.replace(/\?/gi, " ? ");
 	newStr = newStr.replace(/'/gi, "");
@@ -871,7 +877,8 @@ function dAssembleResponse(word)
 	} else {
 		curResponse = 0;
 		console.log('This word does not affect the game');
-		fetchWiki(wiki);
+		//fetchWiki(wiki);
+		searchWiki(wiki);
 	}
 }
 
@@ -894,27 +901,44 @@ function dJumpToDialogueNode(num, dlis, restart){
 }
 
 
-function titleCase(str) {
+function titleCase(str)
+{
   return str.toLowerCase().split(' ').map(function(w) {
     return (w.charAt(0).toUpperCase() + w.slice(1));
   }).join(' ');
 }
-//titleCase("I'm a little tea pot");
 
 
 
 //An approch to getting the summary / leading paragraphs / section 0 out of Wikipedia articlies within the browser using JSONP with the Wikipedia API: http://en.wikipedia.org/w/api.php
 
-function fetchWiki(wikiStr){
+	var wikiTitle = "";
+	var wikiSearchStr= "";
 
+function searchWiki(wikiStr)
+{
+	//var surl = "https://en.wikipedia.org/w/api.php?action=opensearch&search=" + wikiStr + "&limit=1&namespace=0&format=jsonfm";
+	
+	wikiSearchStr = wikiStr.replace(/\s/g, "%20");
+	
+	$.getJSON("https://en.wikipedia.org/w/api.php?action=opensearch&search=" + wikiSearchStr + "&limit=1&namespace=0&format=json&callback=?", function (data) {
+		var wikiTitle = data[1][0];
+		fetchWiki(wikiTitle);
+		log("the first search return was " + wikiTitle);
+	});
+}	
+
+
+function fetchWiki(wikiStr)
+{
 //var url = "http://en.wikipedia.org/wiki/Stack_Overflow";
 //var title = url.split("/");
 
 //title = title[title.length - 1];
 title = wikiStr;
-title = title.split(' ')
+/* title = title.split(' ')
 	.map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
-	.join(' ');
+	.join(' '); */
 
 console.log("The title is " + title);
 
@@ -950,59 +974,16 @@ console.log("The title is " + title);
 			wikiText = wikiText.substring(0, wikiText.length - 2); //Remove extra newline
 			wikiText = wikiText.split("."); 
 			wikiText = wikiText[0];
-			wikiText = wikiText.replace(/\[\d+\]/g, ""); //Remove reference tags (e.x. [1], [4], etc)
-			if (wikiText !== ""){
+			//wikiText = wikiText.replace(/\[\d+\]/g, ""); //Remove reference tags (e.x. [1], [4], etc)
+			//wikiText = wikiText.replace(/\s*\(.*?\)\s*/g, "");
+/* 			if (wikiText !== ""){
 				dWriteDarkWiki(wikiText);
 			} else {
 				var lastValidNoun = valid_nouns[valid_nouns.length-1];
 				fetchWikiWord(lastValidNoun);
-			}			
-		}
-	});
-}
-
-function fetchWikiWord(wikiStr){
-title = wikiStr;
-title = title.split(' ')
-	.map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
-	.join(' ');
-
-console.log("The title is " + title);
-
-	//Get Leading paragraphs (section 0)
-	$.getJSON("http://en.wikipedia.org/w/api.php?action=parse&page=" + title + "&prop=text&section=0&format=json&callback=?", function (data) {
-		for (text in data.parse.text) {
-			var text = data.parse.text[text].split("<p>");
-			var wikiText = "";
-
-			for (p in text) {
-				//Remove html comment
-				text[p] = text[p].split("<!--");
-				if (text[p].length > 1) {
-					text[p][0] = text[p][0].split(/\r\n|\r|\n/);
-					text[p][0] = text[p][0][0];
-					text[p][0] += "</p> ";
-				}
-				text[p] = text[p][0];
-
-				//Construct a string from paragraphs
-				if (text[p].indexOf("</p>") == text[p].length - 4) {
-					var htmlStrip = text[p].replace(/<(?:.|\n)*?>/gm, '') //Remove HTML
-					var splitNewline = htmlStrip.split(/\r\n|\r|\n/); //Split on newlines
-					for (newline in splitNewline) {
-						if (splitNewline[newline].substring(0, 11) != "Cite error:") {
-							wikiText += splitNewline[newline];
-							wikiText += "<br>";
-						}
-					}
-				}
-			}
-			
-			wikiText = wikiText.substring(0, wikiText.length - 2); //Remove extra newline
-			wikiText = wikiText.split("."); 
-			wikiText = wikiText[0];
-			wikiText = wikiText.replace(/\[\d+\]/g, ""); //Remove reference tags (e.x. [1], [4], etc)
+			} */
 			dWriteDarkWiki(wikiText);
+			log(wikiText);			
 		}
 	});
 }
@@ -1019,6 +1000,8 @@ function dWriteDarkWiki(wikiText){
 		cutTopOfChat();
 		scrollToBottom();
 	if (was_taunting) {dTaunt = true};
+	dListen = true;
+	dWaitsForResponse();
 }
 
 function getDarkWiki(wikiText)
@@ -1051,24 +1034,6 @@ function getDarkWiki(wikiText)
 
 
 
-
-
-
-/* Cannot read property 'classList' of undefined
-    at banish_dChat (main.js:604)
-    at main.js:566
-banish_dChat @ main.js:604
-(anonymous) @ main.js:566
-setTimeout (async)
-start @ main.js:454
-getTimeLeft @ main.js:464
-(anonymous) @ main.js:572
-setInterval (async)
-summon_dChat @ main.js:570
-timedEvents @ events.js:18
-(anonymous) @ main.js:411
-setInterval (async)
-(anonymous) @ main.js:392 */
 
 
 

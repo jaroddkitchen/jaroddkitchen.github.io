@@ -15,7 +15,7 @@ var timedEvents = [
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 90000)},		
 		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 90000)},
 		function(){summon_Sound('music/Ice_Demon.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
-		function(){summon_dChat(HelloWorld, null, "vicious", 500, 40000)}
+		function(){summon_dChat(HelloWorld, null, "vicious", 500, 90000)}
 		]
 	],	
 	[false, 17,	0,
@@ -77,8 +77,8 @@ var HelloWorld =
 			]
 		],
 		// Node 2		
-		["that sux", "im a grate one to meet", "a true blue merican hero. ", "maybe i will meet u anyway",
-			[ function(){dJumpToDialogueNode(0, true, true)} ]
+		["that sux", "im a grate one to meet", "a true blew american hero. ", "maybe i will meet u sum day, anyway",
+			[ function(){dJumpToDialogueNode(4, true, true)} ]
 		],
 		// Node 3		
 		["fantastic", "but im not rdy to meet u", " not yet anywy", "may be ur not rdy 2", "but i will keep it in mind",
@@ -88,18 +88,23 @@ var HelloWorld =
 		["hay i gotta nother question","whats the name of ur favorit movie?",
 			[ 
 				["none",null],
-				["ACCEPT",
-					[function(){dJumpToDialogueNode(3, false, true)}]
+				["GOODSEARCH",
+					[function(){dJumpToDialogueNode(5, false, true)}]
 				],
-				["DECLINE",
-					[function(){summon_Apparition(10, 1, 90000)},function(){dJumpToDialogueNode(2, false, true)}]
-				],
-				["MAYBE",
-					[function(){dJumpToDialogueNode(1, false, true)}]
+				["BADSEARCH",
+					[function(){dJumpToDialogueNode(6, true, true)}]
 				]
 			]
-		],	
+		],
 		// Node 5
+		["i seen that one", "im very smart cultured", "eye seen all the movies evr made", "red all the books too", "well I gotta be going now, chosen one", "ill check you ltr", "bye 4 now",
+			[ function(){banish_dChat()} ]
+		],
+		// Node 6
+		["hmmm. i dont know that one", "maybe you misspelt it. like a dum ass", "try aggin or name a different one.",
+			[ function(){dJumpToDialogueNode(4, true, true)} ]
+		],		
+		// Node 7
 		["so thats how you wanna play it", "the strong silent type", "ok kiddo. be that way", "you will regret this",
 			[ function(){banish_allLayers(2000)}, function(){banish_allSounds(2000)} ]
 		]		
