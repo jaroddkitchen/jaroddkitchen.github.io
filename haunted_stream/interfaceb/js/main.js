@@ -706,7 +706,7 @@ function dWaitsForResponse()
 				}			
 			}
 		}
-		log("demon waiting"); 
+		//log("demon waiting"); 
 		document.getElementById("debug").innerHTML = Math.round(dWaitTimeout/1000);				
 	}
 	, 1000);
@@ -714,7 +714,7 @@ function dWaitsForResponse()
 
 function stopInterval(i) { 
    clearInterval(i);
-   log(i + " was cleared"); 
+   //log(i + " was cleared"); 
 } 
 
 
@@ -736,6 +736,11 @@ function dWriteMore(){
 //--------------------------
 // Parse the chat reply
 //--------------------------
+
+	var dQuestionNode;
+	var dQuestionType = "yes or no";
+	
+	var dAnswerNode;
 
 	var word;
 	var letters;	
@@ -762,24 +767,41 @@ function dParseReply(){
 	non_words = [];
 	triggerWords = [];	
 	
-	wiki = plReply;
-	//fetchWiki(wiki);
+	dAnswerNode = c_array[dDialogueNode].length-1;
+	dKeyNode = c_array[dDialogueNode][dAnswerNode];
+	dQuestionType = dKeyNode[0][0];
+	log(dQuestionType);
 	
-	dStrToArray(plReply);
+	wiki = plReply;
+	if (dQuestionType == "wikiSearch") {
+		dGetWiki(wiki);
+	} else {	
+		dStrToArray(plReply);
+	}
 	plReply=null;
 	return;
+}
+
+
+
+function dGetWiki(wiki)
+{		
+	keywords = [];
+	keyactions = [];
+	
+	for (var i = 1; i < dKeyNode.length; i++){
+		keywords.push(dKeyNode[i][0]);
+		keyactions.push(dKeyNode[i][1]);
+		log(dKeyNode[i][1]);
+	}	
+	
+	findWiki(wiki);
 }
 
 
 function dStrToArray(str)
 {
 	var newStr = str;
-	
-/* 	if (wikiText !== ""){
-		newStr = "GOODSEARCH";
-	} else {
-		newStr = "BADSEARCH";
-	} */
 	
 	newStr = newStr.replace(/[.*+\-!^${}()|[\]\\]/gi, "");
 	newStr = newStr.replace(/\?/gi, " ? ");
@@ -814,7 +836,7 @@ function dSearchCommands(word)
 	keywords = [];
 	keyactions = [];
 
-	var dAnswerNode = c_array[dDialogueNode].length-1;
+	dAnswerNode = c_array[dDialogueNode].length-1;
 	dKeyNode = c_array[dDialogueNode][dAnswerNode];
 	
 	for (var i = 0; i < dKeyNode.length; i++){
@@ -869,16 +891,16 @@ function findWord(letters) {
 // Trigger a reply function
 function dAssembleResponse(word)
 {
+	// trigger actions
 	if (triggerWords.length > 0) {		
 		console.log('"' + word + '" will trigger a game action.');
 		for (i=0; i < keyactions[pos].length; i++){
 			keyactions[pos][i]();
 		}
+	// search wiki
 	} else {
-		curResponse = 0;
-		console.log('This word does not affect the game');
-		//fetchWiki(wiki);
-		searchWiki(wiki);
+		console.log('This word does not affect the story');
+		findWiki(wiki);
 	}
 }
 
@@ -910,85 +932,63 @@ function titleCase(str)
 
 
 
-//An approch to getting the summary / leading paragraphs / section 0 out of Wikipedia articlies within the browser using JSONP with the Wikipedia API: http://en.wikipedia.org/w/api.php
 
-	var wikiTitle = "";
-	var wikiSearchStr= "";
+//----------------------------------------------------
+// Wikipedia Context Module
+//----------------------------------------------------
+//This module retrieves the a Wikipedia article using JSONP with the Wikipedia API: http://en.wikipedia.org/w/api.php
 
-function searchWiki(wikiStr)
+	var wikiCat = " film";
+
+
+function findWiki(wikiStr)
 {
-	//var surl = "https://en.wikipedia.org/w/api.php?action=opensearch&search=" + wikiStr + "&limit=1&namespace=0&format=jsonfm";
+let surl = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=1&gsrsearch=' + wikiStr + wikiCat;
 	
-	wikiSearchStr = wikiStr.replace(/\s/g, "%20");
-	
-	$.getJSON("https://en.wikipedia.org/w/api.php?action=opensearch&search=" + wikiSearchStr + "&limit=1&namespace=0&format=json&callback=?", function (data) {
-		var wikiTitle = data[1][0];
-		fetchWiki(wikiTitle);
-		log("the first search return was " + wikiTitle);
-	});
-}	
-
-
-function fetchWiki(wikiStr)
-{
-//var url = "http://en.wikipedia.org/wiki/Stack_Overflow";
-//var title = url.split("/");
-
-//title = title[title.length - 1];
-title = wikiStr;
-/* title = title.split(' ')
-	.map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
-	.join(' '); */
-
-console.log("The title is " + title);
-
-	//Get Leading paragraphs (section 0)
-	$.getJSON("http://en.wikipedia.org/w/api.php?action=parse&page=" + title + "&prop=text&section=0&format=json&callback=?", function (data) {
-		for (text in data.parse.text) {
-			var text = data.parse.text[text].split("<p>");
-			var wikiText = "";
-
-			for (p in text) {
-				//Remove html comment
-				text[p] = text[p].split("<!--");
-				if (text[p].length > 1) {
-					text[p][0] = text[p][0].split(/\r\n|\r|\n/);
-					text[p][0] = text[p][0][0];
-					text[p][0] += "</p> ";
-				}
-				text[p] = text[p][0];
-
-				//Construct a string from paragraphs
-				if (text[p].indexOf("</p>") == text[p].length - 4) {
-					var htmlStrip = text[p].replace(/<(?:.|\n)*?>/gm, '') //Remove HTML
-					var splitNewline = htmlStrip.split(/\r\n|\r|\n/); //Split on newlines
-					for (newline in splitNewline) {
-						if (splitNewline[newline].substring(0, 11) != "Cite error:") {
-							wikiText += splitNewline[newline];
-							wikiText += "<br>";
-						}
-					}
-				}
-			}
-			
-			wikiText = wikiText.substring(0, wikiText.length - 2); //Remove extra newline
-			wikiText = wikiText.split("."); 
-			wikiText = wikiText[0];
-			//wikiText = wikiText.replace(/\[\d+\]/g, ""); //Remove reference tags (e.x. [1], [4], etc)
-			//wikiText = wikiText.replace(/\s*\(.*?\)\s*/g, "");
-/* 			if (wikiText !== ""){
-				dWriteDarkWiki(wikiText);
+    $.ajax({
+      url: surl,
+      header: {
+        'Access-Control-Allow-Origin' : '*',
+        'Content-Type': 'application/json'
+      },
+      method: 'GET',
+      dataType: 'jsonp',
+      data: '',
+/*       beforeSend: function(){
+		  log("loading");
+        // $("#loader").show();
+        $('#resultArea').html('<div class="text-center"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: #fff; display: block;" width="25%" height="25%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid"><g transform="translate(50 50)"><g transform="scale(0.7)"><g transform="translate(-50 -50)"><g transform="translate(-3.20642 -20)"><animateTransform attributeName="transform" type="translate" repeatCount="indefinite" dur="1s" values="-20 -20;20 -20;0 20;-20 -20" keyTimes="0;0.33;0.66;1"></animateTransform><path fill="#5699d2" d="M44.19 26.158c-4.817 0-9.345 1.876-12.751 5.282c-3.406 3.406-5.282 7.934-5.282 12.751 c0 4.817 1.876 9.345 5.282 12.751c3.406 3.406 7.934 5.282 12.751 5.282s9.345-1.876 12.751-5.282 c3.406-3.406 5.282-7.934 5.282-12.751c0-4.817-1.876-9.345-5.282-12.751C53.536 28.033 49.007 26.158 44.19 26.158z"></path><path fill="#1d3f72" d="M78.712 72.492L67.593 61.373l-3.475-3.475c1.621-2.352 2.779-4.926 3.475-7.596c1.044-4.008 1.044-8.23 0-12.238 c-1.048-4.022-3.146-7.827-6.297-10.979C56.572 22.362 50.381 20 44.19 20C38 20 31.809 22.362 27.085 27.085 c-9.447 9.447-9.447 24.763 0 34.21C31.809 66.019 38 68.381 44.19 68.381c4.798 0 9.593-1.425 13.708-4.262l9.695 9.695 l4.899 4.899C73.351 79.571 74.476 80 75.602 80s2.251-0.429 3.11-1.288C80.429 76.994 80.429 74.209 78.712 72.492z M56.942 56.942 c-3.406 3.406-7.934 5.282-12.751 5.282s-9.345-1.876-12.751-5.282c-3.406-3.406-5.282-7.934-5.282-12.751 c0-4.817 1.876-9.345 5.282-12.751c3.406-3.406 7.934-5.282 12.751-5.282c4.817 0 9.345 1.876 12.751 5.282 c3.406 3.406 5.282 7.934 5.282 12.751C62.223 49.007 60.347 53.536 56.942 56.942z"></path></g></g></g></g></svg></div>')
+       },  */  
+		success: function(data){
+			//console.log(data.query.pages);
+			if(typeof data.query == 'undefined'){
+				//Respond with random insult
+				wikiText = "";
 			} else {
-				var lastValidNoun = valid_nouns[valid_nouns.length-1];
-				fetchWikiWord(lastValidNoun);
-			} */
+				dataNum = Object.keys(data.query.pages)[0];
+				//$('#resultArea').empty();
+				//let newTitle = '<h1 class="alert alert-info text-center"><strong>'+data.query.pages[dataNum].title+'</strong></h1>';
+				//$('#resultArea').html(`${newTitle}<div>${data.query.pages[dataNum].extract}</div>`);
+				wikiText = data.query.pages[dataNum].extract
+				wikiText = wikiText.replace(/\s*\(.*?\)/g, "");
+				wikiText = wikiText.replace(/\[\.*?\]/g, "");	
+				wikiText = wikiText.replace(/<(?:.|\n)*?>/gm, '')			
+				wikiText = wikiText.split(".");	
+				wikiText = wikiText[0] + ". " + wikiText[1] + ". ";	
+			}
 			dWriteDarkWiki(wikiText);
-			log(wikiText);			
-		}
-	});
+		},
+		complete: function(){
+			log("wiki search complete");
+			//$('#textfield').val('');
+			$('#textfield').focus();
+		},
+		error: function (xmlHttpRequest, textStatus, errorThrown) {
+			wikiText = "";
+			dWriteDarkWiki(wikiText);
+		}			
+	});  
 }
-
-
 
 
 // print an article
@@ -1000,8 +1000,20 @@ function dWriteDarkWiki(wikiText){
 		cutTopOfChat();
 		scrollToBottom();
 	if (was_taunting) {dTaunt = true};
-	dListen = true;
-	dWaitsForResponse();
+	if (dQuestionType !== "wikiSearch"){ 
+		dListen = true;
+		dWaitsForResponse();
+	} else {
+		if (wikiText !== ""){
+			pos = 0;
+		} else {
+			pos = 1;
+		}
+		for (i=0; i < keyactions[pos].length; i++){
+			keyactions[pos][i]();
+			log(keyactions[pos][i]); 
+		}
+	}
 }
 
 function getDarkWiki(wikiText)

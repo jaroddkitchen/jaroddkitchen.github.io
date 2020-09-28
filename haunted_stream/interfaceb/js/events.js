@@ -56,7 +56,7 @@ var HelloWorld =
 		// Node 0
 		["hello world","i can see you","im right over here ------>","i wanna meet you","do you wanna meet me?",
 			[ 
-				["none",null],
+				["yes or no", null],
 				["ACCEPT",
 					[function(){dJumpToDialogueNode(3, false, true)}]
 				],
@@ -81,13 +81,13 @@ var HelloWorld =
 			[ function(){dJumpToDialogueNode(4, true, true)} ]
 		],
 		// Node 3		
-		["fantastic", "but im not rdy to meet u", " not yet anywy", "may be ur not rdy 2", "but i will keep it in mind",
+		["fantastic", "but im not rdy to meet u", " not yet anywy", "may be ur not rdy 2", "i will keep it in mind tho",
 			[ function(){dJumpToDialogueNode(4, true, true)} ]
 		],
 		// Node 4		
 		["hay i gotta nother question","whats the name of ur favorit movie?",
-			[ 
-				["none",null],
+			[
+				["wikiSearch", null],	
 				["GOODSEARCH",
 					[function(){dJumpToDialogueNode(5, false, true)}]
 				],
@@ -97,7 +97,7 @@ var HelloWorld =
 			]
 		],
 		// Node 5
-		["i seen that one", "im very smart cultured", "eye seen all the movies evr made", "red all the books too", "well I gotta be going now, chosen one", "ill check you ltr", "bye 4 now",
+		["yea i seen that one", "im vry culteruld", "eye seen evry movie evr made", "red all the books too", "well I gotta be going now, chosen one", "ill check you ltr", "bye 4 now",
 			[ function(){banish_dChat()} ]
 		],
 		// Node 6
