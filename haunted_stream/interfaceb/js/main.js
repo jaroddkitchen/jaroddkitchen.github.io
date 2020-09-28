@@ -749,6 +749,8 @@ function dWriteMore(){
 	var searchStr;	
 	var wiki = "";
 	var wikiText = "";
+	var wikiTitle = "";
+	var wikiCat = " film movie";
 	
 	var valid_nouns = [];
 	var valid_verbs = [];
@@ -938,8 +940,6 @@ function titleCase(str)
 //----------------------------------------------------
 //This module retrieves the a Wikipedia article using JSONP with the Wikipedia API: http://en.wikipedia.org/w/api.php
 
-	var wikiCat = " film";
-
 
 function findWiki(wikiStr)
 {
@@ -966,6 +966,8 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&origin
 				wikiText = "";
 			} else {
 				dataNum = Object.keys(data.query.pages)[0];
+				wikiTitle = data.query.pages[dataNum].title;
+				log(wikiTitle);
 				//$('#resultArea').empty();
 				//let newTitle = '<h1 class="alert alert-info text-center"><strong>'+data.query.pages[dataNum].title+'</strong></h1>';
 				//$('#resultArea').html(`${newTitle}<div>${data.query.pages[dataNum].extract}</div>`);
@@ -973,10 +975,10 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&origin
 				wikiText = wikiText.replace(/\s*\(.*?\)/g, "");
 				wikiText = wikiText.replace(/\[\.*?\]/g, "");	
 				wikiText = wikiText.replace(/<(?:.|\n)*?>/gm, '')			
-				wikiText = wikiText.split(".");	
+				wikiText = wikiText.split(". ");	
 				wikiText = wikiText[0] + ". " + wikiText[1] + ". ";	
 			}
-			dWriteDarkWiki(wikiText);
+			dWriteDarkWiki(wikiText, wikiTitle);
 		},
 		complete: function(){
 			log("wiki search complete");
@@ -992,11 +994,11 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&origin
 
 
 // print an article
-function dWriteDarkWiki(wikiText){	
+function dWriteDarkWiki(wikiText, wikiTitle){	
 	var was_taunting = false;
 	if (dTaunt) {dTaunt = false; was_taunting = true}
 		var element = $("#chattext");
-		element.append(getDarkWiki(wikiText));
+		element.append(getDarkWiki(wikiText, wikiTitle));
 		cutTopOfChat();
 		scrollToBottom();
 	if (was_taunting) {dTaunt = true};
@@ -1016,7 +1018,7 @@ function dWriteDarkWiki(wikiText){
 	}
 }
 
-function getDarkWiki(wikiText)
+function getDarkWiki(wikiText, wikiTitle)
 {
 	// get the sound effect
 	var snd_heartbeat = new Audio('../snd/fx/scrape.mp3');	
@@ -1034,6 +1036,11 @@ function getDarkWiki(wikiText)
 	if (wikiText == ""){
 		msgBody = (dRefusals[Math.floor(Math.random()*dRefusals.length)]);
 	} else {
+		var wikiTitleRegEx = new RegExp(wikiTitle,'g');
+		wikiText = wikiText.replace(wikiTitleRegEx,"that shit");
+		
+		//wikiText = wikiText.replace(/\s*\(.*?\)/g, "");		
+
 		msgBody = wikiText;
 	}
 	
@@ -1043,8 +1050,6 @@ function getDarkWiki(wikiText)
     
 	return message;
 }
-
-
 
 
 
