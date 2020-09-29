@@ -750,7 +750,8 @@ function dWriteMore(){
 	var wiki = "";
 	var wikiText = "";
 	var wikiTitle = "";
-	var wikiCat = " film movie";
+	var wikiCat = "";
+	//var wikiCat = " film movie";
 	
 	var valid_nouns = [];
 	var valid_verbs = [];
@@ -939,11 +940,15 @@ function titleCase(str)
 // Wikipedia Context Module
 //----------------------------------------------------
 //This module retrieves the a Wikipedia article using JSONP with the Wikipedia API: http://en.wikipedia.org/w/api.php
+//https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts|pageimages&exintro&explaintext&generator=search&gsrsearch=intitle:planet%20mars&gsrlimit=1&redirects=1
 
+	var wikiData = "";
+	var wikiImg = "";
+//
 
 function findWiki(wikiStr)
 {
-let surl = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=1&gsrsearch=' + wikiStr + wikiCat;
+let surl = 'https://en.wikipedia.org/w/api.php?action=query&formatversion=2&prop=extracts|pageimages&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=1&gsrsearch=' + wikiStr + wikiCat;
 	
     $.ajax({
       url: surl,
@@ -954,42 +959,220 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&origin
       method: 'GET',
       dataType: 'jsonp',
       data: '',
-/*       beforeSend: function(){
+      beforeSend: function(){
 		  log("loading");
         // $("#loader").show();
-        $('#resultArea').html('<div class="text-center"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: #fff; display: block;" width="25%" height="25%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid"><g transform="translate(50 50)"><g transform="scale(0.7)"><g transform="translate(-50 -50)"><g transform="translate(-3.20642 -20)"><animateTransform attributeName="transform" type="translate" repeatCount="indefinite" dur="1s" values="-20 -20;20 -20;0 20;-20 -20" keyTimes="0;0.33;0.66;1"></animateTransform><path fill="#5699d2" d="M44.19 26.158c-4.817 0-9.345 1.876-12.751 5.282c-3.406 3.406-5.282 7.934-5.282 12.751 c0 4.817 1.876 9.345 5.282 12.751c3.406 3.406 7.934 5.282 12.751 5.282s9.345-1.876 12.751-5.282 c3.406-3.406 5.282-7.934 5.282-12.751c0-4.817-1.876-9.345-5.282-12.751C53.536 28.033 49.007 26.158 44.19 26.158z"></path><path fill="#1d3f72" d="M78.712 72.492L67.593 61.373l-3.475-3.475c1.621-2.352 2.779-4.926 3.475-7.596c1.044-4.008 1.044-8.23 0-12.238 c-1.048-4.022-3.146-7.827-6.297-10.979C56.572 22.362 50.381 20 44.19 20C38 20 31.809 22.362 27.085 27.085 c-9.447 9.447-9.447 24.763 0 34.21C31.809 66.019 38 68.381 44.19 68.381c4.798 0 9.593-1.425 13.708-4.262l9.695 9.695 l4.899 4.899C73.351 79.571 74.476 80 75.602 80s2.251-0.429 3.11-1.288C80.429 76.994 80.429 74.209 78.712 72.492z M56.942 56.942 c-3.406 3.406-7.934 5.282-12.751 5.282s-9.345-1.876-12.751-5.282c-3.406-3.406-5.282-7.934-5.282-12.751 c0-4.817 1.876-9.345 5.282-12.751c3.406-3.406 7.934-5.282 12.751-5.282c4.817 0 9.345 1.876 12.751 5.282 c3.406 3.406 5.282 7.934 5.282 12.751C62.223 49.007 60.347 53.536 56.942 56.942z"></path></g></g></g></g></svg></div>')
-       },  */  
+        $('#chapter-time').html('<div class="text-center"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: none; display: block;" width="25%" height="25%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid"><g transform="translate(50 50)"><g transform="scale(0.7)"><g transform="translate(-50 -50)"><g transform="translate(-3.20642 -20)"><animateTransform attributeName="transform" type="translate" repeatCount="indefinite" dur="1s" values="-20 -20;20 -20;0 20;-20 -20" keyTimes="0;0.33;0.66;1"></animateTransform><path fill="#5699d2" d="M44.19 26.158c-4.817 0-9.345 1.876-12.751 5.282c-3.406 3.406-5.282 7.934-5.282 12.751 c0 4.817 1.876 9.345 5.282 12.751c3.406 3.406 7.934 5.282 12.751 5.282s9.345-1.876 12.751-5.282 c3.406-3.406 5.282-7.934 5.282-12.751c0-4.817-1.876-9.345-5.282-12.751C53.536 28.033 49.007 26.158 44.19 26.158z"></path><path fill="#1d3f72" d="M78.712 72.492L67.593 61.373l-3.475-3.475c1.621-2.352 2.779-4.926 3.475-7.596c1.044-4.008 1.044-8.23 0-12.238 c-1.048-4.022-3.146-7.827-6.297-10.979C56.572 22.362 50.381 20 44.19 20C38 20 31.809 22.362 27.085 27.085 c-9.447 9.447-9.447 24.763 0 34.21C31.809 66.019 38 68.381 44.19 68.381c4.798 0 9.593-1.425 13.708-4.262l9.695 9.695 l4.899 4.899C73.351 79.571 74.476 80 75.602 80s2.251-0.429 3.11-1.288C80.429 76.994 80.429 74.209 78.712 72.492z M56.942 56.942 c-3.406 3.406-7.934 5.282-12.751 5.282s-9.345-1.876-12.751-5.282c-3.406-3.406-5.282-7.934-5.282-12.751 c0-4.817 1.876-9.345 5.282-12.751c3.406-3.406 7.934-5.282 12.751-5.282c4.817 0 9.345 1.876 12.751 5.282 c3.406 3.406 5.282 7.934 5.282 12.751C62.223 49.007 60.347 53.536 56.942 56.942z"></path></g></g></g></g></svg></div>')
+       },   
 		success: function(data){
-			//console.log(data.query.pages);
+			wikiText = "";
+			wikiData = "";
+			wikiImg = "";
+			wikiImgHash = "";
+			
 			if(typeof data.query == 'undefined'){
 				//Respond with random insult
-				wikiText = "";
+				dWriteDarkWiki(wikiText, wikiTitle);
 			} else {
 				dataNum = Object.keys(data.query.pages)[0];
+	
+				//get title
 				wikiTitle = data.query.pages[dataNum].title;
-				log(wikiTitle);
+				//dGetWikiCat(wikiTitle);
+				
+/* 				if(typeof data.query.pages[dataNum].thumbnail !== 'undefined'){
+					data.query.pages[dataNum].piprop = 'thumbnail';
+					data.query.pages[dataNum].pilimit = 'max';
+					data.query.pages[dataNum].pithumbsize = 200;						
+					var wikiImg = data.query.pages[dataNum].thumbnail.source;
+				} else {
+					var wikiImg = "";
+				} */				
+				
 				//$('#resultArea').empty();
 				//let newTitle = '<h1 class="alert alert-info text-center"><strong>'+data.query.pages[dataNum].title+'</strong></h1>';
 				//$('#resultArea').html(`${newTitle}<div>${data.query.pages[dataNum].extract}</div>`);
+				
 				wikiText = data.query.pages[dataNum].extract
 				wikiText = wikiText.replace(/\s*\(.*?\)/g, "");
 				wikiText = wikiText.replace(/\[\.*?\]/g, "");	
 				wikiText = wikiText.replace(/<(?:.|\n)*?>/gm, '')			
 				wikiText = wikiText.split(". ");	
-				wikiText = wikiText[0] + ". " + wikiText[1] + ". ";	
+				wikiText = wikiText[1] + ". " + wikiText[2] + ". "
 			}
-			dWriteDarkWiki(wikiText, wikiTitle);
 		},
-		complete: function(){
+		complete: function(data){
 			log("wiki search complete");
-			//$('#textfield').val('');
 			$('#textfield').focus();
+			//$('#textfield').val('');
+			
+			//get wikidata
+			if(wikiText !== ""){
+			//if(typeof data.query !== 'undefined'){
+				dGetWikiData(wikiTitle);
+			}			
 		},
 		error: function (xmlHttpRequest, textStatus, errorThrown) {
-			wikiText = "";
-			dWriteDarkWiki(wikiText);
+			log("findWiki error");
 		}			
 	});  
+}
+
+function dGetWikiData(wikiTitle)
+{
+	let qurl = "https://en.wikipedia.org/w/api.php?action=query&prop=pageprops&titles="+wikiTitle+"&format=json";
+
+	$.ajax({
+		url: qurl,
+		header: {
+			'Access-Control-Allow-Origin' : '*',
+			'Content-Type': 'application/json'
+		},
+		method: 'GET',
+		dataType: 'jsonp',
+		data: '',   
+		success: function(data){
+			dataNum = Object.keys(data.query.pages)[0];
+			wikiData = data.query.pages[dataNum].pageprops.wikibase_item;
+			log(wikiData);
+			log("data search complete");
+			// get image
+			dGetWikiImage(wikiData, wikiTitle);			
+		},
+		complete: function(){
+		},
+		error: function (xmlHttpRequest, textStatus, errorThrown) {
+			log("getWikiData error");
+		}
+	}); 	
+}	
+	
+
+
+	var wikiImgHash;
+
+function dGetWikiImage(wikiData, wikiTitle)
+{	
+	let iurl = "https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&sites=enwiki&props=claims&titles=" + wikiTitle
+	//let iurl = "https://www.wikidata.org/w/api.php?action=wbgetclaims&formatversion=2&property=P18&entity=" + wikiData;
+	//let iurl = "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=" + wikiData + "&property=P18";
+	log(iurl)
+
+	$.ajax({
+		url: iurl,
+		header: {
+			'Access-Control-Allow-Origin' : '*',
+			'Content-Type': 'application/json'
+		},
+		method: 'GET',
+		dataType: 'jsonp',
+		data: '',   
+		success: function(data){
+			if ( data.entities[wikiData].claims.hasOwnProperty('P18') ){;
+				wikiImg = Object(data.entities[wikiData].claims.P18[0].mainsnak.datavalue.value);
+				wikiImg = wikiImg.replace(/\s/gi, "_");
+				console.log(wikiImg);
+				dGetFileHash(wikiImg);
+			} else {
+				log("no image found");
+				dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash);
+			}
+		},
+		complete: function(){
+			log("image search complete");
+		},
+		error: function (xmlHttpRequest, textStatus, errorThrown) {
+			log("getWikiData error");
+		}		
+	});  
+}
+
+
+function dGetFileHash(wikiImg)
+{
+	let hurl = "https://helloacm.com/api/md5/?cached&s=" + wikiImg;
+
+	$.ajax({
+		url: hurl,
+		header: {
+			'Access-Control-Allow-Origin' : '*',
+			'Content-Type': 'application/json'
+		},
+		method: 'GET',
+		dataType: 'json',
+		data: '',  
+		success: function(data){
+			wikiImgHash = data;
+			log("image hash is " + wikiImgHash);
+			dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash);		
+		},
+		complete: function(){
+		},
+		error: function (xmlHttpRequest, textStatus, errorThrown) {
+			log("getImgHash error");
+		}			
+	});
+}
+
+
+function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash)
+{
+	if(wikiImg !== ""){
+		var wikiImgLoad = "<br/><img width='100%' src='https://upload.wikimedia.org/wikipedia/commons/"
+		+ wikiImgHash[0] + "/" + wikiImgHash[0] + wikiImgHash[1] +  "/" + wikiImg + "' />"
+		wikiText = wikiText + wikiImgLoad;
+		log(wikiImgLoad);
+	} else {
+		log("no image");
+	}
+	dWriteDarkWiki(wikiText, wikiTitle);
+}
+
+
+/* function fileHash( file, hasher, callback ){
+	//Instantiate a reader		  
+	var reader = new FileReader();
+		  
+	//What to do when we gets data?
+	reader.onload = function( e ){
+		var hash = hasher(e.target.result);
+		callback( hash );
+	}
+		
+	reader.readAsBinaryString( file );
+
+} */
+
+
+function dGetWikiCat(wikiTitle)
+{
+	log(wikiTitle);
+
+	var curl = "https://en.wikipedia.org/w/api.php"; 
+
+	var params = {
+		action: "query",
+		format: "json",
+		prop: "categories",
+		cllimit: 15,
+		clshow: "!hidden",
+		titles: wikiTitle
+	};
+	
+	curl = curl + "?origin=*";
+	Object.keys(params).forEach(function(key){curl += "&" + key + "=" + params[key];});
+
+	fetch(curl)
+		.then(function(response){return response.json();})
+		.then(function(response) {
+			var pages = response.query.pages;
+			for (var p in pages) {
+				for (var cat of pages[p].categories) {
+					console.log(cat.title);
+				}
+			}
+		})
+		.catch(function(error){console.log(error);});
 }
 
 
@@ -1036,11 +1219,11 @@ function getDarkWiki(wikiText, wikiTitle)
 	if (wikiText == ""){
 		msgBody = (dRefusals[Math.floor(Math.random()*dRefusals.length)]);
 	} else {
-		var wikiTitleRegEx = new RegExp(wikiTitle,'g');
-		wikiText = wikiText.replace(wikiTitleRegEx,"that shit");
+		// Make replacements
+		// var wikiTitleRegEx = new RegExp(wikiTitle,'g');
+		// wikiText = wikiText.replace(wikiTitleRegEx,"that shit");
 		
-		//wikiText = wikiText.replace(/\s*\(.*?\)/g, "");		
-
+		// convert to message 
 		msgBody = wikiText;
 	}
 	
