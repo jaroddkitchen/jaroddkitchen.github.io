@@ -15,7 +15,7 @@ var timedEvents = [
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 90000)},		
 		// function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 90000)},
 		// function(){summon_Sound('music/Ice_Demon.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
-		function(){summon_dChat(HelloWorld, null, "vicious", 500, 90000)}
+		function(){summon_dChat(HelloWorld, null, "vicious", 1000, 90000)}
 		]
 	],	
 	[false, 17,	0,
@@ -63,7 +63,7 @@ var HelloWorld =
 				//	]
 				[
 				"yes or no",
-				"darkness evil terror"
+				""
 				],
 				
 				// Response Nodes
@@ -84,7 +84,7 @@ var HelloWorld =
 			[
 				function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.75, 90000)},
 				function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static_2.gif", 2000, 2000, 0.5, 90000)},			
-				function(){dJumpToDialogueNode(0, true, false)},			
+				function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)},			
 			]
 		],
 		// Node 2		

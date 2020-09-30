@@ -512,6 +512,7 @@ function timer(callback, delay) {
 	var dMsgCount = 0;
 	var dDialogueCount = 0;
 	var dDialogueNode = 0;
+	var dPrevDialogueNode = 0;
 
 	var c_array = [];
 	var c_timer = 0;
@@ -544,7 +545,9 @@ function summon_dChat(array, mem, mood, speed, timeout)
 	dSpamMood = mood;
 	dSpamSpeed = speed;
 	
-	dDialogueNode = 0;
+	dPrevDialogueNode = dDialogueNode;
+	
+	//dDialogueNode = 0;
 	dDialogueCount = 0;
 	dDialogueStop = c_array[dDialogueNode].length - 1;
 
@@ -741,6 +744,7 @@ function dWriteMore(){
 	var dQuestionType = "yes or no";
 	
 	var dAnswerNode;
+	var dKeyNode;
 
 	var word;
 	var letters;	
@@ -767,7 +771,6 @@ function dParseReply(){
 	dAnswerNode = c_array[dDialogueNode].length-1;
 	dKeyNode = c_array[dDialogueNode][dAnswerNode];
 	dQuestionType = dKeyNode[0][0];
-	//log(dQuestionType);
 	dContextStr = dKeyNode[0][1];
 	
 	wiki = plReply;
@@ -982,19 +985,6 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&formatversion=2&prop
 				wikiTitle = data.query.pages[dataNum].title;
 				//dGetWikiCat(wikiTitle);
 				
-/* 				if(typeof data.query.pages[dataNum].thumbnail !== 'undefined'){
-					data.query.pages[dataNum].piprop = 'thumbnail';
-					data.query.pages[dataNum].pilimit = 'max';
-					data.query.pages[dataNum].pithumbsize = 200;						
-					var wikiImg = data.query.pages[dataNum].thumbnail.source;
-				} else {
-					var wikiImg = "";
-				} */				
-				
-				//$('#resultArea').empty();
-				//let newTitle = '<h1 class="alert alert-info text-center"><strong>'+data.query.pages[dataNum].title+'</strong></h1>';
-				//$('#resultArea').html(`${newTitle}<div>${data.query.pages[dataNum].extract}</div>`);
-				
 				wikiText = data.query.pages[dataNum].extract
 				wikiText = wikiText.replace(/\s*\(.*?\)/g, "");
 				wikiText = wikiText.replace(/\[\.*?\]/g, "");	
@@ -1002,11 +992,6 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&formatversion=2&prop
 				//wikiText = wikiText.replace(/\./g, ". ");
 				
 				wikiText = wikiText.split(".");
-				
-				// wikiText[0] = wikiText[0] + wikiText[1];
-				// log(wikiText[0]);
-				// wikiText = wikiText.splice[1,1];
-		
 				
 				// check for abbreviations
 /* 				for (i=0; i < 4; i++){
@@ -1021,16 +1006,16 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&formatversion=2&prop
 					}	
 				} */				
 				
-				for (i=0; i < wikiText.length; i++){
+/* 				for (i=0; i < wikiText.length; i++){
 					var sentenceStop = wikiText[i].length-1;
 					var character = wikiText[i][sentenceStop]
 					if ( character == character.toUpperCase() ) {
 						wikiText[i] = wikiText[i].replace(/\./g, "-");
 					}
-				}
+				} */
 				
 				var wikiSnippet = "";
-				for (n=0; n < 3; n++){
+				for (n=0; n < 2; n++){
 					if (n < wikiText.length){
 						wikiSnippet = wikiSnippet + wikiText[n] + ". ";
 					}
@@ -1042,25 +1027,27 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&formatversion=2&prop
 		complete: function(data){
 			log("wiki search complete");
 			$('#textfield').focus();
-			//$('#textfield').val('');
+			//$('#textfield').val('type bullshit here');
 			
 			//get wikidata
 			if(wikiText !== ""){
-			//if(typeof data.query !== 'undefined'){
 				dGetWikiData(wikiTitle);
 			}			
 		},
 		error: function (xmlHttpRequest, textStatus, errorThrown) {
 			log("findWiki error");
 		}			
-	});  
+	});
 }
 
 
-function isUpperCaseAt(str, index) {
+
+/* function isUpperCaseAt(str, index) {
  return str.charAt(index).toUpperCase() === str.charAt(index);
 	}
-console.log(isUpperCaseAt('Js STRING EXERCISES', 1));	
+console.log(isUpperCaseAt('Js STRING EXERCISES', 1));	 */
+
+
 
 
 function dGetWikiData(wikiTitle)
@@ -1082,7 +1069,9 @@ function dGetWikiData(wikiTitle)
 			log(wikiData);
 			log("data search complete");
 			// get image
-			dGetWikiImage(wikiData, wikiTitle);			
+			//dGetWikiImage(wikiData, wikiTitle);
+			iri = "http://www.wikidata.org/entity/" + wikiData;
+			dLookUpEntity();
 		},
 		complete: function(){
 		},
@@ -1091,17 +1080,90 @@ function dGetWikiData(wikiTitle)
 		}
 	}); 	
 }	
+
+
+	var iri;
+	var wikiProps;
+	var isoLanguage = 'en';
 	
+	var wikiVideo;		// P10
+	var wikiGenre; 		// P136
+	
+	var wikiInstancesOf = [];	// P31
+	var wikiInstanceOf;
+	
+	var wikiSex;		// P21
+	var wikiJobs = [];
+	var wikiJob;		// P106
+	var wikiOffice;		// P39
+	var wikiBirthDate;  // P569
+	var wikiDeathDate;  // P570
+	var wikiImgHash;	
 
+function dLookUpEntity(){
+		console.log(iri);
+		// create URI-encoded query string to get names and IRIs
+		var string = 'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>'
+                    +'PREFIX wd: <http://www.wikidata.org/entity/>'
+                    +'PREFIX wdt: <http://www.wikidata.org/prop/direct/>'
+                    +'SELECT DISTINCT ?property ?value WHERE {'
+                    + '<' + iri + '> ?propertyUri ?valueUri.'
+                    +'?valueUri rdfs:label ?value.'
+                    +'?genProp <http://wikiba.se/ontology#directClaim> ?propertyUri.'
+                    +'?genProp rdfs:label ?property.'
+                    +'FILTER(substr(str(?propertyUri),1,36)="http://www.wikidata.org/prop/direct/")'
+                    +'FILTER(LANG(?property) = "'+isoLanguage+'")'
+                    +'FILTER(LANG(?value) = "'+isoLanguage+'")'
+                    +'}'
+                    +'ORDER BY ASC(?property)';
+		var encodedQuery = encodeURIComponent(string);
 
-	var wikiImgHash;
+		// send query to endpoint
+		$.ajax({
+			type: 'GET',
+			url: 'https://query.wikidata.org/sparql?query=' + encodedQuery,
+			headers: {
+				Accept: 'application/sparql-results+json'
+			},
+			success: function(returnedJson) {
+				//text = '';
+				//wikiProps = '';
+				wikiSex = '';
+				wikiJobs = [];
+				wikiJob = '';
+				wikiInstancesOf = [];
+				wikiInstanceOf = '';
+				for (i = 0; i < returnedJson.results.bindings.length; i++) {
+					property = returnedJson.results.bindings[i].property.value
+					value = returnedJson.results.bindings[i].value.value
+					if (property == "sex or gender"){
+						wikiSex = value;
+					}
+					if (property == "occupation"){
+						wikiJobs.push(value);
+						wikiJob = wikiJobs[0];
+					}
+					if (property == "instance of"){
+						wikiInstancesOf.push(value);
+						wikiInstanceOf = wikiInstancesOf[0];
+					}					
+					//wikiProps = wikiProps + text;
+				//$('#searchSpinner').hide();
+				}
+				//log(wikiSex);
+				dGetWikiImage(wikiData, wikiTitle);
+				//dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash);
+			}
+		});
+}
+	
 
 function dGetWikiImage(wikiData, wikiTitle)
 {	
 	let iurl = "https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&sites=enwiki&props=claims&titles=" + wikiTitle
 	//let iurl = "https://www.wikidata.org/w/api.php?action=wbgetclaims&formatversion=2&property=P18&entity=" + wikiData;
 	//let iurl = "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=" + wikiData + "&property=P18";
-	log(iurl)
+	log(iurl) 
 
 	$.ajax({
 		url: iurl,
@@ -1113,6 +1175,7 @@ function dGetWikiImage(wikiData, wikiTitle)
 		dataType: 'jsonp',
 		data: '',   
 		success: function(data){
+			// Image
 			if ( data.entities[wikiData].claims.hasOwnProperty('P18') ){;
 				wikiImg = Object(data.entities[wikiData].claims.P18[0].mainsnak.datavalue.value);
 				wikiImg = wikiImg.replace(/\s/gi, "_");
@@ -1122,6 +1185,8 @@ function dGetWikiImage(wikiData, wikiTitle)
 				log("no image found");
 				dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash);
 			}
+			
+			//dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash);
 		},
 		complete: function(){
 			log("image search complete");
@@ -1162,7 +1227,8 @@ function dGetFileHash(wikiImg)
 
 function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash)
 {
-	if(wikiImg !== ""){
+	
+	if (wikiImg !== ""){
 		var wikiImgLoad = "<br/><img width='100%' onload='scrollToBottom()' src='https://upload.wikimedia.org/wikipedia/commons/"
 		+ wikiImgHash[0] + "/" + wikiImgHash[0] + wikiImgHash[1] +  "/" + wikiImg + "' />"
 		wikiText = wikiText + wikiImgLoad;
@@ -1170,6 +1236,23 @@ function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash)
 	} else {
 		log("no image");
 	}
+	// add sex
+	if (wikiSex !== ""){
+		wikiText = wikiText + "<br/> sex: " + wikiSex;
+	}
+	// add job
+	if (wikiJob !== ""){
+		wikiText = wikiText + "<br/> job: " + wikiJob;
+	}	
+	// add type
+	if (wikiInstanceOf !== ""){
+		wikiText = wikiText + "<br/> type of: " + wikiInstanceOf;
+	}
+
+/* 	if(wikiDeathDate !== ""){
+		wikiText = wikiText + "<br/> this sukker is dead! ";
+	}	 */
+	
 	dWriteDarkWiki(wikiText, wikiTitle);
 }
 
@@ -1189,7 +1272,7 @@ function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash)
 } */
 
 
-function dGetWikiCat(wikiTitle)
+/* function dGetWikiCat(wikiTitle)
 {
 	log(wikiTitle);
 
@@ -1218,7 +1301,7 @@ function dGetWikiCat(wikiTitle)
 			}
 		})
 		.catch(function(error){console.log(error);});
-}
+} */
 
 
 // print an article
