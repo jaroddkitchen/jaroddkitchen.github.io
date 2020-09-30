@@ -910,6 +910,7 @@ function dJumpToDialogueNode(num, dlis, restart){
 	dListen = dlis;
 	dTaunt = false;
 	
+	dPrevDialogueNode = dDialogueNode;
 	dDialogueNode = num;
 	dDialogueStop = c_array[dDialogueNode].length - 1;
 	
@@ -946,10 +947,9 @@ function titleCase(str)
 	var wikiTitle = "";
 	var wikiData = "";
 	var wikiImg = "";
-	//var wikiCat = "";
-	//var wikiCat = " film movie";
+	
+	var wikiDialogueNode = [];
 
-//
 
 function findWiki(wikiStr)
 {
@@ -991,7 +991,7 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&formatversion=2&prop
 				wikiText = wikiText.replace(/<(?:.|\n)*?>/gm, '');
 				//wikiText = wikiText.replace(/\./g, ". ");
 				
-				wikiText = wikiText.split(".");
+				wikiText = wikiText.split(". ");
 				
 				// check for abbreviations
 /* 				for (i=0; i < 4; i++){
@@ -1021,7 +1021,28 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&formatversion=2&prop
 					}
 				}
 				
-				wikiText = wikiSnippet;
+				wikiDialogueNode = wikiText;
+				wikiDialogueNode[0] = wikiSnippet;
+				wikiDialogueNode.splice(1,1);
+				wikiDialogueNode.splice(5);
+
+				if (dQuestionType !== "wikiSearch"){
+					wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);
+				} else {
+					if (wikiText !== ""){
+						pos = 0; //GOODSEARCH
+					} else {
+						pos = 1; //BADSEARCH
+					}
+					for (i=0; i < keyactions[pos].length; i++){					
+						wikiDialogueNode.push([ keyactions[pos][i] ]);
+					}
+				}
+				
+				c_array[c_array.length-1] = wikiDialogueNode;
+				log(c_array[c_array.length-1]);	
+				
+				wikiText = wikiDialogueNode[0];
 			}
 		},
 		complete: function(data){
@@ -1225,6 +1246,12 @@ function dGetFileHash(wikiImg)
 }
 
 
+function dRunVarDialogue()
+{
+	dJumpToDialogueNode(c_array[c_array.length-1],false,true);
+}
+
+
 function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash)
 {
 	
@@ -1253,7 +1280,8 @@ function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash)
 		wikiText = wikiText + "<br/> this sukker is dead! ";
 	}	 */
 	
-	dWriteDarkWiki(wikiText, wikiTitle);
+	dJumpToDialogueNode(c_array.length-1,false,true);
+	//dWriteDarkWiki(wikiText, wikiTitle);
 }
 
 
@@ -1313,14 +1341,15 @@ function dWriteDarkWiki(wikiText, wikiTitle){
 		cutTopOfChat();
 		scrollToBottom();
 	if (was_taunting) {dTaunt = true};
+	
 	if (dQuestionType !== "wikiSearch"){ 
 		dListen = true;
 		dWaitsForResponse();
 	} else {
 		if (wikiText !== ""){
-			pos = 0;
+			pos = 0; //GOODSEARCH
 		} else {
-			pos = 1;
+			pos = 1; //BADSEARCH
 		}
 		for (i=0; i < keyactions[pos].length; i++){
 			keyactions[pos][i]();

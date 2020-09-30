@@ -114,10 +114,14 @@ var HelloWorld =
 		// Node 6
 		["hmmm. i dont know that one", "maybe you misspelt it. like a dum ass", "try aggin or name a different one.",
 			[ function(){dJumpToDialogueNode(4, true, true)} ]
-		],		
+		],
 		// Node 7
 		["so thats how you wanna play it", "the strong silent type", "ok kiddo. be that way", "you will regret this",
 			[ function(){banish_allLayers(2000)}, function(){banish_allSounds(2000)} ]
+		],
+		// Variable Node
+		[
+			//[ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]
 		]		
 ];
 	HelloWorld.name = "Hello World!";
