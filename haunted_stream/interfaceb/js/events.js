@@ -56,7 +56,18 @@ var HelloWorld =
 		// Node 0
 		["hello world","i can see you","im right over here ------>","i wanna meet you","do you wanna meet me?",
 			[ 
-				["yes or no", null],
+				//	Context node
+				//	[
+				//		type of question,
+				// 		list of contextual words ('!' removes word from context,'null' turns off wiki response engine)
+				//	]
+				[
+				"yes or no",
+				"darkness evil terror"
+				],
+				
+				// Response Nodes
+				// [action word (after translation)],[result functions]
 				["ACCEPT",
 					[function(){dJumpToDialogueNode(3, false, true)}]
 				],
@@ -87,7 +98,7 @@ var HelloWorld =
 		// Node 4		
 		["hay i gotta nother question","whats the name of ur favorit movie?",
 			[
-				["wikiSearch", null],	
+				["wikiSearch", "film movie"],	
 				["GOODSEARCH",
 					[function(){dJumpToDialogueNode(5, false, true)}]
 				],

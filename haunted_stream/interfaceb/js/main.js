@@ -745,13 +745,6 @@ function dWriteMore(){
 	var word;
 	var letters;	
 	var lastWord;
-
-	var searchStr;	
-	var wiki = "";
-	var wikiText = "";
-	var wikiTitle = "";
-	var wikiCat = "";
-	//var wikiCat = " film movie";
 	
 	var valid_nouns = [];
 	var valid_verbs = [];
@@ -760,6 +753,7 @@ function dWriteMore(){
 	var keywords = [];
 	var keyactions = [];	
 	var triggerWords = [];
+	var dContextStr;
 	var pos;
 
 
@@ -773,7 +767,8 @@ function dParseReply(){
 	dAnswerNode = c_array[dDialogueNode].length-1;
 	dKeyNode = c_array[dDialogueNode][dAnswerNode];
 	dQuestionType = dKeyNode[0][0];
-	log(dQuestionType);
+	//log(dQuestionType);
+	dContextStr = dKeyNode[0][1];
 	
 	wiki = plReply;
 	if (dQuestionType == "wikiSearch") {
@@ -942,13 +937,20 @@ function titleCase(str)
 //This module retrieves the a Wikipedia article using JSONP with the Wikipedia API: http://en.wikipedia.org/w/api.php
 //https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts|pageimages&exintro&explaintext&generator=search&gsrsearch=intitle:planet%20mars&gsrlimit=1&redirects=1
 
+	//var searchStr;	
+	var wiki = "";
+	var wikiText = "";
+	var wikiTitle = "";
 	var wikiData = "";
 	var wikiImg = "";
+	//var wikiCat = "";
+	//var wikiCat = " film movie";
+
 //
 
 function findWiki(wikiStr)
 {
-let surl = 'https://en.wikipedia.org/w/api.php?action=query&formatversion=2&prop=extracts|pageimages&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=1&gsrsearch=' + wikiStr + wikiCat;
+let surl = 'https://en.wikipedia.org/w/api.php?action=query&formatversion=2&prop=extracts|pageimages&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=1&gsrsearch=' + wikiStr + " " + dContextStr;
 	
     $.ajax({
       url: surl,
@@ -996,9 +998,45 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&formatversion=2&prop
 				wikiText = data.query.pages[dataNum].extract
 				wikiText = wikiText.replace(/\s*\(.*?\)/g, "");
 				wikiText = wikiText.replace(/\[\.*?\]/g, "");	
-				wikiText = wikiText.replace(/<(?:.|\n)*?>/gm, '')			
-				wikiText = wikiText.split(". ");	
-				wikiText = wikiText[1] + ". " + wikiText[2] + ". "
+				wikiText = wikiText.replace(/<(?:.|\n)*?>/gm, '');
+				//wikiText = wikiText.replace(/\./g, ". ");
+				
+				wikiText = wikiText.split(".");
+				
+				// wikiText[0] = wikiText[0] + wikiText[1];
+				// log(wikiText[0]);
+				// wikiText = wikiText.splice[1,1];
+		
+				
+				// check for abbreviations
+/* 				for (i=0; i < 4; i++){
+					var wikiSentence = wikiText[i].split(" ");
+					var wikiSentenceLength = wikiSentence.length;
+					for (n=0; n < wikiSentenceLength; n++){
+						var wikiSentenceWordLength = wikiSentence[n].length;					
+						if (wikiSentenceWordLength < 2){
+							wikiText[i] = wikiText[i] + wikiText[i+1];
+							wikiText = wikiText.splice[i+1];
+						}
+					}	
+				} */				
+				
+				for (i=0; i < wikiText.length; i++){
+					var sentenceStop = wikiText[i].length-1;
+					var character = wikiText[i][sentenceStop]
+					if ( character == character.toUpperCase() ) {
+						wikiText[i] = wikiText[i].replace(/\./g, "-");
+					}
+				}
+				
+				var wikiSnippet = "";
+				for (n=0; n < 3; n++){
+					if (n < wikiText.length){
+						wikiSnippet = wikiSnippet + wikiText[n] + ". ";
+					}
+				}
+				
+				wikiText = wikiSnippet;
 			}
 		},
 		complete: function(data){
@@ -1017,6 +1055,13 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&formatversion=2&prop
 		}			
 	});  
 }
+
+
+function isUpperCaseAt(str, index) {
+ return str.charAt(index).toUpperCase() === str.charAt(index);
+	}
+console.log(isUpperCaseAt('Js STRING EXERCISES', 1));	
+
 
 function dGetWikiData(wikiTitle)
 {
@@ -1118,7 +1163,7 @@ function dGetFileHash(wikiImg)
 function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash)
 {
 	if(wikiImg !== ""){
-		var wikiImgLoad = "<br/><img width='100%' src='https://upload.wikimedia.org/wikipedia/commons/"
+		var wikiImgLoad = "<br/><img width='100%' onload='scrollToBottom()' src='https://upload.wikimedia.org/wikipedia/commons/"
 		+ wikiImgHash[0] + "/" + wikiImgHash[0] + wikiImgHash[1] +  "/" + wikiImg + "' />"
 		wikiText = wikiText + wikiImgLoad;
 		log(wikiImgLoad);
