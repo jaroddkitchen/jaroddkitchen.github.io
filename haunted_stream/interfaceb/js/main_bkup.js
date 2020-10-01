@@ -424,6 +424,27 @@ setInterval(function() {
 
 
 
+// Ubiquitous interval object
+function interval(func, wait, times){
+    var interv = function(w, t){
+        return function(){
+            if(typeof t === "undefined" || t-- > 0){
+                setTimeout(interv, w);
+                try{
+                    func.call(null);
+                }
+                catch(e){
+                    t = 0;
+                    throw e.toString();
+                }
+            }
+        };
+    }(wait, times);
+
+    setTimeout(interv, wait);
+};
+
+
 // Ubiquitous timer object
 function timer(callback, delay) {
     var id, started, remaining = delay, running
@@ -468,7 +489,7 @@ function timer(callback, delay) {
 
 // Moods	
 	var dGlee = 5;
-	var dPatience = 5;
+	var dPatience = 4;
 	var dCruelty = 5;
 	var dAnger = 5;
 	var dFear = 5;
@@ -491,16 +512,12 @@ function timer(callback, delay) {
 	var dMsgCount = 0;
 	var dDialogueCount = 0;
 	var dDialogueNode = 0;
+	var dPrevDialogueNode = 0;
 
 	var c_array = [];
 	var c_timer = 0;
+	var dChatTimer;
 	var dChatTimeout;
-
-	var dTauntTimeout;
-	var taunt_timer;
-	var taunt_timer;
-	var dTaunt = false;
-	var dListen = true;
 	
 	var plReply;
 	
@@ -511,10 +528,10 @@ function timer(callback, delay) {
 
 function summon_dChat(array, mem, mood, speed, timeout)
 {
-	var video = document.getElementsByTagName('video')[0];
+/* 	var video = document.getElementsByTagName('video')[0];
 	var webcamvideo = document.getElementsByTagName('video')[1];
 	video.pause();
-	webcamvideo.pause();
+	webcamvideo.pause(); */
 	
 	curEventId = timedEvents[0][2];
 	
@@ -528,12 +545,15 @@ function summon_dChat(array, mem, mood, speed, timeout)
 	dSpamMood = mood;
 	dSpamSpeed = speed;
 	
-	dDialogueNode = 0;
+	dPrevDialogueNode = dDialogueNode;
+	
+	//dDialogueNode = 0;
 	dDialogueCount = 0;
 	dDialogueStop = c_array[dDialogueNode].length - 1;
 
 	dTaunt = false;
-	dTauntTimeout = timeout/2;	
+	//dWaitTimeout = timeout/4;
+	dWaitTimeout = dPatience * 1000;	
 	dListen = true;
 	
 	spamming = false;
@@ -548,21 +568,22 @@ function summon_dChat(array, mem, mood, speed, timeout)
 	
 	dChatTimeout = timeout;
 	c_timer = new timer(function() {banish_dChat()}, dChatTimeout);
-	c_timer.pause();
+	//c_timer.pause();
 	
-	var dChatTimeLeft = c_timer.getTimeLeft();
-	setInterval(function() {
+	dChatTimeLeft = c_timer.getTimeLeft();
+	var dChatTimer = setInterval(function() {
 		if (dChatTimeLeft > 0){
 			dChatTimeLeft = c_timer.getTimeLeft();
 			document.getElementById("chapter-time").innerHTML = Math.round(dChatTimeLeft/1000);
 		} else {
 			dChatTimeLeft = 0;
-			clearInterval();
+			clearInterval(dChatTimer);
 		}
 	}
 	, 400);
 	
-	console.log("demon speaks");	
+	console.log("demon speaks");
+	//$('#textfield').prop("disabled", true);
 }
 
 
@@ -573,8 +594,13 @@ function summon_dChat(array, mem, mood, speed, timeout)
 //--------------------------
 
 function banish_dChat(){
-	if (dSpamming === true){	
+	//if (dSpamming === true){	
 		dSpamming = false;
+		dTaunt = false;
+		dListen = false;
+		clearInterval(waitInterval);
+		dChatTimeLeft = 0;
+		clearInterval(dChatTimer);		
 
 		var element = $("#chattext");
 		elements = document.querySelectorAll('#chatbubble.darkbubble, #chatbubble.imgbubble');
@@ -588,9 +614,8 @@ function banish_dChat(){
 		}
 		
 		if (c_array.exit == "banishAll"){
-			banish_Layer(0, dSpamSpeed);
-			banish_Layer(1, dSpamSpeed);
-			banish_Layer(2, dSpamSpeed);
+			banish_allLayers(dSpamSpeed);
+			banish_allSounds(dSpamSpeed);
 			banish_Apparition();
 		}
 		
@@ -598,8 +623,10 @@ function banish_dChat(){
 		
 		console.log("demon is silent");
 		document.getElementById("chapter").innerHTML = "";
-	}
+		document.getElementById("chapter-time").innerHTML = "";
+	//}
 }
+
 
 // erase all demon messages 
 function delayedFade(i, el){
@@ -644,45 +671,64 @@ function restoreChat(){
 // Listening For Response
 //--------------------------
 
-function dWaitsForResponse(){
-	
+	var dChatTimeLeft;
+	var dListen = true;
+
+	var dWaitTimeout;
+	var dTaunt = false;
+
+	var waitInterval;
+
+function dWaitsForResponse()
+{	
 	plReply = null;
+	
+	//$('#textfield').prop("disabled", false);
+	//$('#textfield').focus();
 	
 	if (!dListen){
 		console.log("demon stopped listening." + dSpamType);
 		return;
 	}
+	
+	console.log("demon is listening for " + dQuestionType);
 
-	console.log("demon is listening...");
+	//Set wait-time according to demon's patience stat	
+	dWaitTimeout = dPatience * 1000;
 
-	taunt_timer = new timer(function() {writeDarkTaunt()}, dTauntTimeout);
-	var dTauntTimeLeft = taunt_timer.getTimeLeft();
-	dTauntTimeout = c_timer.getTimeLeft()/2;
-
-	if (dTauntTimeLeft > 2000){
-		dTauntTimeout = c_timer.getTimeLeft()/2;
-	} else {
-		dTauntTimeLeft = 2000;
-		dListen = false;
-		dTaunt = false;
-		clearInterval(tauntInterval);
-	}
-
-	var tauntInterval = setInterval(function() {
-		if (dTauntTimeLeft > 1000){
-			dTauntTimeLeft = taunt_timer.getTimeLeft();
-			document.getElementById("debug").innerHTML = Math.round(dTauntTimeLeft/1000);
-		} else {
-			dTauntTimeLeft = 1000;
-			clearInterval();
+	var waitInterval = setInterval(function()
+	{
+		if (dSpamming){
+			if (plReply !== null) {
+				dListen = false;
+				dTaunt = false;
+				stopInterval(waitInterval);
+				console.log("player responded");
+				dWriteMore();			
+			} else {
+				dWaitTimeout = dWaitTimeout - 1000;
+				if (dWaitTimeout == 0){
+					dWriteMore();
+					dWaitTimeout = dPatience * 1000;
+					stopInterval(waitInterval);
+				}			
+			}
 		}
+		//log("demon waiting"); 
+		document.getElementById("debug").innerHTML = Math.round(dWaitTimeout/1000);				
 	}
-	, 400);
+	, 1000);
 }
+
+function stopInterval(i) { 
+   clearInterval(i);
+   //log(i + " was cleared"); 
+} 
+
 
 	var dRepeatQuestion = true;
 
-function writeDarkTaunt(){
+function dWriteMore(){
 	if (plReply!=null){;
 		dParseReply();
 		dWaitsForResponse();
@@ -695,94 +741,131 @@ function writeDarkTaunt(){
 }
 
 
-function dParseReply(){
-	//banish_dChat();
-	dStrToArray(plReply);
-	//dTauntTimeLeft = 0;
-	//dListen = false;
-	//dTaunt = false;
-	plReply=null;
-	
-/* 	dDialogueCount = 0;
-	dDialogueNode=1;
-	dDialogueStop = c_array[dDialogueNode].length - 1;
+//--------------------------
+// Parse the chat reply
+//--------------------------
 
-	dSpamming = true;
-	dKeepSpamming(); */
+	var dQuestionNode;
+	var dQuestionType = "";
+	
+	var dAnswerNode;
+	var dKeyNode;
+
+	var word;
+	var letters;	
+	var lastWord;
+	
+	var valid_nouns = [];
+	var valid_verbs = [];
+	var non_words = [];
+	
+	var keywords = [];
+	var keyactions = [];	
+	var triggerWords = [];
+	var dContextStr;
+	var pos;
+
+
+// Prepare parser 
+function dParseReply(){
+	valid_nouns = [];
+	valid_verbs = [];
+	non_words = [];
+	triggerWords = [];	
+	
+	dSenseNode();
+	
+	wiki = plReply;
+	if (dQuestionType == "wikiSearch") {
+		dGetWiki(wiki);
+	} else {	
+		dStrToArray(plReply);
+	}
+	plReply=null;
 	return;
 }
 
+
+function dSenseNode(){
+	dAnswerNode = c_array[dDialogueNode].length-1;
+	dKeyNode = c_array[dDialogueNode][dAnswerNode];
+	dQuestionType = dKeyNode[0][0];
+	dContextStr = dKeyNode[0][1];
+}
+
+
+function dGetWiki(wiki)
+{		
+	keywords = [];
+	keyactions = [];
+	
+	for (var i = 1; i < dKeyNode.length; i++){
+		keywords.push(dKeyNode[i][0]);
+		keyactions.push(dKeyNode[i][1]);
+		log(dKeyNode[i][1]);
+	}	
+	
+	findWiki(wiki);
+}
 
 
 function dStrToArray(str)
 {
 	var newStr = str;
+	
 	newStr = newStr.replace(/[.*+\-!^${}()|[\]\\]/gi, "");
 	newStr = newStr.replace(/\?/gi, " ? ");
+	newStr = newStr.replace(/'/gi, "");
 	newStr = newStr.replace(/yes|yeah|okay|ok|yup|yep|agree|affirmative|always/gi, "ACCEPT");
 	newStr = newStr.replace(/noop|nope|no|nay|nah|naw|negative|disagree|never/gi, "DECLINE");
-	
-    // Convert to uppercase
-	//let strUpper = newStr.toUpperCase();
-	let strUpper = newStr;
+	newStr = newStr.replace(/maybe|dont know|not sure|depends/gi, "MAYBE");
+
 
     // Get an array of all the words	
-    playerwords = strUpper.split( " " );
+    playerwords = newStr.split( " " );
 	
 	// Eliminate removal words
-	//const removeWords = ["A", "AS", "THE", "TO", "OF", "", " "]; 
 	const removeWords = ["", " "];
 	playerwords = playerwords.filter( ( el ) => !removeWords.includes( el ) );	
 
-	triggerWords = [];
-	
+	// search for words that trigger actions
 	for (var i = 0; i < playerwords.length; i++){	
 		dSearchCommands(playerwords[i]);
 	}
-	
 	var lastValidWord = triggerWords.length - 1;	
 	
+	// form a response based on the last validated word
 	dAssembleResponse(triggerWords[lastValidWord]);
 	console.log(playerwords);
 }
 
 
-
-	var wordRaw;
-
 // Search for keyword triggers
 function dSearchCommands(word)
 {
-	let wordRaw = word;
-	keynouns = [];
-	keyverbs = [];
+	keywords = [];
 	keyactions = [];
 
-	var dAnswerNode = c_array[dDialogueNode].length-1;
+	dAnswerNode = c_array[dDialogueNode].length-1;
 	dKeyNode = c_array[dDialogueNode][dAnswerNode];
 	
 	for (var i = 0; i < dKeyNode.length; i++){
-		keynouns.push(dKeyNode[i][0]);
+		keywords.push(dKeyNode[i][0]);
 		keyactions.push(dKeyNode[i][1]);
-		//console.log(dKeyNode[i][0]);
 	}
 	
-	const result = keynouns.includes(wordRaw);
-	pos = keynouns.indexOf(wordRaw);
+	// validate english
+	findWord(word);
 	
-	findWord(wordRaw);
-	
+	//check for relevance
+	const result = keywords.includes(word);
+	pos = keywords.indexOf(word);
 	if (result){
 		curResponse = pos;
-		triggerWords.push(wordRaw);		
+		triggerWords.push(word);
     }
 }
 
-
-
-	var lastWord;
-	var letters;
-	var wiki = "";
 
 // Conduct a dictionary search
 function findWord(letters) {
@@ -795,130 +878,521 @@ function findWord(letters) {
 	var v = verbs.includes(searchword);	
 	if (v==true){
 		console.log(searchword + " is a verb!");
-		var lastWord = verbs.length - 1;
-	} else {
-		//console.log("No! " + searchword + " is NOT a word!");
-		var lastWord = verbs.length - 1;
+		valid_verbs.push(searchword);
 	}
 
-	
 	// search for nouns	
 	var n = nouns.includes(searchword);
 	if (n==true){
 		console.log(searchword + " is a noun!");
-		var lastWord = nouns.length - 1;
-	} else {
-		//console.log("No! " + searchword + " is NOT a word!");
-		var lastWord = nouns.length - 1;	
+		valid_nouns.push(searchword);
 	}
 	
 	// neither a noun or a verb
 	if (!v){
 		if(!n){
 			console.log(searchword + " is not a noun or a verb!");
+			non_words.push(searchword);
 		}
 	}
-	
-	wiki = searchword;
 }
 
 
 // Trigger a reply function
 function dAssembleResponse(word)
 {
+	// trigger actions
 	if (triggerWords.length > 0) {		
 		console.log('"' + word + '" will trigger a game action.');
-		keyactions[pos]();
+		for (i=0; i < keyactions[pos].length; i++){
+			keyactions[pos][i]();
+		}
+	// search wiki
 	} else {
-		curResponse = 0;
-		console.log('This word does not affect the game');
-		fetchWiki(wiki);
+		console.log('This word does not affect the story');
+		findWiki(wiki);
 	}
 }
 
 
-function dJumpToDialogueNode(num){
-	dTauntTimeLeft = 0;
-	dListen = false;
-	dTaunt = false;		
-
-	dDialogueCount = 0;
+function dJumpToDialogueNode(num, dlis, restart){
+	dListen = dlis;
+	dTaunt = false;
+	
+	dPrevDialogueNode = dDialogueNode;
 	dDialogueNode = num;
 	dDialogueStop = c_array[dDialogueNode].length - 1;
+	
+	if (restart){
+		dDialogueCount = 0;
+	} else {
+		dDialogueCount = dDialogueStop;
+	}
+
+	dSenseNode();
 
 	dSpamming = true;
 	dKeepSpamming();
 }
 
 
-
-//An approch to getting the summary / leading paragraphs / section 0 out of Wikipedia articlies within the browser using JSONP with the Wikipedia API: http://en.wikipedia.org/w/api.php
-
-
-
-		var wikiText = null;
-
-function fetchWiki(searchword){
-
-//var url = "http://en.wikipedia.org/wiki/Stack_Overflow";
-//var title = url.split("/");
-
-//title = title[title.length - 1];
-title = searchword;
-console.log("The title is " + title);
-
-	//Get Leading paragraphs (section 0)
-	$.getJSON("http://en.wikipedia.org/w/api.php?action=parse&page=" + title + "&prop=text&section=0&format=json&callback=?", function (data) {
-		for (text in data.parse.text) {
-			var text = data.parse.text[text].split("<p>");
-			var wikiText = "";
-
-			for (p in text) {
-				//Remove html comment
-				text[p] = text[p].split("<!--");
-				if (text[p].length > 1) {
-					text[p][0] = text[p][0].split(/\r\n|\r|\n/);
-					text[p][0] = text[p][0][0];
-					text[p][0] += "</p> ";
-				}
-				text[p] = text[p][0];
-
-				//Construct a string from paragraphs
-				//if (text[p].indexOf("</p>") == text[p].length - 5) {
-				if (text[p].indexOf("</p>") == text[p].length - 4) {
-					var htmlStrip = text[p].replace(/<(?:.|\n)*?>/gm, '') //Remove HTML
-					var splitNewline = htmlStrip.split(/\r\n|\r|\n/); //Split on newlines
-					for (newline in splitNewline) {
-						if (splitNewline[newline].substring(0, 11) != "Cite error:") {
-							wikiText += splitNewline[newline];
-							wikiText += "<br>";
-						}
-					}
-				}
-			}
-			
-			wikiText = wikiText.substring(0, wikiText.length - 2); //Remove extra newline
-			wikiText = wikiText.split("<br>"); 
-			wikiText = wikiText[0];
-			//wikiText = wikiText.replace(/\[\d+\]/g, ""); //Remove reference tags (e.x. [1], [4], etc)
-			wikiText = wikiText.replace(/\[\d+\]/g, ""); //Remove reference tags (e.x. [1], [4], etc)
-			//document.getElementById('textarea').value = wikiText
-			//document.getElementById('chapter').innerHTML = wikiText
-			dPostArticle(wikiText);
-		}
-	});
+function titleCase(str)
+{
+  return str.toLowerCase().split(' ').map(function(w) {
+    return (w.charAt(0).toUpperCase() + w.slice(1));
+  }).join(' ');
 }
 
 
 
 
+//----------------------------------------------------
+// Wikipedia Context Module
+//----------------------------------------------------
+//This module retrieves the a Wikipedia article using JSONP with the Wikipedia API: http://en.wikipedia.org/w/api.php
+//https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts|pageimages&exintro&explaintext&generator=search&gsrsearch=intitle:planet%20mars&gsrlimit=1&redirects=1
+
+	//var searchStr;	
+	var wiki = "";
+	var wikiText = "";
+	var wikiTitle = "";
+	var wikiData = "";
+	var wikiImg = "";
+	
+	var wikiDialogueNode = [];
+
+
+function findWiki(wikiStr)
+{
+let surl = 'https://en.wikipedia.org/w/api.php?action=query&formatversion=2&prop=extracts|pageimages&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=1&gsrsearch=' + wikiStr + " " + dContextStr;
+	
+    $.ajax({
+      url: surl,
+      header: {
+        'Access-Control-Allow-Origin' : '*',
+        'Content-Type': 'application/json'
+      },
+      method: 'GET',
+      dataType: 'jsonp',
+      data: '',
+      beforeSend: function(){
+		  log("loading");
+        // $("#loader").show();
+        $('#chapter-time').html('<div class="text-center"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: none; display: block;" width="25%" height="25%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid"><g transform="translate(50 50)"><g transform="scale(0.7)"><g transform="translate(-50 -50)"><g transform="translate(-3.20642 -20)"><animateTransform attributeName="transform" type="translate" repeatCount="indefinite" dur="1s" values="-20 -20;20 -20;0 20;-20 -20" keyTimes="0;0.33;0.66;1"></animateTransform><path fill="#5699d2" d="M44.19 26.158c-4.817 0-9.345 1.876-12.751 5.282c-3.406 3.406-5.282 7.934-5.282 12.751 c0 4.817 1.876 9.345 5.282 12.751c3.406 3.406 7.934 5.282 12.751 5.282s9.345-1.876 12.751-5.282 c3.406-3.406 5.282-7.934 5.282-12.751c0-4.817-1.876-9.345-5.282-12.751C53.536 28.033 49.007 26.158 44.19 26.158z"></path><path fill="#1d3f72" d="M78.712 72.492L67.593 61.373l-3.475-3.475c1.621-2.352 2.779-4.926 3.475-7.596c1.044-4.008 1.044-8.23 0-12.238 c-1.048-4.022-3.146-7.827-6.297-10.979C56.572 22.362 50.381 20 44.19 20C38 20 31.809 22.362 27.085 27.085 c-9.447 9.447-9.447 24.763 0 34.21C31.809 66.019 38 68.381 44.19 68.381c4.798 0 9.593-1.425 13.708-4.262l9.695 9.695 l4.899 4.899C73.351 79.571 74.476 80 75.602 80s2.251-0.429 3.11-1.288C80.429 76.994 80.429 74.209 78.712 72.492z M56.942 56.942 c-3.406 3.406-7.934 5.282-12.751 5.282s-9.345-1.876-12.751-5.282c-3.406-3.406-5.282-7.934-5.282-12.751 c0-4.817 1.876-9.345 5.282-12.751c3.406-3.406 7.934-5.282 12.751-5.282c4.817 0 9.345 1.876 12.751 5.282 c3.406 3.406 5.282 7.934 5.282 12.751C62.223 49.007 60.347 53.536 56.942 56.942z"></path></g></g></g></g></svg></div>')
+       },   
+		success: function(data){
+			wikiText = "";
+			wikiData = "";
+			wikiImg = "";
+			wikiImgHash = "";
+			
+			if(typeof data.query == 'undefined'){
+				//Respond with random insult
+				dWriteDarkWiki(wikiText, wikiTitle);
+			} else {
+				dataNum = Object.keys(data.query.pages)[0];
+	
+				//get title
+				wikiTitle = data.query.pages[dataNum].title;
+				//dGetWikiCat(wikiTitle);
+				
+				wikiText = data.query.pages[dataNum].extract
+				wikiText = wikiText.replace(/\s*\(.*?\)/g, "");
+				wikiText = wikiText.replace(/\[\.*?\]/g, "");	
+				wikiText = wikiText.replace(/<(?:.|\n)*?>/gm, '');
+				
+				replaceHonorifics();
+				log("replacing honorifics");				
+				
+				wikiText = wikiText.split(".");
+				for (i=0; i < wikiText.length; i++){ 
+					wikiText[i] = wikiText[i] + ".";
+				}
+				
+				wikiDialogueNode = wikiText;
+				wikiDialogueNode[0] = wikiDialogueNode[0] + wikiDialogueNode[1];
+				wikiDialogueNode.splice(1,1);
+				wikiDialogueNode.splice(3);
+
+				if (dQuestionType !== "wikiSearch"){
+					var wikismTitle = wikiTitle.toLowerCase();
+					wikiDialogueNode.push("but we aint talking about " + wikismTitle + " rite now");
+					wikiDialogueNode.push("i asxed u a qwestion");
+					wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);
+				} else {
+				// Score context
+					if (wikiText !== ""){
+						pos = 0; //GOODSEARCH
+					} else {
+						pos = 1; //BADSEARCH
+					}
+					for (i=0; i < keyactions[pos].length; i++){					
+						wikiDialogueNode.push([ keyactions[pos][i] ]);
+					}
+				}					
+				
+				c_array[c_array.length-1] = wikiDialogueNode;
+				wikiText = wikiDialogueNode[0];
+			}
+		},
+		complete: function(data){
+			log("wiki search complete");
+			$('#textfield').focus();
+			//$('#textfield').val('type bullshit here');
+			
+			//get wikidata
+			if (wikiText !== ""){
+				dGetWikiData(wikiTitle);
+			}			
+		},
+		error: function (xmlHttpRequest, textStatus, errorThrown) {
+			log("findWiki error");
+		}			
+	});
+}
+
+
+
+/* function isUpperCaseAt(str, index) {
+ return str.charAt(index).toUpperCase() === str.charAt(index);
+	}
+console.log(isUpperCaseAt('Js STRING EXERCISES', 1));	 */
 
 
 
 
+function dGetWikiData(wikiTitle)
+{
+	let qurl = "https://en.wikipedia.org/w/api.php?action=query&prop=pageprops&titles="+wikiTitle+"&format=json";
+
+	$.ajax({
+		url: qurl,
+		header: {
+			'Access-Control-Allow-Origin' : '*',
+			'Content-Type': 'application/json'
+		},
+		method: 'GET',
+		dataType: 'jsonp',
+		data: '',   
+		success: function(data){
+			dataNum = Object.keys(data.query.pages)[0];
+			wikiData = data.query.pages[dataNum].pageprops.wikibase_item;
+			log(wikiData);
+			log("data search complete");
+			// get image
+			//dGetWikiImage(wikiData, wikiTitle);
+			iri = "http://www.wikidata.org/entity/" + wikiData;
+			dLookUpEntity();
+		},
+		complete: function(){
+		},
+		error: function (xmlHttpRequest, textStatus, errorThrown) {
+			log("getWikiData error");
+		}
+	}); 	
+}	
 
 
+	var iri;
+	var wikiProps;
+	var isoLanguage = 'en';
+	
+	var wikiVideo;		// P10
+	var wikiGenre; 		// P136
+	
+	var wikiInstancesOf = [];	// P31
+	var wikiInstanceOf;
+	
+	var wikiSex;		// P21
+	var wikiJobs = [];
+	var wikiJob;		// P106
+	var wikiOffice;		// P39
+	var wikiBirthDate;  // P569
+	var wikiDeathDate;  // P570
+	
+	var wikiImages = [];
+	var wikiImage;
+	var wikiImgHash;	
 
+function dLookUpEntity(){
+		console.log(iri);
+		// create URI-encoded query string to get names and IRIs
+		var string = 'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>'
+                    +'PREFIX wd: <http://www.wikidata.org/entity/>'
+                    +'PREFIX wdt: <http://www.wikidata.org/prop/direct/>'
+                    +'SELECT DISTINCT ?property ?value WHERE {'
+                    + '<' + iri + '> ?propertyUri ?valueUri.'
+                    +'?valueUri rdfs:label ?value.'
+                    +'?genProp <http://wikiba.se/ontology#directClaim> ?propertyUri.'
+                    +'?genProp rdfs:label ?property.'
+                    +'FILTER(substr(str(?propertyUri),1,36)="http://www.wikidata.org/prop/direct/")'
+                    +'FILTER(LANG(?property) = "'+isoLanguage+'")'
+                    +'FILTER(LANG(?value) = "'+isoLanguage+'")'
+                    +'}'
+                    +'ORDER BY ASC(?property)';
+		var encodedQuery = encodeURIComponent(string);
+
+		// send query to endpoint
+		$.ajax({
+			type: 'GET',
+			url: 'https://query.wikidata.org/sparql?query=' + encodedQuery,
+			headers: {
+				Accept: 'application/sparql-results+json'
+			},
+			success: function(returnedJson) {
+				//text = '';
+				//wikiProps = '';
+				wikiSex = '';
+				wikiJobs = [];
+				wikiJob = '';
+				wikiInstancesOf = [];
+				wikiInstanceOf = '';
+				wikiImages = [];
+				for (i = 0; i < returnedJson.results.bindings.length; i++) {
+					property = returnedJson.results.bindings[i].property.value
+					value = returnedJson.results.bindings[i].value.value
+					if (property == "sex or gender"){
+						wikiSex = value;
+					}
+					if (property == "occupation"){
+						wikiJobs.push(value);
+						wikiJob = wikiJobs[0];
+					}
+					if (property == "instance of"){
+						wikiInstancesOf.push(value);
+						wikiInstanceOf = wikiInstancesOf[0];
+					}
+					if (property == "image"){
+						wikiImages.push(value);
+						wikiImage = wikiImages[0];
+						log("THE IMAGE IS " + wikiImage);
+					}
+					
+					//wikiProps = wikiProps + text;
+				//$('#searchSpinner').hide();
+				}
+				//dGetWikiImage(wikiData, wikiTitle);
+				if (wikiImages.length > 0){
+					dGetFileHash(wikiImage);
+				} else {
+					dComposeWiki(wikiText, wikiTitle, wikiImage, wikiImgHash);
+				}
+			}
+		});
+}
+	
+
+/* function dGetWikiImage(wikiData, wikiTitle)
+{	
+	let iurl = "https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&sites=enwiki&props=claims&titles=" + wikiTitle
+	//let iurl = "https://www.wikidata.org/w/api.php?action=wbgetclaims&formatversion=2&property=P18&entity=" + wikiData;
+	//let iurl = "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=" + wikiData + "&property=P18";
+	log(iurl) 
+
+	$.ajax({
+		url: iurl,
+		header: {
+			'Access-Control-Allow-Origin' : '*',
+			'Content-Type': 'application/json'
+		},
+		method: 'GET',
+		dataType: 'jsonp',
+		data: '', 
+		success: function(data){
+			// Image
+			if ( data.entities[wikiData] !== 'undefined'){
+				if ( data.entities[wikiData].claims.hasOwnProperty('P18') ){;
+					wikiImg = Object(data.entities[wikiData].claims.P18[0].mainsnak.datavalue.value);
+					wikiImg = wikiImg.replace(/\s/gi, "_");
+					console.log("found an image!");
+					dGetFileHash(wikiImg);
+				} else {
+					log("no image found");
+					dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash);
+				}
+			}
+			
+			//dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash);
+		},
+		complete: function(){
+			log("image search complete");
+		},
+		error: function (xmlHttpRequest, textStatus, errorThrown) {
+			log("getWikiData error");
+		}		
+	});  
+} */
+
+
+function dGetFileHash(wikiImage)
+{
+	let hurl = "https://helloacm.com/api/md5/?cached&s=" + wikiImage;
+
+	$.ajax({
+		url: hurl,
+		header: {
+			'Access-Control-Allow-Origin' : '*',
+			'Content-Type': 'application/json'
+		},
+		method: 'GET',
+		dataType: 'json',
+		data: '',  
+		success: function(data){
+			wikiImgHash = data;
+			log("image hash is " + wikiImgHash);
+			dComposeWiki(wikiText, wikiTitle, wikiImage, wikiImgHash);		
+		},
+		complete: function(){
+		},
+		error: function (xmlHttpRequest, textStatus, errorThrown) {
+			log("getImgHash error");
+		}			
+	});
+}
+
+
+function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash)
+{
+	// add sex
+	if (wikiSex !== ""){
+		wikiText = wikiText + "<br/> sex: " + wikiSex;
+	}
+	// add job
+	if (wikiJob !== ""){
+		wikiText = wikiText + "<br/> job: " + wikiJob;
+	}	
+	// add type
+	if (wikiInstanceOf !== ""){
+		wikiText = wikiText + "<br/> type of: " + wikiInstanceOf;
+	}
+	
+	if (wikiImage !== ""){
+		var wikiImgLoad = "he kinda looks like this<br/><img width='100%' onload='scrollToBottom()' src='https://upload.wikimedia.org/wikipedia/commons/"
+		+ wikiImgHash[0] + "/" + wikiImgHash[0] + wikiImgHash[1] +  "/" + wikiImage + "' />"
+		//wikiText = wikiText + wikiImgLoad;
+		wikiInsertImg = wikiDialogueNode.length - 3;
+		wikiDialogueNode.splice(wikiInsertImg, 0, wikiImgLoad); 
+		log(wikiImgLoad);
+	} else {
+		log("no image");
+	}
+	
+	log(wikiImage);
+	log(wikiSex);
+	log(wikiJob);
+	log(wikiInstanceOf);
+	
+	dJumpToDialogueNode(c_array.length-1,false,true);
+}
+
+
+/* function fileHash( file, hasher, callback ){
+	//Instantiate a reader		  
+	var reader = new FileReader();
+		  
+	//What to do when we gets data?
+	reader.onload = function( e ){
+		var hash = hasher(e.target.result);
+		callback( hash );
+	}
+		
+	reader.readAsBinaryString( file );
+
+} */
+
+
+/* function dGetWikiCat(wikiTitle)
+{
+	log(wikiTitle);
+
+	var curl = "https://en.wikipedia.org/w/api.php"; 
+
+	var params = {
+		action: "query",
+		format: "json",
+		prop: "categories",
+		cllimit: 15,
+		clshow: "!hidden",
+		titles: wikiTitle
+	};
+	
+	curl = curl + "?origin=*";
+	Object.keys(params).forEach(function(key){curl += "&" + key + "=" + params[key];});
+
+	fetch(curl)
+		.then(function(response){return response.json();})
+		.then(function(response) {
+			var pages = response.query.pages;
+			for (var p in pages) {
+				for (var cat of pages[p].categories) {
+					console.log(cat.title);
+				}
+			}
+		})
+		.catch(function(error){console.log(error);});
+} */
+
+
+// print an article
+function dWriteDarkWiki(wikiText, wikiTitle){	
+	var was_taunting = false;
+	if (dTaunt) {dTaunt = false; was_taunting = true}
+		if (dQuestionType !== "wikiSearch"){
+			var element = $("#chattext");
+			element.append(getDarkWiki(wikiText, wikiTitle));
+			cutTopOfChat();
+			scrollToBottom();
+		}
+	if (was_taunting) {dTaunt = true};
+	
+	if (dQuestionType !== "wikiSearch"){ 
+		dListen = true;
+		dWaitsForResponse();
+	} else {
+		if (wikiText !== ""){
+			pos = 0; //GOODSEARCH
+		} else {
+			pos = 1; //BADSEARCH
+		}
+		for (i=0; i < keyactions[pos].length; i++){
+			keyactions[pos][i]();
+			log(keyactions[pos][i]); 
+		}
+	}
+}
+
+function getDarkWiki(wikiText, wikiTitle)
+{
+	// get the sound effect
+	var snd_heartbeat = new Audio('../snd/fx/scrape.mp3');	
+	audioPlay(snd_heartbeat,0.7);
+	snd_heartbeat.onended = function() {
+		snd_heartbeat.remove();
+	};
+	//style the bubble
+	var message = $('<div id="chatbubble"></div>');
+	message.attr("class", "fly-in-element darkbubble");
+	
+	// apply css changes
+	dApplyMsgTransforms(message);
+	
+	if (wikiText == ""){
+		msgBody = (dRefusals[Math.floor(Math.random()*dRefusals.length)]);
+	} else {
+		// Make replacements
+		// var wikiTitleRegEx = new RegExp(wikiTitle,'g');
+		// wikiText = wikiText.replace(wikiTitleRegEx,"that shit");
+		
+		// convert to message 
+		msgBody = wikiText;
+	}
+	
+	message.append(msgBody);
+	
+	dMsgCount++;
+    
+	return message;
+}
 
 
 
@@ -932,8 +1406,10 @@ function dSpam()
 {   
     if(dSpamming){
         dSpamming = false;
+		//$('#textfield').prop("disabled", false);
     }else{
 		dSpamming = true;
+		//$('#textfield').prop("disabled", true);
 		dKeepSpamming();
     }
 }
@@ -967,6 +1443,12 @@ function dKeepSpamming()
 					dWaitsForResponse();
 				} else {
 					console.log("not listening");
+					var dExitNode = c_array[dDialogueNode].length-1;
+					var dExitFunc = c_array[dDialogueNode][dExitNode];
+					console.log(dExitFunc.length);
+					for (i=0; i< dExitFunc.length; i++){
+						dExitFunc[i]();
+					}
 				}
 			}
 		}
@@ -978,6 +1460,13 @@ function dKeepSpamming()
     }
 }
 
+/* main.js:1481 Uncaught TypeError: message.replace is not a function
+    at replaceEmotes (main.js:1481)
+    at getDarkMessage (main.js:1204)
+    at writeDarkMessage (main.js:1142)
+    at dKeepSpamming (main.js:1108)
+    at main.js:1110 */
+
 
 
 //writes a random message in the chat
@@ -987,17 +1476,6 @@ function writeDarkMessage()
 	element.append(getDarkMessage());
 	cutTopOfChat();
     scrollToBottom();
-}
-
-//writes a random message in the chat
-function dPostArticle(wikiText)
-{
-	dTaunt = false;
-    var element = $("#chattext");
-	element.append(getDarkWiki(wikiText));
-	cutTopOfChat();
-    scrollToBottom();
-	dTaunt = true;
 }
 
 
@@ -1032,14 +1510,9 @@ function getDarkMessage()
 	//style the bubble
 	var message = $('<div id="chatbubble"></div>');
 	message.attr("class", "fly-in-element darkbubble");
-
-	dMsgRandomX = Math.floor(Math.random()*3.5);
-	dMsgAdjX = dMsgOriginX - dMsgRandomX;
 	
 	// apply css changes
-	applyMsgTransforms(message);
-	
-	message.css("margin-left", dMsgAdjX + "vw");
+	dApplyMsgTransforms(message);
 
 	var msgBody = "";
 	
@@ -1078,43 +1551,12 @@ function getDarkMessage()
 
 
 
-function getDarkWiki(txt)
-{
-	// get the sound effect
-	var snd_heartbeat = new Audio('../snd/fx/heartbeat.mp3');	
-	audioPlay(snd_heartbeat,0.7);
-	snd_heartbeat.onended = function() {
-		snd_heartbeat.remove();
-	};
-	//style the bubble
-	var message = $('<div id="chatbubble"></div>');
-	message.attr("class", "fly-in-element darkbubble");
 
+function dApplyMsgTransforms(message)
+{
 	dMsgRandomX = Math.floor(Math.random()*3.5);
 	dMsgAdjX = dMsgOriginX - dMsgRandomX;
 	
-	// apply css changes
-	applyMsgTransforms(message);
-	
-	message.css("margin-left", dMsgAdjX + "vw");
-	
-	if (txt == ""){
-		msgBody = (dRefusals[Math.floor(Math.random()*dRefusals.length)]);
-	} else {
-		msgBody = txt;
-	}
-	
-	message.append(msgBody);
-	
-	dMsgCount++;
-    
-	return message;
-}
-
-
-
-function applyMsgTransforms(message)
-{
 	if (dTaunt){	
 		//random font
 		var fontType = ["Crafty Girls", "Henny Penny", "Gloria Hallelujah", "Eater", "Lacquer", "Homemade Apple"];
@@ -1134,6 +1576,8 @@ function applyMsgTransforms(message)
 		message.css("padding", (dMsgScale*1.5) + "vw");			
 		message.css("width", dMsgBaseWidth + (dMsgScale*1.5) + "vw");
 	}
+	
+	message.css("margin-left", dMsgAdjX + "vw");
 }
 
 //--------------------------
@@ -1202,6 +1646,13 @@ function banish_Layer(layernum, speedout){
 	});
 }
 
+function banish_allLayers(speedout)
+{
+	banish_Layer(0, speedout);
+	banish_Layer(1, speedout);
+	banish_Layer(2, speedout);
+}
+
 
 //--------------------------
 // Demon Sounds
@@ -1212,22 +1663,28 @@ function banish_Layer(layernum, speedout){
 	var pbr = 0.5;
 	var snd_plyr = 0;
 
-function summon_Sound(snd, snd_plyr, vol, pbr, timeout){
+function summon_Sound(snd, snd_plyr, speedin, speedout, vol, pbr, timeout){
 	var music_player = $("#audio" + snd_plyr);
 	var music = $("#audio" + snd_plyr)[0];
 	music.volume = vol;
 	music.src = '../snd/' + snd;	
 	music.play();
-	audioFadeIn(music_player, 3500);
+	audioFadeIn(music_player, speedin);
 	music.playbackRate = pbr;
 	
 	clearTimeout(s_timer[snd_plyr]);
-	s_timer[snd_plyr] =  window.setTimeout(function(){banish_Sound(snd_plyr)}, timeout);		
+	s_timer[snd_plyr] =  window.setTimeout(function(){banish_Sound(snd_plyr, speedout)}, timeout);		
 }
 
-function banish_Sound(snd_plyr){
+function banish_Sound(snd_plyr, speedout){
 	var audio = $("#audio"+snd_plyr);
-	audioFadeOut(audio, 3500);	
+	audioFadeOut(audio, speedout);	
+}
+
+function banish_allSounds(speedout){
+	banish_Sound(0, speedout);
+	banish_Sound(1, speedout);
+	banish_Sound(2, speedout);		
 }
 
 
@@ -1415,10 +1872,11 @@ function cutTopOfChat()
     if(element.children().length > 100)
     {
         var chatMessages = element.children();
-        for(i = 0; i<10; i++)
+		chatMessages[0].remove();
+/*         for(i = 0; i<10; i++)
         {
             chatMessages[i].remove();
-        }
+        } */
     }
 }
 
@@ -1664,15 +2122,13 @@ function strToArray(str)
 
 	var curResponse = 0;
 	var r_timer = null;
-	var triggerWords = [];
 	var keynouns = [];
+	var keyverbs = [];	
 	var keytimes = [];
-	var pos;
 
 // Search for keyword triggers
 function searchCommands(word)
 {
-	let wordRaw = word
 	keynouns = [];
 	keytimes = [];
 	
@@ -1682,16 +2138,16 @@ function searchCommands(word)
 		keytimes.push(nounTriggers[i][1]);		
 	}
 	
-	const result = keynouns.includes(wordRaw);
-	pos = keynouns.indexOf(wordRaw);
-	//console.log("wordRaw=" + wordRaw + pos);
+	const result = keynouns.includes(word);
+	pos = keynouns.indexOf(word);
+	//console.log("word=" + word + pos);
 	
-	findWord(wordRaw);
+	findWord(word);
 	
 	if (result)
 	{
 		curResponse = pos;
-		triggerWords.push(wordRaw);		
+		triggerWords.push(word);		
     }
 	
 	// a creepy tree is over there
@@ -1709,11 +2165,9 @@ function assembleResponse(word)
 			var speechBody = "Okay, let's look at the " + word + ".";
 			speechBubble.append(speechBody);	
 			
-			console.log('"' + word + '" will trigger a game action.');	
+			console.log('"' + word + '" will trigger a game action.');		
 			
-			//console.log("keywords=" + triggerWords.length);		
-			
-			//invalidWords.push(wordRaw);		
+			//invalidWords.push(word);		
 			//jumpToTime(keytimes[pos]);
 			//responsiveVoice.speak("Okay, let's look at the " + commandNoun,$('#voiceselection').val());
 		}
@@ -1803,6 +2257,8 @@ function chat()
     
         element.append(message);
 		plReply = msgBody;
+		if (chatTarget == "demon"){
+		}
 		
 		if (chatTarget == "webcam"){
 			strToArray(msgBody);

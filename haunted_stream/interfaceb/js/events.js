@@ -15,7 +15,7 @@ var timedEvents = [
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 90000)},		
 		// function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 90000)},
 		// function(){summon_Sound('music/Ice_Demon.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
-		function(){summon_dChat(HelloWorld, null, "vicious", 250, 90000)}
+		function(){summon_dChat(HelloWorld, null, "vicious", 700, 90000)}
 		]
 	],	
 	[false, 17,	0,
@@ -54,7 +54,7 @@ var pastEvents = [];
 var HelloWorld =
 [
 		// Node 0
-		["hello world","i can see you","im right over here ------>","i wanna meet you","do you wanna meet me?",
+		["hello world","i can see you","im right over here ------>","do you wanna be my friend?",
 			[ 
 				//	Context node
 				//	[
@@ -80,7 +80,7 @@ var HelloWorld =
 			]
 		],
 		// Node 1		
-		["thats not a grate answer", "in fact that answers a peace of shit. just like u r", "lets try this aggen shall we?",
+		["thats not a grate answer", "in fact that answers a peace of shit, just like u r ha ha ha", "lets try this aggen shall we?",
 			[
 				function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.75, 90000)},
 				function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static_2.gif", 2000, 2000, 0.5, 90000)},			
@@ -88,15 +88,15 @@ var HelloWorld =
 			]
 		],
 		// Node 2		
-		["that sux", "im a grate one to meet", "a true blew american hero. ", "maybe i will meet u sum day, anyway",
+		["that sux", "im a grate one to b frends with", "a true blew american hero ", "maybe i can make u change ur mind sum day",
 			[ function(){dJumpToDialogueNode(4, true, true)} ]
 		],
 		// Node 3		
-		["fantastic", "but im not rdy to meet u", " not yet anywy", "may be ur not rdy 2", "i will keep it in mind tho",
+		["fantastik", "were gonna be GRATE 2gether, me and u", "jus like batman n robin, bogey n bacall, ham n eggs, kids n cancer",
 			[ function(){dJumpToDialogueNode(4, true, true)} ]
 		],
 		// Node 4		
-		["hay i gotta nother question","whats the name of ur favorit movie?",
+		["hay i gotta nother question 4u","whats the name of ur favorit movie?",
 			[
 				["wikiSearch", "film movie"],	
 				["GOODSEARCH",
@@ -108,7 +108,7 @@ var HelloWorld =
 			]
 		],
 		// Node 5
-		["yea i seen that one", "im vry culteruld", "eye seen evry movie evr made", "red all the books too", "well I gotta be going now, chosen one", "ill check you ltr", "bye 4 now",
+		["yea i seen that one", "im vry culteruld", "eye seen evry movie evr made", "red all the books 2", "well I gotta be going now, chosen one", "ill check you ltr", "bye 4 now",
 			[ function(){banish_dChat()} ]
 		],
 		// Node 6
