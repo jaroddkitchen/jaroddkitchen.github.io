@@ -582,7 +582,8 @@ function summon_dChat(array, mem, mood, speed, timeout)
 	}
 	, 400);
 	
-	console.log("demon speaks");	
+	console.log("demon speaks");
+	//$('#textfield').prop("disabled", true);
 }
 
 
@@ -681,12 +682,16 @@ function restoreChat(){
 function dWaitsForResponse()
 {	
 	plReply = null;
+	
+	//$('#textfield').prop("disabled", false);
+	//$('#textfield').focus();
+	
 	if (!dListen){
 		console.log("demon stopped listening." + dSpamType);
 		return;
 	}
 	
-	console.log("demon is listening...");
+	console.log("demon is listening for " + dQuestionType);
 
 	//Set wait-time according to demon's patience stat	
 	dWaitTimeout = dPatience * 1000;
@@ -768,10 +773,7 @@ function dParseReply(){
 	non_words = [];
 	triggerWords = [];	
 	
-	dAnswerNode = c_array[dDialogueNode].length-1;
-	dKeyNode = c_array[dDialogueNode][dAnswerNode];
-	dQuestionType = dKeyNode[0][0];
-	dContextStr = dKeyNode[0][1];
+	dSenseNode();
 	
 	wiki = plReply;
 	if (dQuestionType == "wikiSearch") {
@@ -783,6 +785,13 @@ function dParseReply(){
 	return;
 }
 
+
+function dSenseNode(){
+	dAnswerNode = c_array[dDialogueNode].length-1;
+	dKeyNode = c_array[dDialogueNode][dAnswerNode];
+	dQuestionType = dKeyNode[0][0];
+	dContextStr = dKeyNode[0][1];
+}
 
 
 function dGetWiki(wiki)
@@ -919,6 +928,8 @@ function dJumpToDialogueNode(num, dlis, restart){
 	} else {
 		dDialogueCount = dDialogueStop;
 	}
+
+	dSenseNode();
 
 	dSpamming = true;
 	dKeepSpamming();
@@ -1336,10 +1347,12 @@ function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash)
 function dWriteDarkWiki(wikiText, wikiTitle){	
 	var was_taunting = false;
 	if (dTaunt) {dTaunt = false; was_taunting = true}
-		var element = $("#chattext");
-		element.append(getDarkWiki(wikiText, wikiTitle));
-		cutTopOfChat();
-		scrollToBottom();
+		if (dQuestionType !== "wikiSearch"){
+			var element = $("#chattext");
+			element.append(getDarkWiki(wikiText, wikiTitle));
+			cutTopOfChat();
+			scrollToBottom();
+		}
 	if (was_taunting) {dTaunt = true};
 	
 	if (dQuestionType !== "wikiSearch"){ 
@@ -1403,8 +1416,10 @@ function dSpam()
 {   
     if(dSpamming){
         dSpamming = false;
+		//$('#textfield').prop("disabled", false);
     }else{
 		dSpamming = true;
+		//$('#textfield').prop("disabled", true);
 		dKeepSpamming();
     }
 }

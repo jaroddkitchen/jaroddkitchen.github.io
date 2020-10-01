@@ -15,7 +15,7 @@ var timedEvents = [
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 90000)},		
 		// function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 90000)},
 		// function(){summon_Sound('music/Ice_Demon.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
-		function(){summon_dChat(HelloWorld, null, "vicious", 1000, 90000)}
+		function(){summon_dChat(HelloWorld, null, "vicious", 250, 90000)}
 		]
 	],	
 	[false, 17,	0,
@@ -103,7 +103,7 @@ var HelloWorld =
 					[function(){dJumpToDialogueNode(5, false, true)}]
 				],
 				["BADSEARCH",
-					[function(){dJumpToDialogueNode(6, true, true)}]
+					[function(){dJumpToDialogueNode(6, false, true)}]
 				]
 			]
 		],
@@ -113,7 +113,7 @@ var HelloWorld =
 		],
 		// Node 6
 		["hmmm. i dont know that one", "maybe you misspelt it. like a dum ass", "try aggin or name a different one.",
-			[ function(){dJumpToDialogueNode(4, true, true)} ]
+			[ function(){dJumpToDialogueNode(4, true, false)} ]
 		],
 		// Node 7
 		["so thats how you wanna play it", "the strong silent type", "ok kiddo. be that way", "you will regret this",
