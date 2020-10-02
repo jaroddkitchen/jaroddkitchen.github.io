@@ -984,7 +984,6 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&formatversion=2&prop
 			wikiText = "";
 			wikiData = "";
 			wikiImg = "";
-			wikiImgHash = "";
 			
 			if(typeof data.query == 'undefined'){
 				//Respond with random insult
@@ -1058,24 +1057,29 @@ function dGetWikiData(wikiTitle)
 
 
 	var iri;
+	var isoLanguage = 'en';	
+	
 	var wikiProps;
-	var isoLanguage = 'en';
 	
-	var wikiVideo;		// P10
-	var wikiGenre; 		// P136
+	var wikiInstsOf = [];	// P31
+	var wikiInstOf;
 	
-	var wikiInstancesOf = [];	// P31
-	var wikiInstanceOf;
-	
-	var wikiSex;		// P21
+	var wikiSex;			// P21
 	var wikiJobs = [];
-	var wikiJob;		// P106
-	var wikiOffice;		// P39
-	var wikiBirthDate;  // P569
-	var wikiDeathDate;  // P570
+	var wikiJob;			// P106
+
+	var wikiOffices = [];	// P39
+	var wikiOffice;	
+
+	var wikiGenres =[]; 	// P136			
+	var wikiGenre; 	
 	
-	var wikiImgHash;
-	var wikiImage;	
+	var wikiBirthDate;  	// P569
+	var wikiDeathDate;  	// P570
+
+	var wikiImage;			//P18	
+	var wikiVideo;			// P10
+	
 
 function dLookUpEntity(){
 		console.log(iri);
@@ -1106,29 +1110,33 @@ function dLookUpEntity(){
 				//text = '';
 				//wikiProps = '';
 				wikiSex = '';
-				wikiJobs = [];
-				wikiJob = '';
-				wikiInstancesOf = [];
-				wikiInstanceOf = '';
-				wikiImages = [];
-				wikiImage = '';
+				wikiJobs = []; wikiJob = '';
+				wikiInstsOf = []; wikiInstOf = '';
+				wikiImages = []; wikiImage = '';
+				wikiGenres = []; wikiGenre = '';
+				
 				for (i = 0; i < returnedJson.results.bindings.length; i++) {
 					property = returnedJson.results.bindings[i].property.value
 					value = returnedJson.results.bindings[i].value.value
 					if (property == "sex or gender"){
 						wikiSex = value;
-						log("wikiSex = " + wikiSex);
+						//log("wikiSex = " + wikiSex);
 					}
 					if (property == "occupation"){
 						wikiJobs.push(value);
 						wikiJob = wikiJobs[0];
-						log("wikiJob = " + wikiJob);
+						//log("wikiJob = " + wikiJob);
 					}
 					if (property == "instance of"){
-						wikiInstancesOf.push(value);
-						wikiInstanceOf = wikiInstancesOf[0];
-						log("wikiInstanceOf = " + wikiInstanceOf);
+						wikiInstsOf.push(value);
+						wikiInstOf = wikiInstsOf[0];
+						//log("wikiInstOf = " + wikiInstOf);
 					}
+					if (property == "genre"){
+						wikiGenres.push(value);
+						wikiGenre = wikiGenres[0];
+						//log("Genre = " + Genres);
+					}					
 				}
 
 				dFindWikiImage(wikiData, wikiTitle)
@@ -1200,8 +1208,8 @@ function resizeWikiImg(wikiImg, wikiData){
 					format: "json",
 					prop: "imageinfo",
 					iiprop: "size|url",
-					iiurlwidth: "400",
-					iiurlheight: "400",
+					iiurlwidth: "200",
+					iiurlheight: "200",
 					titles: "File:" + imgPath
 				};
 				
@@ -1221,9 +1229,6 @@ function resizeWikiImg(wikiImg, wikiData){
 						}
 					})
 					.then(function(response) {
-						//$('body').append('<img src="' + thumbPath + '"/>');
-						//wikiImg = thumbPath;
-						//wikiImg = thumbPath;
 						log("thumbpath " + thumbPath);
 						resolve(thumbPath);
 					})
@@ -1255,48 +1260,71 @@ function makeSPARQLQuery( endpointUrl, sparqlQuery, doneCallback ) {
 
 
 
+	var wikiSubjCat;
+
 	var subjProunoun;
+	var subjProunounObj;
+	var subjProunounPos;
+
 	var wikiImgLoader;
 
 async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 {
-	// add sex
+	// Property Mods
+	// the title is default subject
+	wikiSubjCat = wikiTitle;
+	wikiSubjCat = wikiSubjCat.toLowerCase();
+	
+	// Sex
 	subjProunoun = "it";
+	subjProunounObj = "that";
+	subjProunounPos = "its";
 	if (wikiSex !== ""){
-		wikiText = wikiText + "<br/> sex: " + wikiSex;
-		if (wikiSex == "male"){subjProunoun = "he"}
-		if (wikiSex == "female"){subjProunoun = "she"}	
+		if (wikiSex == "male"){subjProunoun = "he"; subjProunounObj = "him"; subjProunounPos = "his"}
+		if (wikiSex == "female"){subjProunoun = "she"; subjProunounObj = "her"; subjProunounPos = "her"}
+		log("sex:" + wikiSex + " " + subjProunoun + "/" + subjProunounObj + "/" + subjProunounPos);		
 	}
-	// add job
+	
+	// Instance
+	if (wikiInstOf !== ""){
+		wikiInstOf = wikiInstOf.toLowerCase();
+		wikiSubjCat = wikiInstOf;
+		log("type of: " + wikiInstOf);
+	}
+	
+	// Job
 	if (wikiJob !== ""){
-		wikiText = wikiText + "<br/> job: " + wikiJob;
-	}	
-	// add type
-	if (wikiInstanceOf !== ""){
-		wikiText = wikiText + "<br/> type of: " + wikiInstanceOf;
+		wikiJob = wikiJob.toLowerCase();
+		wikiSubjCat = wikiJob;
+		log("job: " + wikiJob);
 	}
 	
-	wikiText = wikiText.replace(/\s*\(.*?\)/g, "");
-	wikiText = wikiText.replace(/\[\.*?\]/g, "");	
-	wikiText = wikiText.replace(/<(?:.|\n)*?>/gm, '');
+	// Genre
+	if (wikiGenre !== ""){
+		wikiGenre = wikiGenre.toLowerCase();
+		wikiSubjCat = wikiGenre;
+		log("genre: " + wikiGenre);
+	}
+
+	// Global Replacements 	
+	await globalWikiReplace();
+	wikiText = wikiChange;
+	log("returned from replace");
 	
-	replaceHonorifics();
-	log("replacing honorifics");				
-	
+	// create initial dialogue bubbles
 	wikiText = wikiText.split(".");
 	for (i=0; i < wikiText.length; i++){ 
 		wikiText[i] = wikiText[i] + ".";
 	}
-	
 	wikiDialogueNode = wikiText;
 	wikiDialogueNode[0] = wikiDialogueNode[0] + wikiDialogueNode[1];
 	wikiDialogueNode.splice(1,1);
 	wikiDialogueNode.splice(3);
 
-	await resizeWikiImg(wikiImg, wikiData)
-	log("returned from resize with " + thumbPath );	
-	
+	// asynchrounous image post-processing
 	if (wikiImg !== ""){
+		await resizeWikiImg(wikiImg, wikiData)
+		log("returned from resize with " + thumbPath );			
 		wikiImg = thumbPath;
 		wikiImgLoader = subjProunoun +" kinda looks like this<br/><img width='100%' onload='scrollToBottom()' src='" + wikiImg + "' />"			
 		wikiDialogueNode.push(wikiImgLoader);
@@ -1305,8 +1333,12 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 	}
 
 	if (dQuestionType !== "wikiSearch"){
-		var wikismTitle = wikiTitle.toLowerCase();
-		wikiDialogueNode.push("but we aint talking about " + wikismTitle + " rite now");
+		if (wikiSubjCat == wikiGenre){
+			var subPlural = "";
+		} else {
+			var subPlural = "s";
+		}
+		wikiDialogueNode.push("but we aint talking about " + wikiSubjCat + subPlural + " rite now");		
 		wikiDialogueNode.push("i asxed u a qwestion");
 		wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);
 	} else {
@@ -1320,6 +1352,13 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 			wikiDialogueNode.push([ keyactions[pos][i] ]);
 		}
 	}			
+
+	if (wikiInstOf == "wikimedia disambiguation page"){
+		wikiDialogueNode = [];
+		wikiDialogueNode.push("ur gonna have 2 b more spessific. i know lotsa shit about " + wikiTitle.toLowerCase() );
+		wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);
+	}
+
 	
 	c_array[c_array.length-1] = wikiDialogueNode;
 	wikiText = wikiDialogueNode[0];	
@@ -1327,7 +1366,7 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 	log(wikiImg);
 	log(wikiSex);
 	log(wikiJob);
-	log(wikiInstanceOf);
+	log(wikiInstOf);
 	
 	dJumpToDialogueNode(c_array.length-1,false,true);
 }
@@ -2136,8 +2175,6 @@ function strToArray(str)
 /* 	var newStr = str.replace(/and|then/gi, ".");
 	newStr = newStr.replace(/go to |go towards |go back to |travel to |travel towards |move to |move towards |go back to |walk to |walk towards| head to |head towards |head back to |return to |\s+get to /gi, " _GO_TO: ");
 	newStr = newStr.replace(/\s+on |\s+in |\s+at |\s+with /gi, " _INTERACT_WITH: "); */
-
-//Walk towards the store and make a balloon animal on their table in the back then walk to the front of the place and get on the stage then vomit andthen make a pass at the waitress!
 	
     // Convert to uppercase
 	let strUpper = newStr.toUpperCase();
