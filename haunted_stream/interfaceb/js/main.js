@@ -997,42 +997,6 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&formatversion=2&prop
 				//dGetWikiCat(wikiTitle);
 				
 				wikiText = data.query.pages[dataNum].extract
-				wikiText = wikiText.replace(/\s*\(.*?\)/g, "");
-				wikiText = wikiText.replace(/\[\.*?\]/g, "");	
-				wikiText = wikiText.replace(/<(?:.|\n)*?>/gm, '');
-				
-				replaceHonorifics();
-				log("replacing honorifics");				
-				
-				wikiText = wikiText.split(".");
-				for (i=0; i < wikiText.length; i++){ 
-					wikiText[i] = wikiText[i] + ".";
-				}
-				
-				wikiDialogueNode = wikiText;
-				wikiDialogueNode[0] = wikiDialogueNode[0] + wikiDialogueNode[1];
-				wikiDialogueNode.splice(1,1);
-				wikiDialogueNode.splice(3);
-
-				if (dQuestionType !== "wikiSearch"){
-					var wikismTitle = wikiTitle.toLowerCase();
-					wikiDialogueNode.push("but we aint talking about " + wikismTitle + " rite now");
-					wikiDialogueNode.push("i asxed u a qwestion");
-					wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);
-				} else {
-				// Score context
-					if (wikiText !== ""){
-						pos = 0; //GOODSEARCH
-					} else {
-						pos = 1; //BADSEARCH
-					}
-					for (i=0; i < keyactions[pos].length; i++){					
-						wikiDialogueNode.push([ keyactions[pos][i] ]);
-					}
-				}					
-				
-				c_array[c_array.length-1] = wikiDialogueNode;
-				wikiText = wikiDialogueNode[0];
 			}
 		},
 		complete: function(data){
@@ -1190,16 +1154,85 @@ function dFindWikiImage(wikiData, wikiTitle)
 			//dataNum = Object.keys(data.results.bindings)[0];
 			try {
 				wikiImg = data.results.bindings[0].pic.value;
-				dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash);				
 				console.log( data.results.bindings[0].pic.value );
+				dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData);				
 			} catch(error) {
 				wikiImg = "";
-				dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash);
 				console.log("image error");
+				dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData);
 			}
 		}
 	);
 }
+
+
+	var thumbPath = '';
+	var imgPath = '';
+
+function resizeWikiImg(wikiImg, wikiData){
+	log("resizing " + wikiImg);
+	let imgPath = '';
+	
+	return new Promise((resolve, reject) => {
+
+		var iri = "http://www.wikidata.org/entity/" + wikiData;
+
+		var endpointUrl = 'https://query.wikidata.org/sparql',
+			sparqlQuery = "#\n"
+				+ "#defaultView:ImageGrid\n"
+				+ "SELECT ?pic WHERE {\n"
+				+ "?item wdt:* wd:" + wikiData + ";\n"
+				+ "wdt:P18 ?pic.\n"
+				+ "SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n"
+				+ "}\n"
+				+ "LIMIT 1";
+		
+		makeSPARQLQuery( endpointUrl, sparqlQuery, function( data ) {
+				imgPath = data.results.bindings[0].pic.value
+				imgPath = imgPath.split("FilePath/");
+				imgPath = imgPath[1];
+				console.log(imgPath);
+
+				var url = "https://en.wikipedia.org/w/api.php"; 
+
+				var params = {
+					action: "query",
+					format: "json",
+					prop: "imageinfo",
+					iiprop: "size|url",
+					iiurlwidth: "400",
+					iiurlheight: "400",
+					titles: "File:" + imgPath
+				};
+				
+				url = url + "?origin=*";
+				Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
+
+				fetch(url)
+					.then(function(response){return response.json();})
+					.then(function(response) {
+						var pages = response.query.pages;
+						for (var p in pages) {
+							console.log(pages[p].title + " is uploaded by User:" + pages[p].imageinfo[0].user);
+							console.log(pages[p].imageinfo[0].size + " bytes");
+							console.log(pages[p]);
+							console.log(pages[p].imageinfo[0].thumburl + " is thumbnail");
+							thumbPath = pages[p].imageinfo[0].thumburl;
+						}
+					})
+					.then(function(response) {
+						//$('body').append('<img src="' + thumbPath + '"/>');
+						//wikiImg = thumbPath;
+						//wikiImg = thumbPath;
+						log("thumbpath " + thumbPath);
+						resolve(thumbPath);
+					})
+					.catch(function(error){console.log(error);});
+			}
+		);
+	});
+}
+
 
 
 function makeSPARQLQuery( endpointUrl, sparqlQuery, doneCallback ) {
@@ -1219,38 +1252,20 @@ function makeSPARQLQuery( endpointUrl, sparqlQuery, doneCallback ) {
 }
 
 
-function dGetFileHash(wikiImg)
-{
-	let hurl = "https://helloacm.com/api/md5/?cached&s=" + wikiImg;
-
-	$.ajax({
-		url: hurl,
-		header: {
-			'Access-Control-Allow-Origin' : '*',
-			'Content-Type': 'application/json'
-		},
-		method: 'GET',
-		dataType: 'json',
-		data: '',  
-		success: function(data){
-			wikiImgHash = data;
-			log("image hash is " + wikiImgHash);
-			dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash);		
-		},
-		complete: function(){
-		},
-		error: function (xmlHttpRequest, textStatus, errorThrown) {
-			log("getImgHash error");
-		}			
-	});
-}
 
 
-function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash)
+
+	var subjProunoun;
+	var wikiImgLoader;
+
+async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 {
 	// add sex
+	subjProunoun = "it";
 	if (wikiSex !== ""){
 		wikiText = wikiText + "<br/> sex: " + wikiSex;
+		if (wikiSex == "male"){subjProunoun = "he"}
+		if (wikiSex == "female"){subjProunoun = "she"}	
 	}
 	// add job
 	if (wikiJob !== ""){
@@ -1261,17 +1276,53 @@ function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash)
 		wikiText = wikiText + "<br/> type of: " + wikiInstanceOf;
 	}
 	
+	wikiText = wikiText.replace(/\s*\(.*?\)/g, "");
+	wikiText = wikiText.replace(/\[\.*?\]/g, "");	
+	wikiText = wikiText.replace(/<(?:.|\n)*?>/gm, '');
+	
+	replaceHonorifics();
+	log("replacing honorifics");				
+	
+	wikiText = wikiText.split(".");
+	for (i=0; i < wikiText.length; i++){ 
+		wikiText[i] = wikiText[i] + ".";
+	}
+	
+	wikiDialogueNode = wikiText;
+	wikiDialogueNode[0] = wikiDialogueNode[0] + wikiDialogueNode[1];
+	wikiDialogueNode.splice(1,1);
+	wikiDialogueNode.splice(3);
+
+	await resizeWikiImg(wikiImg, wikiData)
+	log("returned from resize with " + thumbPath );	
+	
 	if (wikiImg !== ""){
-		// var wikiImgLoad = "he kinda looks like this<br/><img width='100%' onload='scrollToBottom()' src='https://upload.wikimedia.org/wikipedia/commons/"
-		// + wikiImgHash[0] + "/" + wikiImgHash[0] + wikiImgHash[1] +  "/" + wikiImg + "' />"
-		var wikiImgLoad = "he kinda looks like this<br/><img width='100%' onload='scrollToBottom()' src='" + wikiImg + "' />"
-		//wikiText = wikiText + wikiImgLoad;
-		wikiInsertImg = wikiDialogueNode.length - 3;
-		wikiDialogueNode.splice(wikiInsertImg, 0, wikiImgLoad); 
-		log(wikiImgLoad);
+		wikiImg = thumbPath;
+		wikiImgLoader = subjProunoun +" kinda looks like this<br/><img width='100%' onload='scrollToBottom()' src='" + wikiImg + "' />"			
+		wikiDialogueNode.push(wikiImgLoader);
 	} else {
 		log("no image");
 	}
+
+	if (dQuestionType !== "wikiSearch"){
+		var wikismTitle = wikiTitle.toLowerCase();
+		wikiDialogueNode.push("but we aint talking about " + wikismTitle + " rite now");
+		wikiDialogueNode.push("i asxed u a qwestion");
+		wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);
+	} else {
+	// Score context
+		if (wikiText !== ""){
+			pos = 0; //GOODSEARCH
+		} else {
+			pos = 1; //BADSEARCH
+		}
+		for (i=0; i < keyactions[pos].length; i++){					
+			wikiDialogueNode.push([ keyactions[pos][i] ]);
+		}
+	}			
+	
+	c_array[c_array.length-1] = wikiDialogueNode;
+	wikiText = wikiDialogueNode[0];	
 	
 	log(wikiImg);
 	log(wikiSex);
@@ -1282,51 +1333,46 @@ function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiImgHash)
 }
 
 
-/* function fileHash( file, hasher, callback ){
-	//Instantiate a reader		  
-	var reader = new FileReader();
-		  
-	//What to do when we gets data?
-	reader.onload = function( e ){
-		var hash = hasher(e.target.result);
-		callback( hash );
-	}
-		
-	reader.readAsBinaryString( file );
 
-} */
-
-
-/* function dGetWikiCat(wikiTitle)
+function getFileSize(url)
 {
-	log(wikiTitle);
+    var fileSize = '';
+    var http = new XMLHttpRequest();
+	http.setRequestHeader('Access-Control-Allow-Origin', '*');
+    http.open('HEAD', url, false); // false = Synchronous
 
-	var curl = "https://en.wikipedia.org/w/api.php"; 
+	log("getting file size");
+	http.send(null); // it will stop here until this http request is complete
 
-	var params = {
-		action: "query",
-		format: "json",
-		prop: "categories",
-		cllimit: 15,
-		clshow: "!hidden",
-		titles: wikiTitle
-	};
+    // when we are here, we already have a response, b/c we used Synchronous XHR
+	log("gotfile size");
+
+    if (http.status === 200) {
+        fileSize = http.getResponseHeader('content-length');
+        console.log('fileSize = ' + fileSize);
+    }
+
+    return fileSize;
+}
+
+
+
+function getFilesize(url, callback) {
+    var xhr = new XMLHttpRequest();
 	
-	curl = curl + "?origin=*";
-	Object.keys(params).forEach(function(key){curl += "&" + key + "=" + params[key];});
+	xhr.setRequestHeader('Access-Control-Allow-Headers', '*');
+	xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+	
+    xhr.open("HEAD", url, true);
+	
+    xhr.onreadystatechange = function() {
+        if (this.readyState == this.DONE) {
+            callback(parseInt(xhr.getResponseHeader("Content-Length")));
+        }
+    };
+    xhr.send();
+}
 
-	fetch(curl)
-		.then(function(response){return response.json();})
-		.then(function(response) {
-			var pages = response.query.pages;
-			for (var p in pages) {
-				for (var cat of pages[p].categories) {
-					console.log(cat.title);
-				}
-			}
-		})
-		.catch(function(error){console.log(error);});
-} */
 
 
 // print an article
