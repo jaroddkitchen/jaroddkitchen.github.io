@@ -106,7 +106,12 @@ function addListeners()
 	});
 }
 
-window.addEventListener('resize', scrollToBottom);
+window.addEventListener('resize', scrollResize);
+
+function scrollResize(){
+	scrollToTop();
+	scrollToBottom();
+}
 
 document.addEventListener("fullscreenchange", function() {
   console.log("fullscreenchange event fired!");
@@ -1063,13 +1068,17 @@ function dGetWikiData(wikiTitle)
 	
 	var wikiInstsOf = [];	// P31
 	var wikiInstOf;
+
+	var wikiSubclassesOf = []; // P279
+	var wikiSubclassOf = '';
 	
 	var wikiSex;			// P21
+	
 	var wikiJobs = [];
 	var wikiJob;			// P106
 
-	var wikiOffices = [];	// P39
-	var wikiOffice;	
+	var wikiNicknames = [];	// P39
+	var wikiNickname;	
 
 	var wikiGenres =[]; 	// P136			
 	var wikiGenre; 	
@@ -1110,33 +1119,58 @@ function dLookUpEntity(){
 				//text = '';
 				//wikiProps = '';
 				wikiSex = '';
+				wikiInstsOf = []; wikiInstOf = '';	
+				wikiSubclassesOf = []; wikiSubclassOf = '';				
 				wikiJobs = []; wikiJob = '';
-				wikiInstsOf = []; wikiInstOf = '';
-				wikiImages = []; wikiImage = '';
 				wikiGenres = []; wikiGenre = '';
+				wikiNicknames = []; wikiNickname = '';
+				wikiImages = []; wikiImage = '';				
 				
 				for (i = 0; i < returnedJson.results.bindings.length; i++) {
 					property = returnedJson.results.bindings[i].property.value
 					value = returnedJson.results.bindings[i].value.value
 					if (property == "sex or gender"){
 						wikiSex = value;
-						//log("wikiSex = " + wikiSex);
-					}
-					if (property == "occupation"){
-						wikiJobs.push(value);
-						wikiJob = wikiJobs[0];
-						//log("wikiJob = " + wikiJob);
+						log("wikiSex = " + wikiSex);
 					}
 					if (property == "instance of"){
 						wikiInstsOf.push(value);
 						wikiInstOf = wikiInstsOf[0];
-						//log("wikiInstOf = " + wikiInstOf);
+						log("wikiInstOf = " + wikiInstOf);
 					}
+					if (property == "subclass of"){
+						wikiSubclassesOf.push(value);
+						wikiSubclassOf = wikiSubclassesOf[0];
+						log("wikiSubclassOf = " + wikiSubclassOf);
+					}
+					if (property == "occupation"){
+						wikiJobs.push(value);
+						wikiJob = wikiJobs[0];
+						log("wikiJob = " + wikiJob);
+					}
+					if (property == "nickname"){
+						wikiNicknames.push(value);
+						wikiNickname = wikiNicknames[0];
+						log("wikiNickname = " + wikiNickname);
+					}					
 					if (property == "genre"){
 						wikiGenres.push(value);
 						wikiGenre = wikiGenres[0];
-						//log("Genre = " + Genres);
-					}					
+						log("wikiGenre = " + wikiGenres);
+					}
+					
+					// catchphrase
+					// signature
+					// political party
+					// residence
+					// member of
+					// position held
+					// field of work
+					// brand
+					// location
+					// has effect
+					// topic's main category
+					// part of
 				}
 
 				dFindWikiImage(wikiData, wikiTitle)
@@ -1292,13 +1326,26 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 		log("type of: " + wikiInstOf);
 	}
 	
+	if (wikiSubclassOf !== ""){
+		wikiSubclassOf = wikiSubclassOf.toLowerCase();
+		wikiSubjCat = wikiSubclassOf;
+		log("subclass of: " + wikiSubclassOf);		
+	}		
+	
 	// Job
 	if (wikiJob !== ""){
 		wikiJob = wikiJob.toLowerCase();
 		wikiSubjCat = wikiJob;
 		log("job: " + wikiJob);
 	}
-	
+
+	// Nicknames
+	if (wikiNickname !== ""){
+		//wikiNickname = wikiNickname.toLowerCase();
+		wikiSubjCat = wikiNickname;
+		log("nickname: " + wikiNickname);
+	}
+
 	// Genre
 	if (wikiGenre !== ""){
 		wikiGenre = wikiGenre.toLowerCase();
@@ -1310,16 +1357,39 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 	await globalWikiReplace();
 	wikiText = wikiChange;
 	log("returned from replace");
+
+	var abbrevWiki = wikiChange.replace(/[A-Z]+\./gm, function(match) {
+	 return match.split(".").join("");
+	});		
+	wikiText = abbrevWiki;
 	
-	// create initial dialogue bubbles
+	// Build initial response nodes
 	wikiText = wikiText.split(".");
+	
 	for (i=0; i < wikiText.length; i++){ 
 		wikiText[i] = wikiText[i] + ".";
 	}
+	
+	// Replace subject in first sentence
+	var wikiFirstSentence = wikiText[0].split(" ");
+	var wikiWas = wikiFirstSentence.indexOf("was"); 
+	var wikiIs = wikiFirstSentence.indexOf("is");
+	var wikiWasIs = false;
+	if (wikiWas !== -1){
+		wikiFirstSentence.splice(0, wikiWas, subjProunoun);
+		wikiWasIs = true;
+	}
+	if (wikiIs !== -1){
+		if (!wikiWasIs){
+			wikiFirstSentence.splice(0, wikiIs, subjProunoun);
+		}
+	}
+	wikiText[0] = wikiFirstSentence.join(" ");	
+	
 	wikiDialogueNode = wikiText;
-	wikiDialogueNode[0] = wikiDialogueNode[0] + wikiDialogueNode[1];
+	wikiDialogueNode[0] = wikiDialogueNode[0] + wikiDialogueNode[1];	
 	wikiDialogueNode.splice(1,1);
-	wikiDialogueNode.splice(3);
+	wikiDialogueNode.splice(2);
 
 	// asynchrounous image post-processing
 	if (wikiImg !== ""){
@@ -1332,6 +1402,7 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 		log("no image");
 	}
 
+	// Solve for question-type and topic-context
 	if (dQuestionType !== "wikiSearch"){
 		if (wikiSubjCat == wikiGenre){
 			var subPlural = "";
@@ -1342,7 +1413,7 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 		wikiDialogueNode.push("i asxed u a qwestion");
 		wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);
 	} else {
-	// Score context
+		// Score context
 		if (wikiText !== ""){
 			pos = 0; //GOODSEARCH
 		} else {
@@ -1351,14 +1422,15 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 		for (i=0; i < keyactions[pos].length; i++){					
 			wikiDialogueNode.push([ keyactions[pos][i] ]);
 		}
-	}			
-
-	if (wikiInstOf == "wikimedia disambiguation page"){
-		wikiDialogueNode = [];
-		wikiDialogueNode.push("ur gonna have 2 b more spessific. i know lotsa shit about " + wikiTitle.toLowerCase() );
-		wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);
 	}
 
+	// Solve for broad context
+	if ( (wikiInstOf == "wikimedia disambiguation page") || (wikiInstOf == "wikimedia list article") ){
+		wikiDialogueNode = [];
+		var modWikiTitle = wikiTitle.replace(/list of/gi, "");
+		wikiDialogueNode.push("ur gonna have 2 b more spessific. i know lotsa shit about " + modWikiTitle.toLowerCase() );
+		wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);
+	}
 	
 	c_array[c_array.length-1] = wikiDialogueNode;
 	wikiText = wikiDialogueNode[0];	
@@ -1617,6 +1689,7 @@ function getDarkMessage()
 	}	
 	
     msgBody = replaceEmotes(msgBody);
+    msgBody = replaceEmoticons(msgBody);
     msgBody = replacePics(msgBody);
 	if (imgMsg){
 		message.attr("class", "fly-in-element darkbubble imgbubble");
@@ -1819,11 +1892,11 @@ var usernameSuffixes = ["Kappa", "Sniper", "maniac", "shipwreck", "M", "LULZ", "
 
 var usernameColors = ["red", "green", "#40b7b5", "blue", "purple", "#aa9929"];
 
-var positiveMessages = ["&#129505;&#129505;&#129505;&#129505;&#129505;", "<div class='bigchat'>HEY YOOOO GUYZ!</div>", "best eppie evah", "LIZZY LUV", "I can't feel my lungs", "&#128072; feels all the feels", "gettin goosebumps now &#128123;", "WTF", "LUL", "holy shit", "SAVED &#128512;", "ez", "GG", "&#128512;", "<div class='bigchat'>LOVE THIS SHOW!!!</div>", "WHAT", "Smash LIKE BUTTON, Peasants!", "&#128512;&#128512;&#128512;&#128512;&#128512;", "anyone like pasta?", "awesome clawsome", "Freddy has powerful swim swims", "Mark is my spirit animal", "KAT GREED", "The enemy of my enemy is my Freddy", "The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top", "&#128512;&#128512;&#128512;&#129505;&#129505;&#129505;","&#128077;"];
+var positiveMessages = ["_heart_full_heart_full_heart_full_heart_full_heart_full", "<div class='bigchat'>HEY YOOOO GUYZ!</div>", "best eppie evah", "LIZZY LUV", "I can't feel my lungs", "_point_left feels all the feels", "gettin goosebumps now _ghost", "WTF", "LUL", "holy shit", "SAVED _smile_big", "ez", "GG", "_smile_big", "<div class='bigchat'>LOVE THIS SHOW!!!</div>", "WHAT", "Smash LIKE BUTTON, Peasants!", "_smile_big_smile_big_smile_big_smile_big_smile_big", "anyone like pasta?", "awesome clawsome", "Freddy has powerful swim swims", "Mark is my spirit animal", "KAT GREED", "The enemy of my enemy is my Freddy", "The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top", "_smile_big _smile_big _smile_big _heart_full _heart_full _heart_full","_thumbs_up","_smile_big_smile_big_smile_big_smile_big_smile_big",];
 
-var negativeMessages = ["BOT", "WTF LMAO", "Stop moving your head! gettin dizzy", "dizzy", "&#128577; VOLUME UP, PREEZ!", "NA CS", "LOL this ridic", "WTF", "LUL", "HAHAHAHA", "OMG", "LMAO&#129315;&#129315;&#129315;", "so bad omg &#128577;", "xD", "FAKE &#128078;", "fakey-fake &#128580;", "fake as fxxk", "FAKE FAKE FAKE", "WutFace", "NotLikeThis", "4Head", "KAT GREED", "salty peanuts yum yum", "Lizzy already won this debate, move along", "PALPATINE'S BEHIND IT ALL!!!","&#128577;","&#128078;&#128078;&#128078;&#128078;"];
+var negativeMessages = ["BOT", "WTF LMAO", "Stop moving your head! gettin dizzy", "dizzy", "_frown_face VOLUME UP, PREEZ!", "NA CS", "LOL this ridic", "WTF", "LUL", "HAHAHAHA", "OMG", "LMAO_rofl_face_rofl_face_rofl_face", "so bad omg _frown_face", "xD", "FAKE _thumbs_down", "fakey-fake _eyeroll_face", "fake as fxxk", "FAKE FAKE FAKE", "WutFace", "NotLikeThis", "4Head", "KAT GREED", "salty peanuts yum yum", "Lizzy already won this debate, move along", "PALPATINE'S BEHIND IT ALL!!!","_frown_face","_thumbs_down_thumbs_down_thumbs_down_thumbs_down"];
 
-var scaredMessages = ["OMG WTF is was that?", "GET OUTTA THERE!", "&#128128;", "Run, Forrest, Run!", "dizzy", "Noooooooo", "OMFG", "just crapped my pantaloons", "WTF", "this is my worst nightmare", "OMG run", "OMG", "LMAO", "so bad omg", "xD", "FAKE", "fake", "can't take this", "please jesus god no more jump scares", "&#128123;&#128577;", "NotLikeThis", "...", "<=== IS SCARED &#128556;", "heart palpittashuns","&#128123;&#128123;&#128123;&#128123;&#128123;&#128123;&#128123;","&#128552;&#128552;&#128552;&#128552;&#128552;&#128552;&#128552;&#128552;&#128552;","&#128552;","&#128552;","&#128552;"];
+var scaredMessages = ["OMG WTF is was that?", "GET OUTTA THERE!", "_skull_face", "Run, Forrest, Run!", "dizzy", "Noooooooo", "OMFG", "just crapped my pantaloons", "WTF", "this is my worst nightmare", "OMG run", "OMG", "LMAO", "so bad omg", "xD", "FAKE", "fake", "can't take this", "please jesus god no more jump scares", "_ghost_frown_face", "NotLikeThis", "...", "<=== IS SCARED _grimace_face", "heart palpittashuns","_ghost_ghost_ghost_ghost_ghost_ghost_ghost","_scared_sweat_scared_sweat_scared_sweat_scared_sweat_scared_sweat_scared_sweat_scared_sweat_scared_sweat_scared_sweat","_scared_sweat","_scared_sweat","_scared_sweat"];
 
 var weirdMessages = ["The overflow-y property specifies whether to clip the content, add a scroll bar, or display overflow content of a block-level element, when it overflows at the top", "RUINED", "SAVED", "RUINED", "CoolStoryMan"];
 
@@ -1838,6 +1911,75 @@ var emotes = [
     ["PogChamp", "pogchamp.png"]
 ];
 
+var emoticons = [
+    ["_smile_normal", "&#128578;"],
+    ["_smile_big", "&#128512;"],
+	["_frown_face","&#128577;"],
+    ["_sad_cry", "&#128532;"],
+    ["_love_face", "&#128525;"],
+    ["_heart_black", "&#10084;"],
+	["_heart_full", "&#129505;"],
+    ["_smile_evil", "&#128520;"],
+    ["_poop", "&#128169;"],
+    ["_x_mark", "&#10060;"],
+    ["_check_mark", "&#10004;"],
+    ["_tears_joy", "&#128514;"],
+    ["_wink_face", "&#128521;"],
+    ["_yum_face", "&#128523;"],
+    ["_cool", "&#128526;"],
+    ["_kiss_face", "&#128536;"],
+    ["_eyeroll_face", "&#128580;"],
+    ["_tears_sad_face", "&#128549;"],
+    ["_tears_big_face", "&#128557;"],
+    ["_oh_no_face", "&#128551;"],
+    ["_grimace_face", "&#128556;"],
+    ["_smile_catface", "&#128570;"],
+    ["_love_catface", "&#128571;"],
+    ["_trophy", "&#127942;"],
+    ["_medal", "&#129351;"],	
+    ["_skull_face", "&#128128;"],
+    ["_ghost", "&#128123;"],
+    ["_meat", "&#129385;"],
+    ["_thumbs_up", "&#128077;"],
+    ["_thumbs_down", "&#128078;"],
+    ["_middle_finger", "&#128405;"],
+    ["_danger", "&#9888;"],
+    ["_strong", "&#128170;"],
+    ["_smirk", "&#128527;"],
+    ["_sad_beg", "&#129402;"],
+    ["_perservere", "&#128547;"],
+    ["_point_left", "&#128072;"],
+    ["_point_right", "&#128073;"],
+    ["_okay", "&#128076;"],
+    ["_angry_evil", "&#128127;"],
+    ["_heart_broken", "&#128148;"],
+    ["_fire", "&#128293;"],
+    ["_clock", "&#128338;"],
+    ["_lol_face", "&#128518;"],
+    ["_confused_face", "&#128533;"],
+    ["_tongue_normal", "&#128539;"],
+    ["_tongue_winking", "&#128540;"],
+    ["_tongue_laugh", "&#128541;"],
+    ["_scared_sweat", "&#128552;"],
+    ["_scared_scream", "&#128561;"],
+    ["_scared_shocked", "&#128562;"],
+    ["_dizzy_face", "&#128565;"],
+    ["_mute_face", "&#128566;"],
+    ["_smile_flipped", "&#128579;"],
+    ["_hand_pray", "&#;"],
+    ["_greed_face", "&#129297;"],
+    ["_hand_horns", "&#129304;"],
+    ["_fingers_crossed", "&#129310;"],
+    ["_sick_face", "&#129314;"],
+    ["_rofl_face", "&#129315;"],
+    ["_crazy_face", "&#129322;"],
+    ["_angry_curse", "&#29324;"],
+    ["_puke_face", "&#129326;"],
+    ["_brain", "&#129504;"],
+    ["_angel_face", "&#128519;"],
+    ["_pout_face", "&#128545;"],
+    ["_angry_face", "&#128544;"]
+];
 
 
 
@@ -1869,6 +2011,7 @@ function getMessage()
     
     if(spamType=="positive")
         msgBody = (positiveMessages[Math.floor(Math.random()*positiveMessages.length)]);
+		//msgBody = (positiveMessages[positiveMessages.length-1]);
     else if(spamType=="negative")
         msgBody = (negativeMessages[Math.floor(Math.random()*negativeMessages.length)]);
     else if(spamType=="scared")
@@ -1880,6 +2023,7 @@ function getMessage()
 		//loadRandomImg(message);
 
     msgBody = replaceEmotes(msgBody);
+    msgBody = replaceEmoticons(msgBody);	
     msgBody = replacePics(msgBody);
 	
     message.append(msgBody);
@@ -1897,6 +2041,15 @@ function replaceEmotes(message)
     } 
     return message;
 }
+
+function replaceEmoticons(message)
+{	
+    for(var i=0;i<emoticons.length;i++){
+        message = message.replace(new RegExp(emoticons[i][0], 'g'), emoticons[i][1]);
+    } 
+    return message;
+}
+
 
 
 var imgMsg = false;
@@ -2328,7 +2481,8 @@ function chat()
         message.append(" ");
 
         var msgBody = textfield.val();
-        msgBody = replaceEmotes(msgBody);
+        //msgBody = replaceEmotes(msgBody);
+		msgBody = replaceEmoticons(msgBody);		
 		var msgBodyDiv = $('<div class="playertext">' + msgBody +'</div>');
 		message.append(msgBodyDiv);
    
@@ -2469,7 +2623,7 @@ function makeSettings()
 	
     var positiveSpam = $('<option></option>');
     positiveSpam.attr("value", "positive");
-    positiveSpam.append("&#128512;&nbsp;&nbsp;&nbsp;Happy");
+    positiveSpam.append("_smile_big&nbsp;&nbsp;&nbsp;Happy");
 	
     var snarkySpam = $('<option></option>');
     snarkySpam.attr("value", "positive");
