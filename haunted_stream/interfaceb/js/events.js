@@ -3,27 +3,39 @@
 //----------------------------------------------------
 
 // summon_Layer(layernum, layertype, bckcolor, bckimg, speedin, speedout, alpha, timeout)
-// summon_Sound(snd, snd_plyr, vol, pbr, timeout)
+// summon_Sound(snd, snd_plyr, speedin, speedout, vol, pbr, timeout)
 // summon_Apparition(speed, scale, timeout)
-// summon_dChat(array, mem, mood, speed, timeout)
+// summon_dChat(array, mem, mood, mask, speed, timeout)
 
 
 var timedEvents = [
-	[true,  2,	"HelloWorld",
+	[false,  2,	"HelloWorld",
 		[
-		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 90000)},
-		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 90000)},		
+		function(){summon_Layer(0, "colorbox hidden", "black", null, 500, 500, 0.35, 2000)},
+		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 500, 500, 0.35, 2000)},		
 		// function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 90000)},
 		// function(){summon_Sound('music/Ice_Demon.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
-		function(){summon_dChat(HelloWorld, null, "vicious", 700, 90000)}
+		function(){summon_Sound('fx/static.mp3', 1, 500, 500, 0.025, 1.0, 90000)},
+		function(){summon_dChat(HelloWorld, null, "vicious", null, 2000, 1)}
 		]
-	],	
+	],
+	[true,  2,	"LetsBeFriends",
+		[
+		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 900000)},
+		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 900000)},		
+		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 900000)},
+		function(){summon_Sound('fx/static.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
+		//function(){summon_Sound('music/Ice_Demon.mp3', 2, 4000, 2000, 0.025, 1.0, 900000)},
+		function(){summon_dChat(LetsBeFriends, null, "vicious", "kiddiebubble", 1, 90)}
+		]
+	],
+	
 	[false, 17,	0,
 		[
 		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.35, 90000)},
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.35, 90000)},		
 		function(){summon_Apparition(10, 1, 90000)},	
-		function(){summon_dChat(HelloWorld, null, "vicious", 500, 20000)},		
+		function(){summon_dChat(HelloWorld, null, "vicious", "chalkbubble", 500, 20000)},		
 		] 
 	],		
 	[false, 35,	1,
@@ -31,7 +43,7 @@ var timedEvents = [
 		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 8000)},
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static_2.gif", 3000, 3000, 0.5, 8000)},		
 		function(){summon_Apparition(10, 1, 90000)},
-		function(){summon_dChat(JarodSucks, null, "vicious", 1000, 8000)}
+		function(){summon_dChat(JarodSucks, null, "vicious", "chalkbubble", 1000, 8000)}
 		]
 	],
 	[false, 55,	1,
@@ -39,7 +51,7 @@ var timedEvents = [
 		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 8000)},
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static_2.gif", 3000, 3000, 0.5, 8000)},		
 		function(){summon_Apparition(8000)},
-		function(){summon_dChat(ThePictureGame, null, "vicious", 1000, 8000)}
+		function(){summon_dChat(ThePictureGame, null, "vicious", "chalkbubble", 1000, 8000)}
 		]
 	],		
 ];
@@ -54,7 +66,20 @@ var pastEvents = [];
 var HelloWorld =
 [
 		// Node 0
-		["hello world","i can see you","im right over here ------>","do you wanna be my friend?",
+		["hello world!",
+			[ function(){banish_dChat()} ]
+		]
+]
+HelloWorld.name = "Hello World!";
+HelloWorld.type = "conversation";
+HelloWorld.exit = "banishAll";
+//HelloWorld.exit = "none";
+
+
+var LetsBeFriends =
+[
+		// Node 0
+		["hay, i can see you","im right over here ------>","do you wanna be my friend?",
 			[ 
 				//	Context node
 				//	[
@@ -72,7 +97,9 @@ var HelloWorld =
 					[function(){dJumpToDialogueNode(3, false, true)}]
 				],
 				["DECLINE",
-					[function(){summon_Apparition(10, 1, 90000)},function(){dJumpToDialogueNode(2, false, true)}]
+					[function(){dJumpToDialogueNode(2, false, true)},
+					//function(){summon_Apparition(10, 1, 90000)},
+					]
 				],
 				["MAYBE",
 					[function(){dJumpToDialogueNode(1, false, true)}]
@@ -92,7 +119,7 @@ var HelloWorld =
 			[ function(){dJumpToDialogueNode(4, true, true)} ]
 		],
 		// Node 3		
-		["fantastik", "were gonna be GRATE 2gether, me and u", "jus like batman n robin, bogey n bacall, ham n eggs, kids n cancer",
+		["fantastik", "were gonna be GRATE 2gether, me and u", "jus like batman n robbin", "bogy n bacall", "ham n eggs", "kids n cancer",
 			[ function(){dJumpToDialogueNode(4, true, true)} ]
 		],
 		// Node 4		
@@ -124,10 +151,10 @@ var HelloWorld =
 			//[ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]
 		]		
 ];
-	HelloWorld.name = "Hello World!";
-	HelloWorld.type = "conversation";
-	HelloWorld.exit = "banishAll";
-	//HelloWorld.exit = "none";
+LetsBeFriends.name = "Let's Be Friends!";
+LetsBeFriends.type = "conversation";
+LetsBeFriends.exit = "banishAll";
+//HelloWorld.exit = "none";
 
 
 ////////////////////////

@@ -156,7 +156,7 @@ function showInterface()
 //----------------------------------------------------
 
 
-function audioPlay(audio,vol) {;
+function audioPlay(audio, vol) {;
 	audio.volume = vol;
 	audio.play();
 }
@@ -164,13 +164,13 @@ function audioPlay(audio,vol) {;
 	var a_timer,audio = 0;
 
 function audioFadeOut(audio, dur){
-    audio[0].volume = 0.1;
+    //audio[0].volume = 0.1;
     audio.animate({volume: 0.0}, dur);
 }
 
-function audioFadeIn(audio, dur){
+function audioFadeIn(audio, dur, vol){
     audio[0].volume = 0.0;
-    audio.animate({volume: 0.1}, dur);
+    audio.animate({volume: vol}, dur);
 }
 
 
@@ -451,7 +451,7 @@ function interval(func, wait, times){
 
 
 // Ubiquitous timer object
-function timer(callback, delay) {
+/* function timer(callback, delay) {
     var id, started, remaining = delay, running
     this.start = function() {
         running = true
@@ -463,6 +463,12 @@ function timer(callback, delay) {
         clearTimeout(id)
         remaining -= new Date() - started
     }
+    this.restart = function() {
+        running = true
+        started = new Date()
+        id = setTimeout(callback, 0)
+		id = setTimeout(callback, delay)
+    }	
     this.getTimeLeft = function() {
         if (running) {
             this.pause()
@@ -474,7 +480,7 @@ function timer(callback, delay) {
         return running
     }
     this.start()
-}
+} */
 
 
 
@@ -494,7 +500,7 @@ function timer(callback, delay) {
 
 // Moods	
 	var dGlee = 5;
-	var dPatience = 4;
+	var dPatience = 3;
 	var dCruelty = 5;
 	var dAnger = 5;
 	var dFear = 5;
@@ -512,6 +518,10 @@ function timer(callback, delay) {
 	var dSpamming = false;
 	var dSpamType = "";
 	var dSpamMood = "";
+	var dMask = "";
+
+	var dSpamBase = 0;
+	var dSpamVar = 0;	
 	var dSpamSpeed = 0;
 
 	var dMsgCount = 0;
@@ -531,7 +541,7 @@ function timer(callback, delay) {
 // Init Demon Chat Module
 //--------------------------
 
-function summon_dChat(array, mem, mood, speed, timeout)
+function summon_dChat(array, mem, mood, mask, speed, timeout)
 {
 /* 	var video = document.getElementsByTagName('video')[0];
 	var webcamvideo = document.getElementsByTagName('video')[1];
@@ -547,38 +557,46 @@ function summon_dChat(array, mem, mood, speed, timeout)
 	document.getElementById("chapter").innerHTML = c_array.name;
 	
 	dSpamType = c_array.type;
+	
 	dSpamMood = mood;
-	dSpamSpeed = speed;
 	
+	dMask = mask;
+	
+	dMsgScale = 1.0;
+	
+	dSpamBase = speed;
+	dSpamSpeed = dSpamBase + dSpamVar;
+	
+	//Dialogue Node
 	dPrevDialogueNode = dDialogueNode;
-	
-	//dDialogueNode = 0;
 	dDialogueCount = 0;
 	dDialogueStop = c_array[dDialogueNode].length - 1;
 
-	dTaunt = false;
-	//dWaitTimeout = timeout/4;
-	dWaitTimeout = dPatience * 1000;	
 	dListen = true;
+	
+	dTaunt = false;
+	dWaitTimeout = dPatience * 1000;
+	//Set wait-time according to demon's patience stat	
+	//dNewWaitTimer();
+	//dWaitTimer.pause();
 	
 	spamming = false;
 	$("#chattext").css("overflow", "hidden");
 	
 	dMsgCount = 0;
 	dSpam();
-
-/* 	dChatTimeout = timeout;
-	clearTimeout(c_timer);
-	c_timer = window.setTimeout(banish_dChat, timeout); */
 	
+	// Set initial length of chat clock
 	dChatTimeout = timeout;
-	c_timer = new timer(function() {banish_dChat()}, dChatTimeout);
-	//c_timer.pause();
+	var c_timer = new Timer();
+	c_timer.start(dChatTimeout).on('end', function () {
+	  banish_dChat();
+	});	
 	
-	dChatTimeLeft = c_timer.getTimeLeft();
+	dChatTimeLeft = c_timer.getDuration();
 	var dChatTimer = setInterval(function() {
 		if (dChatTimeLeft > 0){
-			dChatTimeLeft = c_timer.getTimeLeft();
+			dChatTimeLeft = c_timer.getDuration();
 			document.getElementById("chapter-time").innerHTML = Math.round(dChatTimeLeft/1000);
 		} else {
 			dChatTimeLeft = 0;
@@ -645,6 +663,9 @@ function delayedFade(i, el){
 		  css: { 
 			width: 0.0,
 			height: 0.0,
+			marginLeft: 100.0,
+			fontSize: 0.0,
+			padding: 0.0,
 			transformOrigin:"top right",
 		  }
 	});
@@ -680,9 +701,14 @@ function restoreChat(){
 	var dListen = true;
 
 	var dWaitTimeout;
+	var dWaitTimer;
+	
 	var dTaunt = false;
 
-	var waitInterval;
+	var waitInterval = null;
+	
+	var dSpamTimeout;
+	var dSpamTimer;
 
 function dWaitsForResponse()
 {	
@@ -698,36 +724,142 @@ function dWaitsForResponse()
 	
 	console.log("demon is listening for " + dQuestionType);
 
-	//Set wait-time according to demon's patience stat	
 	dWaitTimeout = dPatience * 1000;
 
-	var waitInterval = setInterval(function()
-	{
-		if (dSpamming){
-			if (plReply !== null) {
-				dListen = false;
-				dTaunt = false;
-				stopInterval(waitInterval);
-				console.log("player responded");
-				dWriteMore();			
-			} else {
-				dWaitTimeout = dWaitTimeout - 1000;
-				if (dWaitTimeout == 0){
+	if (waitInterval == null){
+		waitInterval = setInterval(function()
+		{
+			if (dSpamming){
+				if (plReply !== null) {
+					dListen = false;
+					dTaunt = false;
+					console.log("player responded");
 					dWriteMore();
-					dWaitTimeout = dPatience * 1000;
-					stopInterval(waitInterval);
-				}			
+					//dWaitTimeout = dPatience * 1000;
+					//clearInterval(waitInterval);
+					//waitInterval = null;				
+				} else {
+					dWaitTimeout = dWaitTimeout - 1000;
+					if (dWaitTimeout == 0){
+						dWriteMore();
+						clearInterval(waitInterval);
+						waitInterval = null;
+						dWaitsForResponse()						
+					}			
+				}
+			}
+			document.getElementById("debug").innerHTML = Math.round(dWaitTimeout/1000);
+		}
+		, 1000);
+	}
+}
+
+
+
+//--------------------------
+// Chat Functions
+//--------------------------
+
+//starts spamming, calls dKeepSpamming()
+function dSpam()
+{   
+    if(dSpamming){
+        dSpamming = false;
+		//$('#textfield').prop("disabled", false);
+    }else{
+		dSpamming = true;
+		//$('#textfield').prop("disabled", true);
+		dKeepSpamming();
+    }
+}
+
+
+//recursive function that writes a message every 0-249ms
+function dKeepSpamming()
+{
+    if(dSpamming){
+		if (dSpamType=="rant") {
+			if (dMsgCount < dDialogueStop){
+				writeDarkMessage();
+				dSpamSpeed = dSpamBase + dSpamVar;
+				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
+			}
+			else
+			{
+				banish_dChat();
 			}
 		}
-		//log("demon waiting"); 
-		document.getElementById("debug").innerHTML = Math.round(dWaitTimeout/1000);				
-	}
-	, 1000);
+		if (dSpamType=="conversation"){			
+			if (dDialogueCount < dDialogueStop){
+				writeDarkMessage();
+				dDialogueCount++;
+				dSpamSpeed = dSpamBase + dSpamVar;
+				dSpamTimer = new Timer();
+				dSpamTimer.start(dSpamSpeed).on('end', function () {
+				  clearInterval(waitInterval);
+				  waitInterval = null;
+				  dKeepSpamming();
+				});	
+			}
+			else
+			{
+				if (dListen){
+					dTaunt = false;
+					clearInterval(waitInterval);
+					waitInterval = null;
+					dWaitsForResponse();
+				} else {
+					console.log("not listening");
+					var dExitNode = c_array[dDialogueNode].length-1;
+					var dExitFunc = c_array[dDialogueNode][dExitNode];
+					console.log(dExitFunc.length);
+					for (i=0; i< dExitFunc.length; i++){
+						dExitFunc[i]();
+					}
+				}
+			}
+		}
+		if (dSpamType=="random"){
+			writeDarkMessage();
+			//setTimeout(function() {dKeepSpamming(); }, Math.floor(Math.random() * spamSpeed));
+			setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
+		}
+    }
+}
+
+
+
+
+function dNewWaitTimer(){
+	dWaitTimeout = dPatience;
+	dWaitTimer = new Timer();
+	dWaitTimer.start(dWaitTimeout).on('end', function () {
+	  dWaitIsUp();
+	});
+}
+
+function dWaitIsUp() {
+	dWriteMore();
+	dNewWaitTimer();	
+/* 	if (dSpamming){
+		if (plReply !== null) {
+			dListen = false;
+			dTaunt = false;
+			dWriteMore();
+			dNewWaitTimer();			
+		} else {
+			dWaitTimeout = dWaitTimeout - 1;
+			if (dWaitTimeout == 0){
+				dWriteMore();
+				dNewWaitTimer();
+			}			
+		}
+	} */	
 }
 
 function stopInterval(i) { 
    clearInterval(i);
-   //log(i + " was cleared"); 
+   log(i + " was cleared"); 
 } 
 
 
@@ -1387,13 +1519,17 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 	wikiText[0] = wikiFirstSentence.join(" ");	
 	
 	wikiDialogueNode = wikiText;
-	wikiDialogueNode[0] = wikiDialogueNode[0] + wikiDialogueNode[1];	
-	wikiDialogueNode.splice(1,1);
+	//wikiDialogueNode[0] = wikiDialogueNode[0] + wikiDialogueNode[1];	
+	//wikiDialogueNode.splice(1,1);
 	wikiDialogueNode.splice(2);
+	
+	var wikiIntro = "yeah i know all abowt " + subjProunounObj;
+	wikiDialogueNode.splice(0,0,wikiIntro);
+	
 
 	// asynchrounous image post-processing
 	if (wikiImg !== ""){
-		await resizeWikiImg(wikiImg, wikiData)
+		await resizeWikiImg(wikiImg, wikiData);
 		log("returned from resize with " + thumbPath );			
 		wikiImg = thumbPath;
 		wikiImgLoader = subjProunoun +" kinda looks like this<br/><img width='100%' onload='scrollToBottom()' src='" + wikiImg + "' />"			
@@ -1404,6 +1540,8 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 
 	// Solve for question-type and topic-context
 	if (dQuestionType !== "wikiSearch"){
+		// remove additional content bubbles
+		wikiDialogueNode.splice(1,2);
 		if (wikiSubjCat == wikiGenre){
 			var subPlural = "";
 		} else {
@@ -1443,46 +1581,6 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 	dJumpToDialogueNode(c_array.length-1,false,true);
 }
 
-
-
-function getFileSize(url)
-{
-    var fileSize = '';
-    var http = new XMLHttpRequest();
-	http.setRequestHeader('Access-Control-Allow-Origin', '*');
-    http.open('HEAD', url, false); // false = Synchronous
-
-	log("getting file size");
-	http.send(null); // it will stop here until this http request is complete
-
-    // when we are here, we already have a response, b/c we used Synchronous XHR
-	log("gotfile size");
-
-    if (http.status === 200) {
-        fileSize = http.getResponseHeader('content-length');
-        console.log('fileSize = ' + fileSize);
-    }
-
-    return fileSize;
-}
-
-
-
-function getFilesize(url, callback) {
-    var xhr = new XMLHttpRequest();
-	
-	xhr.setRequestHeader('Access-Control-Allow-Headers', '*');
-	xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
-	
-    xhr.open("HEAD", url, true);
-	
-    xhr.onreadystatechange = function() {
-        if (this.readyState == this.DONE) {
-            callback(parseInt(xhr.getResponseHeader("Content-Length")));
-        }
-    };
-    xhr.send();
-}
 
 
 
@@ -1550,77 +1648,6 @@ function getDarkWiki(wikiText, wikiTitle)
 
 
 
-//--------------------------
-// Chat Functions
-//--------------------------
-
-//starts spamming, calls dKeepSpamming()
-function dSpam()
-{   
-    if(dSpamming){
-        dSpamming = false;
-		//$('#textfield').prop("disabled", false);
-    }else{
-		dSpamming = true;
-		//$('#textfield').prop("disabled", true);
-		dKeepSpamming();
-    }
-}
-
-
-//recursive function that writes a message every 0-249ms
-function dKeepSpamming()
-{
-    if(dSpamming){
-		//curEventId = timedEvents[0][2];
-		if (dSpamType=="rant") {
-			if (dMsgCount < dDialogueStop){
-				writeDarkMessage();
-				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
-			}
-			else
-			{
-				banish_dChat();
-			}
-		}
-		if (dSpamType=="conversation"){			
-			if (dDialogueCount < dDialogueStop){
-				writeDarkMessage();
-				dDialogueCount++;
-				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
-			}
-			else
-			{
-				if (dListen){
-					dTaunt = false;
-					dWaitsForResponse();
-				} else {
-					console.log("not listening");
-					var dExitNode = c_array[dDialogueNode].length-1;
-					var dExitFunc = c_array[dDialogueNode][dExitNode];
-					console.log(dExitFunc.length);
-					for (i=0; i< dExitFunc.length; i++){
-						dExitFunc[i]();
-					}
-				}
-			}
-		}
-		if (dSpamType=="random"){
-			writeDarkMessage();
-			//setTimeout(function() {dKeepSpamming(); }, Math.floor(Math.random() * spamSpeed));
-			setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
-		}
-    }
-}
-
-/* main.js:1481 Uncaught TypeError: message.replace is not a function
-    at replaceEmotes (main.js:1481)
-    at getDarkMessage (main.js:1204)
-    at writeDarkMessage (main.js:1142)
-    at dKeepSpamming (main.js:1108)
-    at main.js:1110 */
-
-
 
 //writes a random message in the chat
 function writeDarkMessage()
@@ -1655,7 +1682,7 @@ function getDemonName()
 function getDarkMessage()
 {
 	// get the sound effect
-	var snd_heartbeat = new Audio('../snd/fx/heartbeat.mp3');	
+	var snd_heartbeat = new Audio('../snd/fx/scrape.mp3');	
 	audioPlay(snd_heartbeat,0.7);
 	snd_heartbeat.onended = function() {
 		snd_heartbeat.remove();
@@ -1663,6 +1690,11 @@ function getDarkMessage()
 	//style the bubble
 	var message = $('<div id="chatbubble"></div>');
 	message.attr("class", "fly-in-element darkbubble");
+	
+	if (dMask == "sheet"){
+		//var message = $('<div id="chatbubble" class="fly-in-element sheet"><div class="l-margin margin"><div class="hole first-hole"></div></div><div class="r-margin margin"></div><header><span class="sheet-title"></span></header></div>');		
+		var message = $('<div id="chatbubble" class="fly-in-element sheet"><div class="l-margin margin"></div><div class="r-margin margin"></div></div>');
+	}
 	
 	// apply css changes
 	dApplyMsgTransforms(message);
@@ -1710,21 +1742,37 @@ function dApplyMsgTransforms(message)
 {
 	dMsgRandomX = Math.floor(Math.random()*3.5);
 	dMsgAdjX = dMsgOriginX - dMsgRandomX;
+
+/* 	if (dMask !== null){
+		if (dMask !== "sheet"){
+			message.attr("class", "fly-in-element darkbubble " + dMask);
+		}
+	} */
+	
+	if (dMask !== null){
+		message.attr("class", "fly-in-element darkbubble " + dMask);
+	}	
 	
 	if (dTaunt){	
 		//random font
 		var fontType = ["Crafty Girls", "Henny Penny", "Gloria Hallelujah", "Eater", "Lacquer", "Homemade Apple"];
 		var num;
 		num=Math.floor(Math.random()*fontType.length);
-		message.css("font-family", fontType[num]);
+/* 		message.css("font-family", fontType[num]);
 		if (dRepeatQuestion){
 			var fontType = "Courier Prime";
 			message.css("font-family", fontType);		
-		}		
+		} */		
 		
 		//increased size
-		dMsgScale = dMsgScale + 0.1;
-		dMsgAdjX = dMsgAdjX - (dMsgScale*1.5);
+		if (dMsgScale < 2.0) {
+			dMsgScale = dMsgScale + 0.1;
+			dMsgAdjX = dMsgAdjX - (dMsgScale*1.5);
+		} else {
+			message.attr("class", "fly-in-element darkbubble");
+			dMsgAdjX = dMsgAdjX - (dMsgScale*1.5);
+		}
+			
 		message.css("font-size", dMsgScale +"vw");
 		message.css("line-height", (dMsgScale*1.5) + "vw");
 		message.css("padding", (dMsgScale*1.5) + "vw");			
@@ -1784,6 +1832,7 @@ function summon_Layer(layernum, layertype, bckcolor, bckimg, speedin, speedout, 
 	
 	targetLayer.attr("class", layertype);
 	targetLayer.css("background-color", bckcolor);
+	targetLayer.css("z-index", "4");
 	if (bckimg != null){
 		targetLayer.css("background-image", "url('"+ bckimg +"')");
 	}	
@@ -1797,6 +1846,7 @@ function summon_Layer(layernum, layertype, bckcolor, bckimg, speedin, speedout, 
 
 function banish_Layer(layernum, speedout){
 	$("#overlay"+layernum).fadeTo( speedout, 0.0, function(){
+		$("#overlay"+layernum).css("z-index", "-1");
 	});
 }
 
@@ -1823,7 +1873,7 @@ function summon_Sound(snd, snd_plyr, speedin, speedout, vol, pbr, timeout){
 	music.volume = vol;
 	music.src = '../snd/' + snd;	
 	music.play();
-	audioFadeIn(music_player, speedin);
+	audioFadeIn(music_player, speedin, vol);
 	music.playbackRate = pbr;
 	
 	clearTimeout(s_timer[snd_plyr]);

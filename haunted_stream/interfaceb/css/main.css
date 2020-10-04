@@ -122,7 +122,8 @@ video
 	pointer-events: none;
     cursor: default;
 	
-	z-index: 4;
+	/* z-index: 4; */
+	z-index: -1;
 }
 
 .apparitions {
@@ -139,7 +140,8 @@ video
 	pointer-events: none;
     cursor: default;
 	
-	z-index: 6;
+	/* z-index: 6; */
+	z-index: -1;
 }
 
 
@@ -154,7 +156,8 @@ video
 	pointer-events: none;
     cursor: default;
 
-	z-index: 4;
+	/* z-index: 4; */
+	z-index: -1;
 }
 
 
@@ -170,7 +173,8 @@ video
     cursor: default;
 	background-image: none;
 
-	z-index: 4;
+	/* z-index: 4; */
+	z-index: -1;
 }
 
 .textures:after {
@@ -496,7 +500,7 @@ input[type = text]
 
 #chatbubble.userbubble
 {	
-	box-shadow: inset 0 0.5vw 0.5vw 0px rgb(255, 255, 255, 0.5),inset 0 0.5vw 0.5vw 0px rgb(255, 255, 255, 0.5);
+	box-shadow: inset 0 0.5vw 0.5vw 0 rgb(255, 255, 255, 0.5),inset 0 0.5vw 0.5vw 0 rgb(255, 255, 255, 0.5);
 	background: rgba(255, 255, 255, 0.7);		
 }
 
@@ -512,7 +516,8 @@ input[type = text]
 	font-family: Courier Prime, Courier, Courier New;
 	color: white;
 	font-size: 1.0vw;
-	text-shadow: 0.15vw 0.15vw 0.25vw #000000;
+/* 	text-shadow: 0.15vw 0.15vw 0.25vw #000000; */
+	text-shadow: none;
 	line-height: 1.5vw;
 	
 	border-radius: 0.75vw;
@@ -520,6 +525,48 @@ input[type = text]
 	box-shadow: none;	
 	background-color: rgb(0, 0, 0, 0.75);
 	background: rgba(0, 0, 0, 1.0);
+}
+
+#chatbubble.chalkbubble
+{
+	/* transform-origin: top right; */
+    transform: translateX(200%);
+    -webkit-transform: translateX(200%);
+
+    padding: 1.5vw;
+
+	font-family: Gaegu, Gloria Hallelujah, Crafty Girls;
+	color: white;
+	font-size: 1.5vw;
+	/* text-shadow: 0.25vw 0.25vw 0.25vw #000000; */
+	line-height: 2.0vw;
+	
+	border-radius: 0.75vw;
+
+	box-shadow: inset 0 0 2.0vw -0.5vw rgb(0, 0, 0, 0.75);	
+	background-color: rgb(0, 0, 0, 0.75);
+	background: rgba(0, 32, 8, 1.0);
+}
+
+#chatbubble.kiddiebubble
+{
+	/* transform-origin: top right; */
+    transform: translateX(200%);
+    -webkit-transform: translateX(200%);
+
+    padding: 1.5vw;
+
+	font-family: Crafty Girls;
+	color: rgb(200, 200, 255, 1.0);
+	font-size: 1.25vw;
+	text-shadow: 0.25vw 0.25vw 0.25vw #000000;
+	line-height: 1.75vw;
+	
+	border-radius: 0.75vw;
+
+	box-shadow: inset 0 0 2.0vw -0.5vw rgb(0, 0, 0, 0.75);	
+	background-color: rgb(224, 112, 112, 0.75);
+	background: rgb(224, 112, 112, 0.75);
 }
 
 
