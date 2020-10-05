@@ -10,13 +10,8 @@ function globalWikiReplace(){
 		wikiChange = wikiChange.replace(/<(?:.|\n)*?>/gm, '');		
 		
 		//abbreviations
-		wikiChange = wikiChange.replace(/a+\.k+\.a+\./gm, "a-k-a");
-		wikiChange = wikiChange.replace(/no+\./gi, "#");
-
-		var abbrevWiki = wikiChange.replace(/[A-Z]+\./gm, function(match) {
-		 return match.split(".").join("");
-		});		
-		wikiChange = abbrevWiki;
+/* 		wikiChange = wikiChange.replace(/a+\.k+\.a+\./gm, "a-k-a");
+		wikiChange = wikiChange.replace(/no+\./gi, "#"); */
 		
 		//wikiChange = wikiChange.replace(/[a-zA-Z]+\.+\s[a-zA-Z]+\.+\s/gm, ""); // J. K. 
 		//wikiChange = wikiChange.replace(/[a-zA-Z]+\.+[a-zA-Z]+\.+\s/gm, ""); // J.K.

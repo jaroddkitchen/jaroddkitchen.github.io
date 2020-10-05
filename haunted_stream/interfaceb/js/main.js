@@ -569,7 +569,7 @@ function summon_dChat(array, mem, mood, mask, speed, timeout)
 	
 	//Dialogue Node
 	dPrevDialogueNode = dDialogueNode;
-	dDialogueCount = 0;
+	dDialogueCount = 1;
 	dDialogueStop = c_array[dDialogueNode].length - 1;
 
 	dListen = true;
@@ -734,10 +734,7 @@ function dWaitsForResponse()
 					dListen = false;
 					dTaunt = false;
 					console.log("player responded");
-					dWriteMore();
-					//dWaitTimeout = dPatience * 1000;
-					//clearInterval(waitInterval);
-					//waitInterval = null;				
+					dWriteMore();			
 				} else {
 					dWaitTimeout = dWaitTimeout - 1000;
 					if (dWaitTimeout == 0){
@@ -828,35 +825,6 @@ function dKeepSpamming()
 }
 
 
-
-
-function dNewWaitTimer(){
-	dWaitTimeout = dPatience;
-	dWaitTimer = new Timer();
-	dWaitTimer.start(dWaitTimeout).on('end', function () {
-	  dWaitIsUp();
-	});
-}
-
-function dWaitIsUp() {
-	dWriteMore();
-	dNewWaitTimer();	
-/* 	if (dSpamming){
-		if (plReply !== null) {
-			dListen = false;
-			dTaunt = false;
-			dWriteMore();
-			dNewWaitTimer();			
-		} else {
-			dWaitTimeout = dWaitTimeout - 1;
-			if (dWaitTimeout == 0){
-				dWriteMore();
-				dNewWaitTimer();
-			}			
-		}
-	} */	
-}
-
 function stopInterval(i) { 
    clearInterval(i);
    log(i + " was cleared"); 
@@ -866,14 +834,15 @@ function stopInterval(i) {
 	var dRepeatQuestion = true;
 
 function dWriteMore(){
-	if (plReply!=null){;
+	if (plReply!==null){;
+		clearInterval(waitInterval);
 		dParseReply();
-		dWaitsForResponse();
+		//dWaitsForResponse();
 	} else {
 		dRepeatQuestion = !dRepeatQuestion
 		dTaunt = true;
 		writeDarkMessage();
-		dWaitsForResponse();
+		//dWaitsForResponse();
 	}
 }
 
@@ -924,10 +893,12 @@ function dParseReply(){
 
 
 function dSenseNode(){
+	dQuestionNode = c_array[dDialogueNode][0];
+	dQuestionType = c_array[dDialogueNode][0][0];
+	dContextStr = c_array[dDialogueNode][0][1];	
+	
 	dAnswerNode = c_array[dDialogueNode].length-1;
 	dKeyNode = c_array[dDialogueNode][dAnswerNode];
-	dQuestionType = dKeyNode[0][0];
-	dContextStr = dKeyNode[0][1];
 }
 
 
@@ -1061,11 +1032,10 @@ function dJumpToDialogueNode(num, dlis, restart){
 	dDialogueStop = c_array[dDialogueNode].length - 1;
 	
 	if (restart){
-		dDialogueCount = 0;
+		dDialogueCount = 1;
 	} else {
 		dDialogueCount = dDialogueStop;
 	}
-
 	dSenseNode();
 
 	dSpamming = true;
@@ -1425,6 +1395,9 @@ function makeSPARQLQuery( endpointUrl, sparqlQuery, doneCallback ) {
 
 
 
+//////////////////////////////////////////////////////////////////
+// ASSEMBLE RESPONSE BASED ON WIKIDATA CONTEXT
+//////////////////////////////////////////////////////////////////
 
 	var wikiSubjCat;
 
@@ -1526,6 +1499,8 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 	var wikiIntro = "yeah i know all abowt " + subjProunounObj;
 	wikiDialogueNode.splice(0,0,wikiIntro);
 	
+	// Insert question node at beginning
+	wikiDialogueNode.splice(0,0,dQuestionNode);
 
 	// asynchrounous image post-processing
 	if (wikiImg !== ""){
@@ -1541,21 +1516,36 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 	// Solve for question-type and topic-context
 	if (dQuestionType !== "wikiSearch"){
 		// remove additional content bubbles
-		wikiDialogueNode.splice(1,2);
+		wikiDialogueNode.splice(2,1);
 		if (wikiSubjCat == wikiGenre){
 			var subPlural = "";
 		} else {
 			var subPlural = "s";
 		}
-		wikiDialogueNode.push("but we aint talking about " + wikiSubjCat + subPlural + " rite now");		
-		wikiDialogueNode.push("i asxed u a qwestion");
+		wikiDialogueNode.push("but we aint talking about " + wikiSubjCat + subPlural + " rite now");
+		if (dContextStr !== ""){
+			wikiDialogueNode.push("i asxed u a qwestion abowt " + dContextStr);
+		}
 		wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);
 	} else {
 		// Score context
-		if (wikiText !== ""){
-			pos = 0; //GOODSEARCH
-		} else {
+		if (wikiText == ""){
 			pos = 1; //BADSEARCH
+		} else {
+			wikiInstStr = wikiInstsOf.join();
+			if (wikiInstStr.includes(dContextStr)){
+				pos = 0; //GOODSEARCH
+			} else {
+				pos = 2; //WRONGTOPIC
+				if (wikiSubjCat == wikiGenre){
+					var subPlural = "";
+				} else {
+					var subPlural = "s";
+				}				
+				wikiDialogueNode.push("but we aint talking about " + wikiSubjCat + subPlural + " rite now");				
+				wikiDialogueNode.push("i asxed u a qwestion abowt " + dContextStr);
+				wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);				
+			}
 		}
 		for (i=0; i < keyactions[pos].length; i++){					
 			wikiDialogueNode.push([ keyactions[pos][i] ]);
@@ -1565,12 +1555,16 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 	// Solve for broad context
 	if ( (wikiInstOf == "wikimedia disambiguation page") || (wikiInstOf == "wikimedia list article") ){
 		wikiDialogueNode = [];
+		wikiDialogueNode.push(["", ""]);
 		var modWikiTitle = wikiTitle.replace(/list of/gi, "");
-		wikiDialogueNode.push("ur gonna have 2 b more spessific. i know lotsa shit about " + modWikiTitle.toLowerCase() );
+		wikiDialogueNode.push("ur gonna have 2 b more spessific. i know lotsa stuff about " + modWikiTitle.toLowerCase() );
 		wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);
 	}
 	
 	c_array[c_array.length-1] = wikiDialogueNode;
+	// c_array[c_array.length-1] = [];
+	// c_array[c_array.length-1].push(dAnswerNode);	
+	// c_array[c_array.length-1].push(wikiDialogueNode);	
 	wikiText = wikiDialogueNode[0];	
 	
 	log(wikiImg);

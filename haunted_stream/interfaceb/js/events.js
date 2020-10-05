@@ -79,18 +79,12 @@ HelloWorld.exit = "banishAll";
 var LetsBeFriends =
 [
 		// Node 0
-		["hay, i can see you","im right over here ------>","do you wanna be my friend?",
+		[		
+			//	Context node
+			//	[type of question, list of contextual words ('!' removes word from context,'null' turns off wiki response engine)]
+			["yes or no", ""],
+			"hay, i can see you","im right over here ------>","do you wanna be my friend?",
 			[ 
-				//	Context node
-				//	[
-				//		type of question,
-				// 		list of contextual words ('!' removes word from context,'null' turns off wiki response engine)
-				//	]
-				[
-				"yes or no",
-				"" // Deconstructing Harry film woody
-				],
-				
 				// Response Nodes
 				// [action word (after translation)],[result functions]
 				["ACCEPT",
@@ -107,7 +101,9 @@ var LetsBeFriends =
 			]
 		],
 		// Node 1		
-		["thats not a grate answer", "in fact that answers a peace of shit, just like u r ha ha ha", "lets try this aggen shall we?",
+		[
+			["yes or no", ""],
+			"thats not a grate answer", "in fact that answers a peace of shit, just like u r ha ha ha", "lets try this aggen shall we?",
 			[
 				function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.75, 90000)},
 				function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static_2.gif", 2000, 2000, 0.5, 90000)},			
@@ -115,35 +111,56 @@ var LetsBeFriends =
 			]
 		],
 		// Node 2		
-		["that sux", "im a grate one to b frends with", "a true blew american hero ", "maybe i can make u change ur mind sum day",
+		[
+			["yes or no", ""],		
+			"that sux", "im a grate one to b frends with", "a true blew american hero ", "maybe i can make u change ur mind sum day",
 			[ function(){dJumpToDialogueNode(4, true, true)} ]
 		],
 		// Node 3		
-		["fantastik", "were gonna be GRATE 2gether, me and u", "jus like batman n robbin", "bogy n bacall", "ham n eggs", "kids n cancer",
+		[
+		["yes or no", ""],		
+		"fantastik", "were gonna be GRATE 2gether, me and u", "jus like batman n robbin", "bogy n bacall", "ham n eggs", "kids n cancer",
 			[ function(){dJumpToDialogueNode(4, true, true)} ]
 		],
 		// Node 4		
-		["hay i gotta nother question 4u","whats the name of ur favorit movie?",
+		[
+			["wikiSearch", "film"],
+			"hay i gotta nother question 4u","whats the name of ur favorit movie?",
 			[
-				["wikiSearch", "film movie"],	
+				["wikiSearch", "film"],
 				["GOODSEARCH",
 					[function(){dJumpToDialogueNode(5, false, true)}]
 				],
 				["BADSEARCH",
 					[function(){dJumpToDialogueNode(6, false, true)}]
-				]
+				],
+				["",
+					[]
+				]				
 			]
 		],
 		// Node 5
-		["yea i seen that one", "im vry culteruld", "eye seen evry movie evr made", "red all the books 2", "well I gotta be going now, chosen one", "ill check you ltr", "bye 4 now",
+		[
+			["wikiSearch", "film"],
+			"yea i seen that one", "im vry culteruld", "eye seen evry movie evr made", "red all the books 2", "well I gotta be going now, chosen one", "ill check you ltr", "bye 4 now",
 			[ function(){banish_dChat()} ]
 		],
 		// Node 6
-		["hmmm. i dont know that one", "maybe you misspelt it. like a dum ass", "try aggin or name a different one.",
+		[
+			["wikiSearch", "film"],
+			"hmmm. i dont know that one", "maybe you misspelt it. like a dum ass", "try aggin or name a different one.",
 			[ function(){dJumpToDialogueNode(4, true, false)} ]
 		],
 		// Node 7
-		["so thats how you wanna play it", "the strong silent type", "ok kiddo. be that way", "you will regret this",
+		[
+			["wikiSearch", "film"],		
+			"but we ain't talkin abowt " + wikiSubjCat + ". were talkin abowt " + dContextStr, "lets try this aggin",
+			[ function(){dJumpToDialogueNode(4, true, false)} ]
+		],		
+		// Node 8
+		[
+			["yes or no", ""],
+			"so thats how you wanna play it", "the strong silent type", "ok kiddo. be that way", "you will regret this",
 			[ function(){banish_allLayers(2000)}, function(){banish_allSounds(2000)} ]
 		],
 		// Variable Node
