@@ -710,8 +710,7 @@ function restoreChat(){
 	var dSpamTimeout;
 	var dSpamTimer;
 
-function dWaitsForResponse()
-{	
+function dWaitsForResponse(){	
 	plReply = null;
 	
 	//$('#textfield').prop("disabled", false);
@@ -771,6 +770,14 @@ function dSpam()
 }
 
 
+
+function dForceSpam(){
+	clearInterval(waitInterval);
+	dSpamTimer.stop();
+	dWriteMore();
+}
+
+
 //recursive function that writes a message every 0-249ms
 function dKeepSpamming()
 {
@@ -798,8 +805,11 @@ function dKeepSpamming()
 				  dKeepSpamming();
 				});	
 			}
-			else
-			{
+			if (dDialogueCount == dDialogueStop){
+/* 					dTaunt = false;
+					clearInterval(waitInterval);
+					waitInterval = null;
+					dWaitsForResponse(); */
 				if (dListen){
 					dTaunt = false;
 					clearInterval(waitInterval);
@@ -837,7 +847,6 @@ function dWriteMore(){
 	if (plReply!==null){;
 		clearInterval(waitInterval);
 		dParseReply();
-		//dWaitsForResponse();
 	} else {
 		dRepeatQuestion = !dRepeatQuestion
 		dTaunt = true;
@@ -1526,7 +1535,7 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 		if (dContextStr !== ""){
 			wikiDialogueNode.push("i asxed u a qwestion abowt " + dContextStr);
 		}
-		wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);
+		wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);	
 	} else {
 		// Score context
 		if (wikiText == ""){
@@ -1587,6 +1596,9 @@ function dWriteDarkWiki(wikiText, wikiTitle){
 			element.append(getDarkWiki(wikiText, wikiTitle));
 			cutTopOfChat();
 			scrollToBottom();
+			dListen = true;
+			dWaitsForResponse();
+			dKeepSpamming();
 		}
 	if (was_taunting) {dTaunt = true};
 	
@@ -1606,8 +1618,8 @@ function dWriteDarkWiki(wikiText, wikiTitle){
 	}
 }
 
-function getDarkWiki(wikiText, wikiTitle)
-{
+
+function getDarkWiki(wikiText, wikiTitle){
 	// get the sound effect
 	var snd_heartbeat = new Audio('../snd/fx/scrape.mp3');	
 	audioPlay(snd_heartbeat,0.7);
@@ -1624,18 +1636,13 @@ function getDarkWiki(wikiText, wikiTitle)
 	if (wikiText == ""){
 		msgBody = (dRefusals[Math.floor(Math.random()*dRefusals.length)]);
 	} else {
-		// Make replacements
-		// var wikiTitleRegEx = new RegExp(wikiTitle,'g');
-		// wikiText = wikiText.replace(wikiTitleRegEx,"that shit");
-		
-		// convert to message 
 		msgBody = wikiText;
 	}
 	
 	message.append(msgBody);
 	
 	dMsgCount++;
-    
+	
 	return message;
 }
 
@@ -2535,6 +2542,7 @@ function chat()
         element.append(message);
 		plReply = msgBody;
 		if (chatTarget == "demon"){
+			dForceSpam();
 		}
 		
 		if (chatTarget == "webcam"){

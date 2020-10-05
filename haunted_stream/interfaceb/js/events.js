@@ -26,7 +26,7 @@ var timedEvents = [
 		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 900000)},
 		function(){summon_Sound('fx/static.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
 		//function(){summon_Sound('music/Ice_Demon.mp3', 2, 4000, 2000, 0.025, 1.0, 900000)},
-		function(){summon_dChat(LetsBeFriends, null, "vicious", "kiddiebubble", 1, 90)}
+		function(){summon_dChat(LetsBeFriends, null, "vicious", "kiddiebubble", 10, 90)}
 		]
 	],
 	
