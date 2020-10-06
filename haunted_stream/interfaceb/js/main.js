@@ -747,17 +747,6 @@ function dForceSpam(){
 function dKeepSpamming()
 {
     if(dSpamming){
-		if (dSpamType=="rant") {
-			if (dMsgCount < dDialogueStop){
-				writeDarkMessage();
-				dSpamSpeed = dSpamBase + dSpamVar;
-				setTimeout(function() {dKeepSpamming(); }, dSpamSpeed);
-			}
-			else
-			{
-				banish_dChat();
-			}
-		}
 		if (dSpamType=="conversation"){			
 			if (dDialogueCount < dDialogueStop){
 				writeDarkMessage();
@@ -769,8 +758,7 @@ function dKeepSpamming()
 				  waitInterval = null;
 				  dKeepSpamming();
 				});	
-			}
-			if (dDialogueCount == dDialogueStop){
+			} else {
 				//dDialogueCount = dDialogueStop;
 				if (dListen){
 					dTaunt = false;
@@ -787,11 +775,11 @@ function dKeepSpamming()
 							dExitFunc[i]();
 						}
 					} else {
-						log("no function exists");
+						log("no exit function exists");
 						dListen = true;
 						dTaunt = false;
-						clearInterval(waitInterval);
-						waitInterval = null;
+						// clearInterval(waitInterval);
+						// waitInterval = null;
 						dWaitsForResponse();						
 					}
 				}
