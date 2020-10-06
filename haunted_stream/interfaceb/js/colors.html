@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="description" content="The Haunted Stream Project">
+	
+	 <!-- importing the jQuery library  -->
+    <script src="./jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script>
+	function makeSPARQLQuery( endpointUrl, sparqlQuery, doneCallback ) {
+		var settings = {
+			headers: { Accept: 'application/sparql-results+json' },
+			data: { query: sparqlQuery }
+		};
+		return $.ajax( endpointUrl, settings ).then( doneCallback );
+	}
+
+	const wikiData = "Q2695156";
+	// const wikiData = "Q146";
+
+	var iri = "http://www.wikidata.org/entity/" + wikiData;
+
+	var endpointUrl = 'https://query.wikidata.org/sparql',
+		sparqlQuery = "#\n"
+			+ "#defaultView:ImageGrid\n"
+			+ "SELECT ?pic WHERE {\n"
+			+ "?item wdt:* wd:" + wikiData + ";\n"
+			+ "wdt:P18 ?pic.\n"
+			+ "SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n"
+			+ "}\n"
+			+ "LIMIT 1";
+
+	makeSPARQLQuery( endpointUrl, sparqlQuery, function( data ) {
+			$( 'body' ).append( $( '<pre>' ).text( JSON.stringify( data ) ) );
+			console.log( data.results.bindings[0].pic.value );
+		}
+	);
+</script>
+</head>
+
+<body>
+</body>

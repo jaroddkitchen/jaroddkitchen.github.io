@@ -450,38 +450,6 @@ function interval(func, wait, times){
 };
 
 
-// Ubiquitous timer object
-/* function timer(callback, delay) {
-    var id, started, remaining = delay, running
-    this.start = function() {
-        running = true
-        started = new Date()
-        id = setTimeout(callback, remaining)
-    }
-    this.pause = function() {
-        running = false
-        clearTimeout(id)
-        remaining -= new Date() - started
-    }
-    this.restart = function() {
-        running = true
-        started = new Date()
-        id = setTimeout(callback, 0)
-		id = setTimeout(callback, delay)
-    }	
-    this.getTimeLeft = function() {
-        if (running) {
-            this.pause()
-            this.start()
-        }
-        return remaining
-    }
-    this.getStateRunning = function() {
-        return running
-    }
-    this.start()
-} */
-
 
 
 //------------------------------------------------------------------------------
@@ -504,9 +472,6 @@ function interval(func, wait, times){
 	var dCruelty = 5;
 	var dAnger = 5;
 	var dFear = 5;
-
-
-
 
 
 //----------------------------------------------------
@@ -806,10 +771,7 @@ function dKeepSpamming()
 				});	
 			}
 			if (dDialogueCount == dDialogueStop){
-/* 					dTaunt = false;
-					clearInterval(waitInterval);
-					waitInterval = null;
-					dWaitsForResponse(); */
+				//dDialogueCount = dDialogueStop;
 				if (dListen){
 					dTaunt = false;
 					clearInterval(waitInterval);
@@ -819,9 +781,18 @@ function dKeepSpamming()
 					console.log("not listening");
 					var dExitNode = c_array[dDialogueNode].length-1;
 					var dExitFunc = c_array[dDialogueNode][dExitNode];
-					console.log(dExitFunc.length);
-					for (i=0; i< dExitFunc.length; i++){
-						dExitFunc[i]();
+					console.log("# of exit dunctions = " + dExitFunc.length);
+					if (dExitFunc[0].length == 0){
+						for (i=0; i< dExitFunc.length; i++){
+							dExitFunc[i]();
+						}
+					} else {
+						log("no function exists");
+						dListen = true;
+						dTaunt = false;
+						clearInterval(waitInterval);
+						waitInterval = null;
+						dWaitsForResponse();						
 					}
 				}
 			}
@@ -902,10 +873,12 @@ function dParseReply(){
 
 
 function dSenseNode(){
+	// detect question type
 	dQuestionNode = c_array[dDialogueNode][0];
 	dQuestionType = c_array[dDialogueNode][0][0];
 	dContextStr = c_array[dDialogueNode][0][1];	
-	
+	dVerbose = c_array[dDialogueNode][0][2];	
+	// detect answer types
 	dAnswerNode = c_array[dDialogueNode].length-1;
 	dKeyNode = c_array[dDialogueNode][dAnswerNode];
 }
@@ -1080,7 +1053,7 @@ function titleCase(str)
 
 function findWiki(wikiStr)
 {
-let surl = 'https://en.wikipedia.org/w/api.php?action=query&formatversion=2&prop=extracts|pageimages&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=1&gsrsearch=' + wikiStr + " " + dContextStr;
+let surl = 'https://en.wikipedia.org/w/api.php?action=query&origin=*&formatversion=2&prop=extracts|pageimages&format=json&generator=search&gsrnamespace=0&gsrlimit=1&redirects=1&gsrsearch=the ' + dContextStr + " " + wikiStr
 	
     $.ajax({
       url: surl,
@@ -1156,10 +1129,8 @@ function dGetWikiData(wikiTitle)
 		success: function(data){
 			dataNum = Object.keys(data.query.pages)[0];
 			wikiData = data.query.pages[dataNum].pageprops.wikibase_item;
-			log(wikiData);
+			log("wikiData = " + wikiData);
 			log("data search complete");
-			// get image
-			//dGetWikiImage(wikiData, wikiTitle);
 			iri = "http://www.wikidata.org/entity/" + wikiData;
 			dLookUpEntity();
 		},
@@ -1197,6 +1168,8 @@ function dGetWikiData(wikiTitle)
 	var wikiBirthDate;  	// P569
 	var wikiDeathDate;  	// P570
 
+	var wikiColor;
+	
 	var wikiImage;			//P18	
 	var wikiVideo;			// P10
 	
@@ -1240,6 +1213,7 @@ function dLookUpEntity(){
 				for (i = 0; i < returnedJson.results.bindings.length; i++) {
 					property = returnedJson.results.bindings[i].property.value
 					value = returnedJson.results.bindings[i].value.value
+					id = returnedJson.results.bindings[i].value
 					if (property == "sex or gender"){
 						wikiSex = value;
 						log("wikiSex = " + wikiSex);
@@ -1270,6 +1244,9 @@ function dLookUpEntity(){
 						log("wikiGenre = " + wikiGenres);
 					}
 					
+					//log(value);
+					//log("bindings length =" + returnedJson.results.bindings.length);
+					
 					// catchphrase
 					// signature
 					// political party
@@ -1282,11 +1259,39 @@ function dLookUpEntity(){
 					// has effect
 					// topic's main category
 					// part of
-				}
+				}			
 
-				dFindWikiImage(wikiData, wikiTitle)
+				dFindWikiColor(wikiData, wikiTitle)
 			}
 		});
+}
+
+
+function dFindWikiColor(wikiData, wikiTitle)
+{
+	var endpointUrl = 'https://query.wikidata.org/sparql',
+		sparqlQuery = "#\n"
+			+ "#defaultView:ImageGrid\n"
+			+ "SELECT ?color ?rgb WHERE {\n"
+			+ "?item wdt:* wd:" + wikiData + ";\n"
+			+ "wdt:P465 ?rgb.\n"
+			+ "SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n"
+			+ "}\n"
+			+ "LIMIT 1";
+
+	makeSPARQLQuery( endpointUrl, sparqlQuery, function( data ) {
+			try {
+				wikiColor = data.results.bindings[0].rgb.value;
+				console.log( data.results.bindings[0].rgb.value );
+				console.log("color found");
+				dFindWikiImage(wikiData, wikiTitle)				
+			} catch(error) {
+				wikiColor = "";
+				console.log("color error");
+				dFindWikiImage(wikiData, wikiTitle)
+			}
+		}
+	);
 }
 	
 
@@ -1366,15 +1371,15 @@ function resizeWikiImg(wikiImg, wikiData){
 					.then(function(response) {
 						var pages = response.query.pages;
 						for (var p in pages) {
-							console.log(pages[p].title + " is uploaded by User:" + pages[p].imageinfo[0].user);
-							console.log(pages[p].imageinfo[0].size + " bytes");
-							console.log(pages[p]);
-							console.log(pages[p].imageinfo[0].thumburl + " is thumbnail");
+							//console.log(pages[p].title + " is uploaded by User:" + pages[p].imageinfo[0].user);
+							//console.log(pages[p].imageinfo[0].size + " bytes");
+							//console.log(pages[p]);
+							//console.log(pages[p].imageinfo[0].thumburl + " is thumbnail");
 							thumbPath = pages[p].imageinfo[0].thumburl;
 						}
 					})
 					.then(function(response) {
-						log("thumbpath " + thumbPath);
+						//log("thumbpath " + thumbPath);
 						resolve(thumbPath);
 					})
 					.catch(function(error){console.log(error);});
@@ -1392,7 +1397,7 @@ function makeSPARQLQuery( endpointUrl, sparqlQuery, doneCallback ) {
 		success: function(data){
 		},
 		complete: function(){
-			log("SPARQL image search complete");
+			log("SPARQL search complete");
 		},
 		error: function (xmlHttpRequest, textStatus, errorThrown) {
 			log("getWikiData error");
@@ -1408,13 +1413,12 @@ function makeSPARQLQuery( endpointUrl, sparqlQuery, doneCallback ) {
 // ASSEMBLE RESPONSE BASED ON WIKIDATA CONTEXT
 //////////////////////////////////////////////////////////////////
 
+	var wikiImgLoader;
 	var wikiSubjCat;
-
 	var subjProunoun;
 	var subjProunounObj;
 	var subjProunounPos;
-
-	var wikiImgLoader;
+	var dVerbose = false;
 
 async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 {
@@ -1465,6 +1469,11 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 		wikiGenre = wikiGenre.toLowerCase();
 		wikiSubjCat = wikiGenre;
 		log("genre: " + wikiGenre);
+	}
+	
+	// Color
+	if (wikiColor !== ""){
+		log(wikiColor);
 	}
 
 	// Global Replacements 	
@@ -1522,6 +1531,12 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 		log("no image");
 	}
 
+	// Erase if non-verbose
+	if (!dVerbose){
+		var wikiDialogueEnd = wikiDialogueNode.length - 1;
+		wikiDialogueNode.splice(1,wikiDialogueEnd);
+	}
+
 	// Solve for question-type and topic-context
 	if (dQuestionType !== "wikiSearch"){
 		// remove additional content bubbles
@@ -1531,7 +1546,7 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 		} else {
 			var subPlural = "s";
 		}
-		wikiDialogueNode.push("but we aint talking about " + wikiSubjCat + subPlural + " rite now");
+		wikiDialogueNode.push("we aint talking about " + wikiSubjCat + subPlural + " rite now");
 		if (dContextStr !== ""){
 			wikiDialogueNode.push("i asxed u a qwestion abowt " + dContextStr);
 		}
@@ -1541,6 +1556,7 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 		if (wikiText == ""){
 			pos = 1; //BADSEARCH
 		} else {
+			// search for instance match
 			wikiInstStr = wikiInstsOf.join();
 			if (wikiInstStr.includes(dContextStr)){
 				pos = 0; //GOODSEARCH
@@ -1571,9 +1587,6 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 	}
 	
 	c_array[c_array.length-1] = wikiDialogueNode;
-	// c_array[c_array.length-1] = [];
-	// c_array[c_array.length-1].push(dAnswerNode);	
-	// c_array[c_array.length-1].push(wikiDialogueNode);	
 	wikiText = wikiDialogueNode[0];	
 	
 	log(wikiImg);
@@ -1752,7 +1765,11 @@ function dApplyMsgTransforms(message)
 	
 	if (dMask !== null){
 		message.attr("class", "fly-in-element darkbubble " + dMask);
-	}	
+	}
+
+	if (wikiColor !== ""){
+		message.css("background", "#" + wikiColor);		
+	}
 	
 	if (dTaunt){	
 		//random font
