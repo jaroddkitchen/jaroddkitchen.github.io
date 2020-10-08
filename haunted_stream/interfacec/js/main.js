@@ -627,7 +627,7 @@ function dStrToArray(str)
 	newStr = newStr.replace(/\?/gi, " ? ");
 	newStr = newStr.replace(/'/gi, "");
 	newStr = newStr.replace(/\by\b|yes|yeah|okay|ok|yup|yep|agree|affirmative|always/gi, "ACCEPT");
-	newStr = newStr.replace(/noop|nope|no|nay|nah|naw|negative|disagree|never/gi, "DECLINE");
+	newStr = newStr.replace(/\bn\b|noop|nope|no|nay|nah|naw|negative|disagree|never/gi, "DECLINE");
 	newStr = newStr.replace(/maybe|dont know|not sure|depends/gi, "MAYBE");
 
 
@@ -823,6 +823,9 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 	// Color
 	if (wikiColor !== ""){
 		log(wikiColor);
+		if (dContextStr == "color"){
+			ds_fave_color = wikiColor;
+		}
 	}
 
 	// Global Replacements 	
@@ -908,7 +911,15 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 		} else {
 			// search for instance match
 			wikiInstStr = wikiInstsOf.join();
-			if (wikiInstStr.includes(dContextStr)){
+			if (wikiInstStr.includes("single")){
+				wikiInstStr = wikiInstStr + "song";
+			}
+			// search for genre match
+			wikiGenreStr = wikiGenres.join();
+			if (wikiGenreStr.includes("music")){
+				wikiGenreStr = wikiGenreStr + "song";
+			}
+			if ( wikiInstStr.includes(dContextStr) || wikiGenreStr.includes(dContextStr) ) {
 				pos = 0; //GOODSEARCH
 			} else {
 				pos = 2; //WRONGTOPIC
@@ -918,7 +929,7 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 					var subPlural = "s";
 				}				
 				wikiDialogueNode.push("but we aint talking about " + wikiSubjCat + subPlural + " rite now");				
-				wikiDialogueNode.push("i asxed u a qwestion abowt " + dContextStr);
+				wikiDialogueNode.push("i asxed u a qwestion abowt " + dContextStr + subPlural);
 				wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);				
 			}
 		}
@@ -1117,13 +1128,8 @@ function dApplyMsgTransforms(message)
 		message.attr("class", "fly-in-element darkbubble " + dChatMask);
 	}
 
-	if (wikiColor !== ""){
-		// var modColor = tinycolor("#" + wikiColor).darken(25).toRgb();
-		// modColor.a = 0.75;
-		// var newColor = tinycolor(modColor).toRgbString();
-		// log(newColor);
-		// var modColor = tinycolor("#" + wikiColor).darken(25).toRgbString();
-		var modColor = tinycolor("#" + wikiColor).toRgb();
+	if (ds_fave_color !== ""){
+		var modColor = tinycolor("#" + ds_fave_color).darken(10).toRgb();
 		modColor.a = 0.75;
 		newColor = tinycolor(modColor).toRgbString();
 		log(newColor);

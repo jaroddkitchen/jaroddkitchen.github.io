@@ -15,7 +15,7 @@ function findWiki(wikiStr){
 let surl = 'https://en.wikipedia.org/w/api.php?action=query&origin=*&formatversion=2&prop=extracts|pageimages&format=json&generator=search&gsrnamespace=0&gsrlimit=1&redirects=1&gsrsearch=' + wikiStr + " " + dContextStr + " " + dMinusContext;
 
 // "in title" kludge for bad search results
-if (dContextStr == "color"){
+if ( dContextStr == "color" || dContextStr == "song" ){
 	surl ='https://en.wikipedia.org/w/api.php?action=query&origin=*&formatversion=2&prop=extracts|pageimages&format=json&generator=search&gsrnamespace=0&gsrlimit=1&redirects=1&gsrsearch=' + wikiStr + " " + "intitle:" + dContextStr + " " + dMinusContext;;
 }
 

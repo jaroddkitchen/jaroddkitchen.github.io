@@ -9,17 +9,17 @@
 
 
 var timedEvents = [
-	[false,  0,	"HelloWorld",
+	[false,  1,	"HelloWorld",
 		[
 		function(){summon_Layer(0, "colorbox hidden", "black", null, 500, 500, 0.35, 2000)},
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 500, 500, 0.35, 2000)},		
 		// function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 90000)},
 		// function(){summon_Sound('music/Ice_Demon.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
 		function(){summon_Sound('fx/static.mp3', 1, 500, 500, 0.025, 1.0, 90000)},
-		function(){summon_dChat(HelloWorld, null, "vicious", null, 2000, 1)}
+		function(){summon_dChat(HelloWorld, null, "vicious", null, 1, 2)}
 		]
 	],
-	[true,  1,	"LetsBeFriends",
+	[false,  1,	"LetsBeFriends",
 		[
 		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 900000)},
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 900000)},		
@@ -30,15 +30,17 @@ var timedEvents = [
 		]
 	],
 	
-	[false, 17,	0,
+	[true,	2, "JarodSucks",
 		[
-		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.35, 90000)},
-		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.35, 90000)},		
-		function(){summon_Apparition(10, 1, 90000)},	
-		function(){summon_dChat(HelloWorld, null, "vicious", "chalkbubble", 500, 20000)},		
+		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 900000)},
+		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 900000)},		
+		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 900000)},
+		function(){summon_Sound('fx/static.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
+		//function(){summon_Sound('music/Ice_Demon.mp3', 2, 4000, 2000, 0.025, 1.0, 900000)},
+		function(){summon_dChat(JarodSucks, null, "vicious", "kiddiebubble", 2, 900)}	
 		] 
 	],		
-	[false, 35,	1,
+	[false, 35,	1, "",
 		[
 		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 8000)},
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static_2.gif", 3000, 3000, 0.5, 8000)},		
@@ -46,7 +48,7 @@ var timedEvents = [
 		function(){summon_dChat(JarodSucks, null, "vicious", "chalkbubble", 1000, 8000)}
 		]
 	],
-	[false, 55,	1,
+	[false, 55,	1, "ThePictureGame",
 		[
 		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 8000)},
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static_2.gif", 3000, 3000, 0.5, 8000)},		
@@ -166,7 +168,7 @@ var LetsBeFriends =
 		// Node 7
 		[
 			["wikiSearch", "color", "!disease", false],
-			"mine too!", "small world amirite?", "c i knew we would be best freiends",
+			"mine too!", "small world amirite?", "see i knew we would b best freiends! _smile_big _tongue_winking",
 			[ function(){dJumpToDialogueNode(10, false, true)} ]
 		],		
 		// Node 8
@@ -178,7 +180,7 @@ var LetsBeFriends =
 		// Node 9
 		[
 			["wikiSearch", "", "", false],		
-			"but we ain't talkin abowt " + wikiSubjCat + ". were talkin abowt " + dContextStr, "lets try this aggin",
+			"but we aint talkin abowt " + wikiSubjCat + ". were talkin abowt " + dContextStr, "lets try this aggin",
 			[ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]
 		],		
 		// Node 10
@@ -201,7 +203,7 @@ var LetsBeFriends =
 LetsBeFriends.name = "Let's Be Friends!";
 LetsBeFriends.type = "conversation";
 LetsBeFriends.exit = "banishAll";
-//HelloWorld.exit = "none";
+
 
 
 ////////////////////////
@@ -214,14 +216,127 @@ var ThePictureGame =
 	ThePictureGame.type = "conversation";
 	ThePictureGame.exit = "none";
 
+
 ////////////////////////
 var JarodSucks =
 [
-	["im not a big fan of you-know-who","too arrogant for my tastss","im sure hes been bragging about this thing for weeks","taking all the credit","did he ever tell you his virus theory. all that shit about &quot;housecats&quot;?", "bet he did"]
+		// Node 0
+		[	
+			["yes or no", "", "", true],
+			"hello, aggen!","im back an i look byootifull _smile_big_smile_big_smile_big", "gotta say im not a big fan of u-know-who", "he is 2 arrigant for my tayste", "im sure hes been braggin abowt me 4 weeks now. lik he wuz sum big creativ jeenius. gettin 2 big for his britchez, u ask me", "hay, did he evr tell u his hole Virus Theory?",
+			[ 
+				["ACCEPT",
+					[function(){dJumpToDialogueNode(3, false, true)}]
+				],
+				["DECLINE",
+					[function(){dJumpToDialogueNode(2, false, true)},
+					//function(){summon_Apparition(10, 1, 90000)},
+					]
+				],
+				["MAYBE",
+					[function(){dJumpToDialogueNode(1, false, true)}]
+				]
+			]
+		],
+		// Node 1		
+		[
+			["yes or no", " ", "", true],
+			"that answer sux _eyeroll_face _thumbs_down", "Make Answers Grate Aggen! _lol_face_lol_face_lol_face", "lissen bettr this time",
+			[
+				function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.75, 90000)},
+				function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static_2.gif", 2000, 2000, 0.5, 90000)},			
+				function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)},			
+			]
+		],
+		// Node 2		
+		[
+			["", "", "", true],		
+			"its all about their scale, according to him", "a tiny one might give you a cough, or a sneeze or a belly ayche", "he thinks there r bigger, fancier ones out there.", "lik a virus the size of a cat might give u a nitemare, or a hallucination", "or maybe make u wanna do something very bad", 
+			[ function(){dJumpToDialogueNode(4, true, true)} ]
+		],
+		// Node 3
+		[
+			["", "", "", true],	
+			"_rofl_face _rofl_face _rofl_face he goes on and on abowt it, lik a loonytick, right?", "lik hes got a frigging degree", "what a dork _tongue_winking",
+			[ function(){dJumpToDialogueNode(2, false, true)} ]
+		],
+		// Node 4		
+		[
+			["wikiSearch", "novel", "", true],
+			"o that reminds me i wantit to axsk u something","whats the name of ur favorit book?",
+			[
+				["GOODSEARCH",
+					[function(){dJumpToDialogueNode(5, false, true)}]
+				],
+				["BADSEARCH",
+					[function(){dJumpToDialogueNode(8, false, true)}]
+				],
+				["",
+					[]
+				]				
+			]
+		],	
+		// Node 5
+		[
+			["wikiSearch", "", "", true],
+			"yea i red that one", "im am the smartist 1 i know", "red all the books.",
+			[ function(){dJumpToDialogueNode(6, false, true)} ]
+		],
+		// Node 6		
+		[
+			["wikiSearch", "song", "", true],
+			"nother question 4 u","whats ur favorit song?",
+			[
+				["GOODSEARCH",
+					[function(){dJumpToDialogueNode(7, false, true)}]
+				],
+				["BADSEARCH",
+					[function(){dJumpToDialogueNode(8, false, true)}]
+				],
+				["",
+					[]
+				]	
+			]
+		],
+		// Node 7
+		[
+			["wikiSearch", "", "", true],
+			"that song ROCKS!!! _heart_full _heart_full _heart_full", "yeah thats my jam. i wuld play it for u, but weed get in trubble", "sumbody owns it i guess",
+			[ function(){dJumpToDialogueNode(10, false, true)} ]
+		],		
+		// Node 8
+		[
+			["wikiSearch", "", "", false],
+			"hmmm i dont know that one", "maybe you misspelt it.", "try aggin or name a different one.",
+			[ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]
+		],
+		// Node 9
+		[
+			["wikiSearch", "", "", false],		
+			"but we aint talkin abowt " + wikiSubjCat + ". were talkin abowt " + dContextStr, "s. lets try this aggin",
+			[ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]
+		],		
+		// Node 10
+		[
+			["wikiSearch", "", "", false],
+			"well I gotta be going now, chosen one", "ill check you ltr", "bye 4 now",
+			[ function(){banish_dChat()} ]
+		],		
+		// Node 11
+		[
+			["yes or no", "", "", false],
+			"so thats how you wanna play it", "the strong silent type", "ok kiddo. be that way", "you will regret this",
+			[ function(){banish_dChat()} ]
+		],
+		// Variable Node
+		[
+			//[ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]
+		]		
 ];
 	JarodSucks.name = "My Creator Sucks";
-	JarodSucks.type = "rant";
+	JarodSucks.type = "conversation";
 	JarodSucks.exit = "none";
+
 
 ////////////////////////
 var Randomness =
