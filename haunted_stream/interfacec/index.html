@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="description" content="The Haunted Stream Project">
+	
+	
+	<!-- initializing custom controls -->
+
+    <!-- importing videojs -->	
+	<script src="https://vjs.zencdn.net/7.8.4/video.js"></script>
+	<!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+	<script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+
+    <!-- importing the styling -->
+	<link rel="stylesheet" href="https://vjs.zencdn.net/7.8.4/video-js.css" />	
+	<link rel="stylesheet" type="text/css" href="./css/video_controls.css" />	
+	
+	<!-- importing text-to-speech files -->	
+	<script src="./js/speechsynth.js"></script>	
+	<!-- <script src="https://code.responsivevoice.org/responsivevoice.js?key=lxcndNc5"></script> -->
+	
+	 <!-- importing the jQuery library  -->
+    <script src="./js/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>	
+    
+	<!-- importing system js files -->
+	<script src="./js/timer.js"></script>
+    <script src="./js/main.js"></script>
+	<script src="./js/reader.js"></script>
+	<script src="./js/webcam.js"></script>
+    <script src="./js/events.js"></script>
+	<script src="./js/translator.js"></script>
+	<script src="./js/controls.js"></script>
+	<script src="./js/datastore.js"></script>
+	<script src="./js/dev_sandbox.js"></script>
+	
+	<!-- importing third-party js files -->	
+	<script src="./js/TweenMax.min.js"></script>
+	<script src="./js/tinycolor.js"></script>
+	
+	<!-- importing dictionary files -->
+	<script src="./dict/dictionary.js"></script>
+	<script src="./dict/verbs.js"></script>
+	<script src="./dict/nouns.js"></script>
+
+	
+	<!-- importing google font styles -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Courier+Prime">	
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Crafty+Girls">	
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Henny+Penny">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Eater">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lacquer&effect=neon">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Homemade+Apple">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Gaegu">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Chilanka">
+	
+	<!-- importing system css -->
+    <link rel="stylesheet" type="text/css" href="./css/main.css">
+	<link rel="stylesheet" type="text/css" href="./css/notecard.css">
+    <link rel="stylesheet" type="text/css" href="./css/styles.css">	
+	<link rel="stylesheet" href="./css/apparitions-style.css">
+	
+	<!-- <style data-styled="" data-styled-version="7.8.4">	 -->
+	
+	<style data-styled="" data-styled-version="4.4.1">
+	#main-video, .video-js, .vjs-default-skin, .vjs-hd
+	{
+	  position: absolute;
+	  left: 0; 
+	  bottom: 0;
+	  min-width: 100%; 
+	  min-height: 100%;
+	  width: 100%; 
+	  height: 100%;	  
+	}	
+	</style>
+	
+</head>
+
+<body onload="init()">
+	
+	<div id="overlays">
+		<div id="overlay0" class="visual slave hidden"></div>
+		<div id="overlay1" class="visual slave hidden"></div>
+		<div id="overlay2" class="visual slave hidden"></div>
+		<div id="overlay3" class="apparitions slave hidden">
+			<img id="node" src="../img/fx/dot_min.png" alt="">
+			<script  src="./js/apparitions.js"></script>			
+		</div>
+	</div>
+	
+	<div id="audio_tracks">
+		<audio id="audio0" src=""></audio>
+		<audio id="audio1" src=""></audio>
+		<audio id="audio2" src=""></audio>
+	</div>
+	
+	<div id="videoframe">
+	<video
+		id="main-video"
+		class="video-js vjs-default-skin vjs-hd mainvideo"
+		poster="../img/art/svg/bootoob_poster-min.png"
+		data-setup='{ "controls": true, "loop": true, "inactivityTimeout": 0}'
+	>
+<!--     <source src="../video_src/Chapel and Cellar.mp4" type="video/mp4" /> -->
+    <source src="https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4" type="video/mp4" />
+    <p class="vjs-no-js">
+      To view this video please enable JavaScript, and consider upgrading to a
+      web browser that
+      <a href="https://videojs.com/html5-video-support/" target="_blank"
+        >supports HTML5 video</a
+      >
+    </p>
+	</video>		
+    </div>
+	
+	<div id="webcamframe">
+		<div id="webcam-wrapper">
+			<video class="scale1" id="webcam-video" loop muted preload="auto">
+			<source src="https://video.wixstatic.com/video/bde2cd_f447f30577a74aba829138597bb3f323/720p/mp4/file.mp4" type="video/mp4" />
+			</video>
+			<div id="timer-text">
+				<div id="timer-header">time elapsed:</div>
+				<div id="timer"></div>	
+			</div>		
+		</div>
+    </div>
+
+	<div id="cameraiconbox">
+		<div id="cameraIconWrapper">
+			<img id="cameraButton1" name="0" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow">
+			<div id="cameraText0" class="cameraIconText shadow" >1</div>
+		</div>
+		<div id="cameraIconWrapper">
+			<img id="cameraButton2" name="1" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
+			<div id="cameraText1" class="cameraIconText shadow">2</div>
+		</div>
+		<div id="cameraIconWrapper">
+			<img id="cameraButton3" name="2" src="../img/art/svg/camera_off.svg" height="100%" onclick="toggleCamera(name);" class="cameraIconButton shadow ">
+			<div id="cameraText2" class="cameraIconText shadow">3</div>
+		</div>
+	</div>
+	
+	<div id="control-row">
+		<div id="control-panel">
+			<div id="input">		
+				<button id="settingsButton" onclick="toggleMenu();" style="background-color: rgb(100, 65, 164);" name="settings" class="dirButton">settings</button>	
+			</div>
+		</div>		
+    </div>
+	
+    <div id="chat" style="display: none;">
+		<div id="abovechat">
+			<div id="channelname">
+			</div>
+		</div>		
+		<div id="chatoverlay-front">
+			<!-- <img src="../img/art/svg/vamp_front.png" draggable="false" width="80%"></img>  -->
+		</div>	
+		<div id="chattext" class="container y-scroll y-mandatory"></div>
+		<div id="chatoverlay-back">
+			<!-- <img src="../img/art/svg/vamp_back.png" draggable="false" width="80%"></img>  -->
+		</div>
+		<!-- <img src="../img/art/svg/chat_icon.svg" draggable="false" width="10%"></img>			 -->
+		<div id="belowchat" class="">	
+			<div id="input-wrapper">
+				<form onsubmit="return false">
+					<div" id="textfield-container" class="shadow">
+						<input type="text" id="textfield" maxlength="200" autocomplete="off" placeholder="send a message">
+<div" id="chatButton-container" class="" type="submit" id="chatButtonIcon" onclick="chat()" value="">
+						<input type="submit" id="chatButton" class="" onclick="chat()" value="" onkeypress="checkForEnter(event)">
+						<svg class="shadow" xmlns="http://www.w3.org/2000/svg"
+								 width="0.644444in" height="0.566667in"
+								 viewBox="0 0 58 51">						 
+								  <path id="chatButtonIcon"
+										fill="none" stroke="#000" stroke-width="1"
+										d="M 5.00,0.00
+										   C 2.28,0.00 0.00,2.26 0.00,4.96
+											 0.00,4.96 0.00,37.69 0.00,37.69
+											 0.00,40.39 2.28,42.65 5.00,42.65
+											 5.00,42.65 7.00,42.65 7.00,42.65
+											 7.00,42.65 13.00,42.65 13.00,42.65
+											 13.00,42.65 15.00,42.65 15.00,42.65
+											 15.00,42.65 15.00,51.00 15.00,51.00
+											 15.00,51.00 23.24,42.00 23.24,42.00
+											 23.24,42.00 28.24,36.24 28.24,36.24
+											 28.60,35.83 29.23,35.78 29.65,36.14
+											 30.07,36.49 30.12,37.12 29.76,37.54
+											 29.76,37.54 25.32,42.65 25.32,42.65
+											 25.32,42.65 53.00,42.65 53.00,42.65
+											 55.72,42.65 58.00,40.39 58.00,37.69
+											 58.00,37.69 58.00,4.96 58.00,4.96
+											 58.00,2.26 55.72,0.00 53.00,0.00
+											 53.00,0.00 5.00,0.00 5.00,0.00 Z" />
+								  <path id="chatButtonIconTxt"
+										fill="red" stroke="none" stroke-width="0"
+										d="M 15.00,18.36
+										   C 16.66,18.36 18.00,19.69 18.00,21.33
+											 18.00,22.98 16.66,24.31 15.00,24.31
+											 13.34,24.31 12.00,22.98 12.00,21.33
+											 12.00,19.69 13.34,18.36 15.00,18.36
+											 15.00,18.36 15.00,18.36 15.00,18.36 Z
+										   M 29.00,18.36
+										   C 30.66,18.36 32.00,19.69 32.00,21.33
+											 32.00,22.98 30.66,24.31 29.00,24.31
+											 27.34,24.31 26.00,22.98 26.00,21.33
+											 26.00,19.69 27.34,18.36 29.00,18.36
+											 29.00,18.36 29.00,18.36 29.00,18.36 Z
+										   M 43.00,18.36
+										   C 44.66,18.36 46.00,19.69 46.00,21.33
+											 46.00,22.98 44.66,24.31 43.00,24.31
+											 41.34,24.31 40.00,22.98 40.00,21.33
+											 40.00,19.69 41.34,18.36 43.00,18.36
+											 43.00,18.36 43.00,18.36 43.00,18.36 Z" />													 
+							</svg>
+						<!-- <img src="../img/art/svg/chat_icon.svg" type="submit" id="chatButtonIcon" onclick="chat()" value="" onkeypress="checkForEnter(event)"> -->
+					</div>						
+					</div>
+				</form>
+				<div id="chapter"></div>
+				<div id="chapter-time"></div>
+				<div id="debug">~</div>
+			</div>		
+		</div>		
+	</div>
+	<div id="notchat">
+		<div id="responsebox">
+		</div>
+		<div id="voicebox">
+			<div id="speechbox"></div>
+		</div>		
+	</div>
+</body>
+</html>
