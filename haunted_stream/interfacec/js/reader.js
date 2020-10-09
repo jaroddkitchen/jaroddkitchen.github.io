@@ -16,7 +16,7 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&origin=*&formatversi
 
 // "in title" kludge for bad search results
 if ( dContextStr == "color" || dContextStr == "song" ){
-	surl ='https://en.wikipedia.org/w/api.php?action=query&origin=*&formatversion=2&prop=extracts|pageimages&format=json&generator=search&gsrnamespace=0&gsrlimit=1&redirects=1&gsrsearch=' + wikiStr + " " + "intitle:" + dContextStr + " " + dMinusContext;;
+	surl ='https://en.wikipedia.org/w/api.php?action=query&origin=*&formatversion=2&prop=extracts|pageimages&format=json&generator=search&gsrnamespace=0&gsrlimit=1&redirects=1&gsrsearch=' + wikiStr + " " + "intitle:" + dContextStr + " " + dMinusContext;
 }
 
     $.ajax({
@@ -131,7 +131,7 @@ function dGetWikiData(wikiTitle)
 	
 
 function dLookUpEntity(){
-		console.log(iri);
+		// console.log(iri);
 		// create URI-encoded query string to get names and IRIs
 		var string = 'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>'
                     +'PREFIX wd: <http://www.wikidata.org/entity/>'
@@ -238,8 +238,9 @@ function dFindWikiColor(wikiData, wikiTitle)
 	makeSPARQLQuery( endpointUrl, sparqlQuery, function( data ) {
 			try {
 				wikiColor = data.results.bindings[0].rgb.value;
-				console.log( data.results.bindings[0].rgb.value );
-				console.log("color found");
+				//log( data.results.bindings[0].rgb.value );
+				log("color found");
+				wikiInstsOf.push("colors");
 				dFindWikiImage(wikiData, wikiTitle)				
 			} catch(error) {
 				wikiColor = "";
@@ -305,7 +306,7 @@ function resizeWikiImg(wikiImg, wikiData){
 				imgPath = data.results.bindings[0].pic.value
 				imgPath = imgPath.split("FilePath/");
 				imgPath = imgPath[1];
-				console.log(imgPath);
+				//console.log(imgPath);
 
 				var url = "https://en.wikipedia.org/w/api.php"; 
 

@@ -297,7 +297,10 @@ function vidJumpToTime(landTime){
 	
 	var dSpamming = false;
 	var dChatType = "";
+
 	var dChatMood = "";
+
+	var dInitMask = "";
 	var dChatMask = "";
 
 	var dSpamBase = 0;
@@ -342,7 +345,8 @@ function summon_dChat(array, mem, mood, mask, speed, timeout){
 	//Set the mood	
 	dChatMood = mood;
 	
-	//Set the style mask	
+	//Set the style mask
+	dInitMask = mask;
 	dChatMask = mask;
 	
 	// Set the initial bubble scale
@@ -630,7 +634,6 @@ function dStrToArray(str)
 	newStr = newStr.replace(/\bn\b|noop|nope|no|nay|nah|naw|negative|disagree|never/gi, "DECLINE");
 	newStr = newStr.replace(/maybe|dont know|not sure|depends/gi, "MAYBE");
 
-
     // Get an array of all the words	
     playerwords = newStr.split( " " );
 	
@@ -763,6 +766,7 @@ function titleCase(str)
 	var subjProunoun;
 	var subjProunounObj;
 	var subjProunounPos;
+	var wikiDialogueNode;
 	
 	var dContextStr = "";
 	var dMinusContext = "";
@@ -771,12 +775,12 @@ function titleCase(str)
 
 async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 {
-	// Property Mods
+// Property Mods
 	// the title is default subject
 	wikiSubjCat = wikiTitle;
 	wikiSubjCat = wikiSubjCat.toLowerCase();
 	
-	// Sex
+// Sex
 	subjProunoun = "it";
 	subjProunounObj = "that";
 	subjProunounPos = "its";
@@ -786,7 +790,7 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 		log("sex:" + wikiSex + " " + subjProunoun + "/" + subjProunounObj + "/" + subjProunounPos);		
 	}
 	
-	// Instance
+// Instance
 	if (wikiInstOf !== ""){
 		wikiInstOf = wikiInstOf.toLowerCase();
 		wikiSubjCat = wikiInstOf;
@@ -799,28 +803,28 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 		log("subclass of: " + wikiSubclassOf);		
 	}		
 	
-	// Job
+// Job
 	if (wikiJob !== ""){
 		wikiJob = wikiJob.toLowerCase();
 		wikiSubjCat = wikiJob;
 		log("job: " + wikiJob);
 	}
 
-	// Nicknames
+// Nicknames
 	if (wikiNickname !== ""){
 		//wikiNickname = wikiNickname.toLowerCase();
 		wikiSubjCat = wikiNickname;
 		log("nickname: " + wikiNickname);
 	}
 
-	// Genre
+// Genre
 	if (wikiGenre !== ""){
 		wikiGenre = wikiGenre.toLowerCase();
 		wikiSubjCat = wikiGenre;
 		log("genre: " + wikiGenre);
 	}
 	
-	// Color
+// Color
 	if (wikiColor !== ""){
 		log(wikiColor);
 		if (dContextStr == "color"){
@@ -828,25 +832,24 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 		}
 	}
 
-	// Global Replacements 	
+// Global Replacements 	
 	await globalWikiReplace();
 	wikiText = wikiChange;
 	log("returned from replace");
-
 	var abbrevWiki = wikiChange.replace(/[A-Z]+\./gm, function(match) {
 	 return match.split(".").join("");
 	});		
 	wikiText = abbrevWiki;
 	
-	// Build initial response nodes
-	wikiText = wikiText.split(".");
-	
+// Build initial response nodes
+	wikiText = wikiText.split(".")
+	wikiDialogueNode = [];
 	for (i=0; i < wikiText.length; i++){ 
-		wikiText[i] = wikiText[i] + ".";
+		wikiDialogueNode[i] = [wikiText[i] + "."];
 	}
 	
-	// Replace subject in first sentence
-	var wikiFirstSentence = wikiText[0].split(" ");
+// Replace subject in first sentence
+	var wikiFirstSentence = wikiDialogueNode[0][0].split(" ");
 	var wikiWas = wikiFirstSentence.indexOf("was"); 
 	var wikiIs = wikiFirstSentence.indexOf("is");
 	var wikiWasIs = false;
@@ -859,53 +862,59 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 			wikiFirstSentence.splice(0, wikiIs, subjProunoun);
 		}
 	}
-	wikiText[0] = wikiFirstSentence.join(" ");	
+	wikiDialogueNode[0][0] = wikiFirstSentence.join(" ");	
 	
-	wikiDialogueNode = wikiText;
-	//wikiDialogueNode[0] = wikiDialogueNode[0] + wikiDialogueNode[1];	
-	//wikiDialogueNode.splice(1,1);
-	wikiDialogueNode.splice(2);
-	
-	var wikiIntro = "yeah i know all abowt " + subjProunounObj;
+// Insert intro sentence
+	var wikiIntro = ["yeah i know all abowt " + subjProunounObj];
 	wikiDialogueNode.splice(0,0,wikiIntro);
 	
-	// Insert question node at beginning
+// Reduce article size
+	wikiDialogueNode.splice(3);
+	
+// Insert question node at beginning
 	wikiDialogueNode.splice(0,0,dQuestionNode);
 
-	// asynchrounous image post-processing
+// Asynchrounous image post-processing
 	if (wikiImg !== ""){
 		await resizeWikiImg(wikiImg, wikiData);
 		log("returned from resize with " + thumbPath );			
 		wikiImg = thumbPath;
-		wikiImgLoader = subjProunoun +" kinda looks like this<br/><img width='100%' onload='scrollToBottom()' src='" + wikiImg + "' />"			
+		wikiImgLoader = [subjProunoun +" kinda looks like this<br/><img width='100%' onload='scrollToBottom()' src='" + wikiImg + "' />"];			
 		wikiDialogueNode.push(wikiImgLoader);
 	} else {
 		log("no image");
 	}
 
-	// Erase if non-verbose
+// Reduce length if non-verbose
 	if (!dVerbose){
 		var wikiDialogueEnd = wikiDialogueNode.length - 1;
 		wikiDialogueNode.splice(1,wikiDialogueEnd);
 	}
 
-	// Solve for question-type and topic-context
+// Solve for question-type and topic-context
 	if (dQuestionType !== "wikiSearch"){
-		// remove additional content bubbles
-		wikiDialogueNode.splice(2,1);
-		if (wikiSubjCat == wikiGenre){
+	// Reduce length if not a wiki question
+		//wikiDialogueNode.splice(2,1);
+		// Add plural
+/* 		if (wikiSubjCat == wikiGenre){
 			var subPlural = "";
 		} else {
 			var subPlural = "s";
 		}
-		var subPlural = "s";
-		wikiDialogueNode.push("but we aint talking about " + wikiSubjCat + subPlural + " rite now");
-		if (dContextStr !== ""){
-			wikiDialogueNode.push("i asxed u a qwestion abowt " + dContextStr);
+		var subPlural = "s"; */
+		log(wikiSubjCat + " / " + dContextStr);
+		if (wikiSubjCat !== dContextStr){
+			wikiDialogueNode.push(["but we aint talking about " + wikiSubjCat + " rite now"]);
+			if (dContextStr !== ""){
+				wikiDialogueNode.push(["i asxed u a qwestion abowt " + dContextStr]);
+			}
+		} else {
+			wikiDialogueNode.push(["ur gonna have to be more spessific. or maybe less spessific _smirk"]);
 		}
 		wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);	
 	} else {
-		// Score context
+	// Score context
+		// If no article was found
 		if (wikiText == ""){
 			pos = 1; //BADSEARCH
 		} else {
@@ -927,10 +936,17 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 					var subPlural = "";
 				} else {
 					var subPlural = "s";
-				}				
-				wikiDialogueNode.push("but we aint talking about " + wikiSubjCat + subPlural + " rite now");				
-				wikiDialogueNode.push("i asxed u a qwestion abowt " + dContextStr + subPlural);
-				wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);				
+				}
+				var subPlural = "s";
+				if (wikiSubjCat !== dContextStr){				
+					wikiDialogueNode.push(["but we aint talking about " + wikiSubjCat + subPlural + " rite now"]);				
+					wikiDialogueNode.push(["i asxed u a qwestion abowt " + dContextStr + subPlural]);
+					wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);	
+				} else {
+					wikiDialogueNode.push(["ur gonna have to be more spessific. or maybe less spessific _smirk"]);
+					wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);	
+				}	
+				
 			}
 		}
 		for (i=0; i < keyactions[pos].length; i++){					
@@ -943,17 +959,22 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 		wikiDialogueNode = [];
 		wikiDialogueNode.push(["", ""]);
 		var modWikiTitle = wikiTitle.replace(/list of/gi, "");
-		wikiDialogueNode.push("ur gonna have 2 b more spessific. i know lotsa stuff about " + modWikiTitle.toLowerCase() );
+		wikiDialogueNode.push(["ur gonna have 2 b more spessific. i know lotsa stuff about " + modWikiTitle.toLowerCase()] );
 		wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);
 	}
 	
-	c_array[c_array.length-1] = wikiDialogueNode;
-	wikiText = wikiDialogueNode[0];	
+	// Save article to dialogue node
+	//wikiDialogueNode = wikiText;
+	c_array[c_array.length-1] = wikiDialogueNode;	
 	
+	// Save success/failure reference
+	wikiText = wikiDialogueNode[0][0];
+	
+	log(wikiInstOf);
 	log(wikiImg);
 	log(wikiSex);
 	log(wikiJob);
-	log(wikiInstOf);
+	log(wikiGenre);
 	
 	dJumpToDialogueNode(c_array.length-1,false,true);
 }
@@ -1072,11 +1093,6 @@ function getDarkMessage()
 	var message = $('<div id="chatbubble"></div>');
 	message.attr("class", "fly-in-element darkbubble");
 	
-	if (dChatMask == "sheet"){
-		//var message = $('<div id="chatbubble" class="fly-in-element sheet"><div class="l-margin margin"><div class="hole first-hole"></div></div><div class="r-margin margin"></div><header><span class="sheet-title"></span></header></div>');		
-		var message = $('<div id="chatbubble" class="fly-in-element sheet"><div class="l-margin margin"></div><div class="r-margin margin"></div></div>');
-	}
-	
 	// apply css changes
 	dApplyMsgTransforms(message);
 
@@ -1086,13 +1102,23 @@ function getDarkMessage()
 		msgBody = c_array[dDialogueNode][dMsgCount];
 	}
 	if(dChatType=="conversation"){
-		msgBody = c_array[dDialogueNode][dDialogueCount];
+		if (c_array[dDialogueNode][dDialogueCount].length == 1){
+			msgBody = c_array[dDialogueNode][dDialogueCount][0];
+		} else {
+			if (!dTaunt){	
+				msgBody = c_array[dDialogueNode][dDialogueCount][0];
+				log (c_array[dDialogueNode][dDialogueCount]);
+				if ( c_array[dDialogueNode][dDialogueCount].length > 1){
+					c_array[dDialogueNode][dDialogueCount][1]();
+				}
+			}
+		}
 	}
     if (dTaunt){
-		msgBody = (dTaunts[Math.floor(Math.random()*dTaunts.length)]);
+		msgBody = (dTaunts[Math.floor(Math.random()*dTaunts.length)][0]);
 		if (dRepeatQuestion){
 			var curQuestion = dDialogueCount-1;
-			msgBody = c_array[dDialogueNode][curQuestion];
+			msgBody = c_array[dDialogueNode][curQuestion][0];
 		}
 	}
 	
@@ -1104,6 +1130,7 @@ function getDarkMessage()
     msgBody = replaceEmotes(msgBody);
     msgBody = replaceEmoticons(msgBody);
     msgBody = replacePics(msgBody);
+	
 	if (imgMsg){
 		message.attr("class", "fly-in-element darkbubble imgbubble");
 		message.css("padding", "0vw");	
@@ -1118,16 +1145,25 @@ function getDarkMessage()
 
 
 
+function dReMask(mask){
+	dChatMask = mask;
+	log ("mask changed");
+}
 
-function dApplyMsgTransforms(message)
-{
+
+
+function dApplyMsgTransforms(message){
+	// Dishevel the x position of bubble
 	dMsgRandomX = Math.floor(Math.random()*3.5);
 	dMsgAdjX = dMsgOriginX - dMsgRandomX;
 	
 	if (dChatMask !== null){
 		message.attr("class", "fly-in-element darkbubble " + dChatMask);
+	} else {
+		message.attr("class", "fly-in-element darkbubble");
 	}
 
+	// "Beef" breaks the color with "colors"
 	if (ds_fave_color !== ""){
 		var modColor = tinycolor("#" + ds_fave_color).darken(10).toRgb();
 		modColor.a = 0.75;
@@ -1261,7 +1297,7 @@ function restoreChat(){
 
 var dRandoms = ["i can see you", "i can hear you breathing", "im right over here ------>", "do you wanna meet me?", "do you wanna see my face?", "everbody hates you", "i can smell you", "i cant taste you", "chosen 4 whut?", "la diablo estas vivanta ene de mia korpo", "mi sangas pro la vundoj de inferaj trancxoj", "mi glutos vian animon","ni vekigu la lordon de la abismo", "im coming for you", "7:31", "mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon mi glutos vian animon", "naw im just fukkin around with you chosen one", "we breathe chocolate over here", "guess what's for dinner?", "i want to show you something", "these people are already dead. their blood is on your hands", "did you ever think about ending things?","i know things", "i know your secret","i can do things","do you wanna see whut i can do","_eye1","_eye2","_eye3","_eye4","_burn_girl","_face1","_face2","_face3","_face4","_face5","_face6","_face7","_face8","_face9"];
 
-var dTaunts = ["answer the question, claire!", "just answer the question", "times a wastin", "answer me", "speak up", "_just_answer", "_still_waiting", "_answer_me", "_answer_the_question", "_use_your_voice", "_finding_his_voice", "_anyone_there", "answer", "say something", "speak","use ur words", "i need answers", "..."];
+var dTaunts = [["answer the question, claire!"], ["just answer the question"], ["times a wastin", "answer me"], ["speak up"], ["_just_answer"], ["_still_waiting"], ["_answer_me"], ["_answer_the_question"], ["_use_your_voice"], ["_finding_his_voice"], ["_anyone_there"], ["answer"], ["say something"], ["speak"],["use ur words"], ["i need answers"], ["..."]];
 
 var dRefusals = ["i dont care about that", "who gives a fux about that?", "snore", "zzzzzzzzz", "is that your deep dark fantasy?", "only losers care about that", "stop trying to change the subject", "dont make me come over there"];
 
