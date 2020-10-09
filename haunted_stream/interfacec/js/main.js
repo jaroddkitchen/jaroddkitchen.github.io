@@ -1,3 +1,54 @@
+// Audio preloader
+
+function preloadAudio(){
+  var audio_preload = 0;
+  function launchApp(launch){
+    audio_preload++;
+    if ( audio_preload == 3 || launch == 1) {  // set 3 to # of your files
+      startSound();  // set this function to your start function
+    }
+  }
+  var support = {};
+  function audioSupport() {
+    var a = document.createElement('audio');
+    var ogg = !!(a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, ''));
+    if (ogg) return 'ogg';
+    var mp3 = !!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, ''));
+    if (mp3) return 'mp3';
+    else return 0;
+  }
+  support.audio = audioSupport();
+  function loadAudio(url, vol){
+    var audio = new Audio();
+    audio.src = url;
+    audio.preload = "auto";
+    audio.volume = vol;
+    $(audio).on("loadeddata", launchApp);  // jQuery checking
+    return audio;
+  }
+  if (support.audio === 'ogg') {
+    var snd1 = loadAudio("../snd/music/Ice_Demon.ogg", 0.0);  // ie) the 1 is 100% volume
+    var snd2 = loadAudio("../snd/music/twinkle_twinkle.ogg", 0.0);  // ie) the 0.3 is 30%
+    var snd3 = loadAudio("../snd/music/horror_buzz.ogg", 0.0);
+        // add more sounds here
+  } else if (support.audio === 'mp3') { 
+    var snd1 = loadAudio("../snd/music/Ice_Demon.mp3", 0.0);
+    var snd2 = loadAudio("../snd/music/twinkle_twinkle.mp3", 0.0);
+    var snd3 = loadAudio("../snd/music/horror_buzz.mp3", 0.0);
+        // add more sounds here
+  } else {
+    launchApp(1);  // launch app without audio
+  }
+
+	// this is your first function you want to start after audio is preloaded:
+	function startSound(){
+		//if (support.audio) snd3.play();  // this is how you play sounds
+		log("audio preloaded");
+	}
+}
+
+
+
 //----------------------------------------------------
 // INIT VARS
 //----------------------------------------------------
@@ -67,6 +118,7 @@ function initMainVideoStart(){
 	webcamvideo.play();
 	spamming = true;
 	keepSpamming();	
+	preloadAudio();	
 }
 
 
@@ -938,17 +990,19 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 					var subPlural = "s";
 				}
 				var subPlural = "s";
-				if (wikiSubjCat !== dContextStr){				
+				if ( (wikiSubjCat !== dContextStr) && ( (wikiSubjCat + subPlural) !== dContextStr) && ( wikiSubjCat !== (dContextStr + subPlural)) ){				
 					wikiDialogueNode.push(["but we aint talking about " + wikiSubjCat + subPlural + " rite now"]);				
 					wikiDialogueNode.push(["i asxed u a qwestion abowt " + dContextStr + subPlural]);
-					wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);	
 				} else {
-					wikiDialogueNode.push(["ur gonna have to be more spessific. or maybe less spessific _smirk"]);
-					wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);	
-				}	
+					wikiDialogueNode.push(["ur gonna have to be more spessific"]); 
+					wikiDialogueNode.push(["or maybe less spessific _smirk"]);
+				}
+				// Return to last node
+				wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);					
 				
 			}
 		}
+		// Load key actions
 		for (i=0; i < keyactions[pos].length; i++){					
 			wikiDialogueNode.push([ keyactions[pos][i] ]);
 		}
@@ -1107,9 +1161,11 @@ function getDarkMessage()
 		} else {
 			if (!dTaunt){	
 				msgBody = c_array[dDialogueNode][dDialogueCount][0];
-				log (c_array[dDialogueNode][dDialogueCount]);
+				// execute cued dialogue functions 
 				if ( c_array[dDialogueNode][dDialogueCount].length > 1){
-					c_array[dDialogueNode][dDialogueCount][1]();
+					for (i = 1; i < c_array[dDialogueNode][dDialogueCount].length; i++){
+						c_array[dDialogueNode][dDialogueCount][i]();
+					}
 				}
 			}
 		}
@@ -1163,7 +1219,8 @@ function dApplyMsgTransforms(message){
 		message.attr("class", "fly-in-element darkbubble");
 	}
 
-	// "Beef" breaks the color with "colors"
+	// "white" breaks the color.
+	// rem: solve against white and black
 	if (ds_fave_color !== ""){
 		var modColor = tinycolor("#" + ds_fave_color).darken(10).toRgb();
 		modColor.a = 0.75;
@@ -1379,7 +1436,7 @@ function summon_Sound(snd, snd_plyr, speedin, speedout, vol, pbr, timeout){
 	var music_player = $("#audio" + snd_plyr);
 	var music = $("#audio" + snd_plyr)[0];
 	music.volume = vol;
-	music.src = '../snd/' + snd;	
+	music.src = snd;	
 	music.play();
 	audioFadeIn(music_player, speedin, vol);
 	music.playbackRate = pbr;

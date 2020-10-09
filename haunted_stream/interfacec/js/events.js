@@ -13,9 +13,9 @@ var timedEvents = [
 		[
 		function(){summon_Layer(0, "colorbox hidden", "black", null, 500, 500, 0.35, 2000)},
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 500, 500, 0.35, 2000)},		
-		// function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 90000)},
-		// function(){summon_Sound('music/Ice_Demon.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
-		function(){summon_Sound('fx/static.mp3', 1, 500, 500, 0.025, 1.0, 90000)},
+		// function(){summon_Sound('../snd/music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 90000)},
+		// function(){summon_Sound('../snd/music/Ice_Demon.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
+		function(){summon_Sound('../snd/fx/static.mp3', 1, 500, 500, 0.025, 1.0, 90000)},
 		function(){summon_dChat(HelloWorld, null, "vicious", null, 1, 2)}
 		]
 	],
@@ -23,9 +23,8 @@ var timedEvents = [
 		[
 		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 900000)},
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 900000)},		
-		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 900000)},
-		function(){summon_Sound('fx/static.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
-		//function(){summon_Sound('music/Ice_Demon.mp3', 2, 4000, 2000, 0.025, 1.0, 900000)},
+		function(){summon_Sound('../snd/music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.025, 0.5, 900000)},
+		function(){summon_Sound('../snd/fx/static.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
 		function(){summon_dChat(LetsBeFriends, null, "vicious", "kiddiebubble", 2, 900)}
 		]
 	],
@@ -34,8 +33,8 @@ var timedEvents = [
 		[
 		function(){summon_Layer(0, "colorbox hidden", "black", null, 3000, 3000, 0.5, 900000)},
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", 3000, 3000, 0.5, 900000)},		
-		function(){summon_Sound('music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 900000)},
-		function(){summon_Sound('fx/static.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
+		function(){summon_Sound('../snd/music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.05, 0.5, 900000)},
+		function(){summon_Sound('../snd/fx/static.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
 		//function(){summon_Sound('music/Ice_Demon.mp3', 2, 4000, 2000, 0.025, 1.0, 900000)},
 		function(){summon_dChat(JarodSucks, null, "vicious", "kiddiebubble", 2, 900)}	
 		] 
@@ -90,7 +89,7 @@ var LetsBeFriends =
 				// Response Nodes
 				// [action word (after translation)],[result functions]
 				["ACCEPT",
-					[function(){dJumpToDialogueNode(6, false, true)}]
+					[function(){dJumpToDialogueNode(3, false, true)}]
 				],
 				["DECLINE",
 					[function(){dJumpToDialogueNode(2, false, true)},
@@ -115,13 +114,24 @@ var LetsBeFriends =
 		// Node 2		
 		[
 			["yes or no", "", "", true],		
-			["that sux"], ["im a grate one to b frends with"], ["a true blew american hero"], ["maybe i can make u change ur mind Sum Day _tongue_winking"],
+			["that sux _frown_face", function(){dReMask(null)}],
+			["im a grate one to b frends with",
+				function(){summon_Sound('../snd/music/horror_buzz.mp3', 2, 250, 1500, 0.25, 2.0, 2500)},
+				function(){summon_Layer(2, "background-fullscreen hidden", "transparent", "../img/pics/girlcry2.gif", 500, 1000, 0.4, 1200)}, 
+				function(){dReMask(dInitMask)} ],	
+			["a troo blew american hero!"], ["maybe i can make u change ur mind Sum Day _tongue_winking"],
 			[ function(){dJumpToDialogueNode(4, true, true)} ]
 		],
 		// Node 3		
 		[
 			["yes or no", "", "", true],	
-			["fantastik"], ["were gonna be GRATE 2gether, me and u"], ["jus like batman n robbin"], ["ham n eggs", function(){dReMask(null)}], ["Children and chainsaws."],
+			["fantastik"], ["were gonna be GRATE 2gether, me and u",
+				function(){summon_Sound('../snd/fx/car_meow_funny.mp3', 2, 250, 2500, 0.25, 0.75, 3000)},
+				function(){summon_Layer(2, "background-round-pattern hidden", "transparent", "../img/pics/cool_cat.gif", 750, 750, 0.75, 1250)} ],
+			["jus like batman n robbin"],
+			["ham n eggs",
+				function(){dReMask(null)}],
+			["Children and chainsaws."],
 			[ function(){dReMask(dInitMask)}, function(){dJumpToDialogueNode(4, true, true)} ]
 		],
 		// Node 4		

@@ -149,17 +149,54 @@ video
 	position:absolute;	
 	height: 100%;
 	width: 100%;
-
+	
  	-moz-user-select: none;
 	-webkit-user-select: none;
 	user-select: none;
 	pointer-events: none;
     cursor: default;
 
+	background-repeat: repeat;
+
 	/* z-index: 4; */
 	z-index: -1;
 }
 
+.background-round-pattern {
+	position:absolute;	
+	height: 100%;
+	width: 100%;
+	
+ 	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	pointer-events: none;
+    cursor: default;
+
+	background-repeat: round;
+
+	/* z-index: 4; */
+	z-index: -1;
+}
+
+
+.background-fullscreen {
+	position:absolute;	
+	height: 100%;
+	width: 100%;
+	
+ 	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	pointer-events: none;
+    cursor: default;
+
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+
+	/* z-index: 4; */
+	z-index: -1;
+}
 
 .textures {
 	position:absolute;	
