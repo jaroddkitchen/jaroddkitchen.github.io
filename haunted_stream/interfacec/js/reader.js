@@ -16,7 +16,7 @@ let surl = 'https://en.wikipedia.org/w/api.php?action=query&origin=*&formatversi
 
 // "in title" kludge for bad search results
 if ( dContextStr == "color" || dContextStr == "song" ){
-	surl ='https://en.wikipedia.org/w/api.php?action=query&origin=*&formatversion=2&prop=extracts|pageimages&format=json&generator=search&gsrnamespace=0&gsrlimit=1&redirects=1&gsrsearch=' + wikiStr + " " + "intitle:" + dContextStr + " " + dMinusContext;
+	surl ='https://en.wikipedia.org/w/api.php?action=query&origin=*&formatversion=2&prop=extracts|pageimages&format=json&generator=search&gsrnamespace=0&gsrlimit=1&redirects=1&gsrsearch=' + "intitle:" + dContextStr + " " + wikiStr + " " + dMinusContext;
 }
 
     $.ajax({
@@ -30,8 +30,8 @@ if ( dContextStr == "color" || dContextStr == "song" ){
       data: '',
       beforeSend: function(){
 		  log("loading");
-        // $("#loader").show();
-        $('#chapter-time').html('<div class="text-center"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: none; display: block;" width="25%" height="25%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid"><g transform="translate(50 50)"><g transform="scale(0.7)"><g transform="translate(-50 -50)"><g transform="translate(-3.20642 -20)"><animateTransform attributeName="transform" type="translate" repeatCount="indefinite" dur="1s" values="-20 -20;20 -20;0 20;-20 -20" keyTimes="0;0.33;0.66;1"></animateTransform><path fill="#5699d2" d="M44.19 26.158c-4.817 0-9.345 1.876-12.751 5.282c-3.406 3.406-5.282 7.934-5.282 12.751 c0 4.817 1.876 9.345 5.282 12.751c3.406 3.406 7.934 5.282 12.751 5.282s9.345-1.876 12.751-5.282 c3.406-3.406 5.282-7.934 5.282-12.751c0-4.817-1.876-9.345-5.282-12.751C53.536 28.033 49.007 26.158 44.19 26.158z"></path><path fill="#1d3f72" d="M78.712 72.492L67.593 61.373l-3.475-3.475c1.621-2.352 2.779-4.926 3.475-7.596c1.044-4.008 1.044-8.23 0-12.238 c-1.048-4.022-3.146-7.827-6.297-10.979C56.572 22.362 50.381 20 44.19 20C38 20 31.809 22.362 27.085 27.085 c-9.447 9.447-9.447 24.763 0 34.21C31.809 66.019 38 68.381 44.19 68.381c4.798 0 9.593-1.425 13.708-4.262l9.695 9.695 l4.899 4.899C73.351 79.571 74.476 80 75.602 80s2.251-0.429 3.11-1.288C80.429 76.994 80.429 74.209 78.712 72.492z M56.942 56.942 c-3.406 3.406-7.934 5.282-12.751 5.282s-9.345-1.876-12.751-5.282c-3.406-3.406-5.282-7.934-5.282-12.751 c0-4.817 1.876-9.345 5.282-12.751c3.406-3.406 7.934-5.282 12.751-5.282c4.817 0 9.345 1.876 12.751 5.282 c3.406 3.406 5.282 7.934 5.282 12.751C62.223 49.007 60.347 53.536 56.942 56.942z"></path></g></g></g></g></svg></div>')
+        $("#loader").show();
+        $('#loader').html('<div class="text-center"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: none; display: block;" width="25%" height="25%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid"><g transform="translate(50 50)"><g transform="scale(0.7)"><g transform="translate(-50 -50)"><g transform="translate(-3.20642 -20)"><animateTransform attributeName="transform" type="translate" repeatCount="indefinite" dur="1s" values="-20 -20;20 -20;0 20;-20 -20" keyTimes="0;0.33;0.66;1"></animateTransform><path fill="#666666" d="M78.712 72.492L67.593 61.373l-3.475-3.475c1.621-2.352 2.779-4.926 3.475-7.596c1.044-4.008 1.044-8.23 0-12.238 c-1.048-4.022-3.146-7.827-6.297-10.979C56.572 22.362 50.381 20 44.19 20C38 20 31.809 22.362 27.085 27.085 c-9.447 9.447-9.447 24.763 0 34.21C31.809 66.019 38 68.381 44.19 68.381c4.798 0 9.593-1.425 13.708-4.262l9.695 9.695 l4.899 4.899C73.351 79.571 74.476 80 75.602 80s2.251-0.429 3.11-1.288C80.429 76.994 80.429 74.209 78.712 72.492z M56.942 56.942 c-3.406 3.406-7.934 5.282-12.751 5.282s-9.345-1.876-12.751-5.282c-3.406-3.406-5.282-7.934-5.282-12.751 c0-4.817 1.876-9.345 5.282-12.751c3.406-3.406 7.934-5.282 12.751-5.282c4.817 0 9.345 1.876 12.751 5.282 c3.406 3.406 5.282 7.934 5.282 12.751C62.223 49.007 60.347 53.536 56.942 56.942z"></path></g></g></g></g></svg></div>')
        },   
 		success: function(data){
 			wikiText = "";
@@ -54,7 +54,7 @@ if ( dContextStr == "color" || dContextStr == "song" ){
 		complete: function(data){
 			log("wiki search complete");
 			$('#textfield').focus();
-			//$('#textfield').val('type bullshit here');
+			$("#loader").hide();
 			
 			//get wikidata
 			if (wikiText !== ""){
@@ -63,6 +63,7 @@ if ( dContextStr == "color" || dContextStr == "song" ){
 		},
 		error: function (xmlHttpRequest, textStatus, errorThrown) {
 			log("findWiki error");
+			$("#loader").hide();
 		}			
 	});
 }
@@ -83,12 +84,28 @@ function dGetWikiData(wikiTitle)
 		dataType: 'jsonp',
 		data: '',   
 		success: function(data){
+			// dataNum = Object.keys(data.query.pages)[0];
+			// log("dataNum = " + dataNum);			
+			// wikiData = data.query.pages[dataNum].pageprops.wikibase_item;
+			// log("wikiData = " + wikiData);
+			// log("data search complete");
+			// iri = "http://www.wikidata.org/entity/" + wikiData;
+			// dLookUpEntity();
+			
 			dataNum = Object.keys(data.query.pages)[0];
-			wikiData = data.query.pages[dataNum].pageprops.wikibase_item;
-			log("wikiData = " + wikiData);
-			log("data search complete");
-			iri = "http://www.wikidata.org/entity/" + wikiData;
-			dLookUpEntity();
+			log("dataNum = " + dataNum);
+			if (dataNum == -1){
+				wikiData = "";
+				wikiText = "";
+				wikiTitle = "";
+				dWriteDarkWiki(wikiText, wikiTitle);
+			} else {
+				wikiData = data.query.pages[dataNum].pageprops.wikibase_item;
+				log("wikiData = " + wikiData);
+				log("data search complete");
+				iri = "http://www.wikidata.org/entity/" + wikiData;
+				dLookUpEntity();					
+			}
 		},
 		complete: function(){
 		},
@@ -269,7 +286,7 @@ function dFindWikiImage(wikiData, wikiTitle)
 			//dataNum = Object.keys(data.results.bindings)[0];
 			try {
 				wikiImg = data.results.bindings[0].pic.value;
-				console.log( data.results.bindings[0].pic.value );
+				//console.log( data.results.bindings[0].pic.value );
 				dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData);				
 			} catch(error) {
 				wikiImg = "";
@@ -285,7 +302,7 @@ function dFindWikiImage(wikiData, wikiTitle)
 	var imgPath = '';
 
 function resizeWikiImg(wikiImg, wikiData){
-	log("resizing " + wikiImg);
+	//log("resizing " + wikiImg);
 	let imgPath = '';
 	
 	return new Promise((resolve, reject) => {

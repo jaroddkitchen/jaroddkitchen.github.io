@@ -1,57 +1,12 @@
-// Audio preloader
-
-function preloadAudio(){
-  var audio_preload = 0;
-  function launchApp(launch){
-    audio_preload++;
-    if ( audio_preload == 3 || launch == 1) {  // set 3 to # of your files
-      startSound();  // set this function to your start function
-    }
-  }
-  var support = {};
-  function audioSupport() {
-    var a = document.createElement('audio');
-    var ogg = !!(a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, ''));
-    if (ogg) return 'ogg';
-    var mp3 = !!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, ''));
-    if (mp3) return 'mp3';
-    else return 0;
-  }
-  support.audio = audioSupport();
-  function loadAudio(url, vol){
-    var audio = new Audio();
-    audio.src = url;
-    audio.preload = "auto";
-    audio.volume = vol;
-    $(audio).on("loadeddata", launchApp);  // jQuery checking
-    return audio;
-  }
-  if (support.audio === 'ogg') {
-    var snd1 = loadAudio("../snd/music/Ice_Demon.ogg", 0.0);  // ie) the 1 is 100% volume
-    var snd2 = loadAudio("../snd/music/twinkle_twinkle.ogg", 0.0);  // ie) the 0.3 is 30%
-    var snd3 = loadAudio("../snd/music/horror_buzz.ogg", 0.0);
-        // add more sounds here
-  } else if (support.audio === 'mp3') { 
-    var snd1 = loadAudio("../snd/music/Ice_Demon.mp3", 0.0);
-    var snd2 = loadAudio("../snd/music/twinkle_twinkle.mp3", 0.0);
-    var snd3 = loadAudio("../snd/music/horror_buzz.mp3", 0.0);
-        // add more sounds here
-  } else {
-    launchApp(1);  // launch app without audio
-  }
-
-	// this is your first function you want to start after audio is preloaded:
-	function startSound(){
-		//if (support.audio) snd3.play();  // this is how you play sounds
-		log("audio preloaded");
-	}
-}
-
-
-
 //----------------------------------------------------
 // INIT VARS
 //----------------------------------------------------
+
+	var video;
+	//var video = document.getElementsByTagName('video')[0];
+
+	var webcamvideo;
+	//var webcamvideo = document.getElementsByTagName('video')[1];	
 
 	// Zero all video flags   
 	var camLoaded = false;
@@ -79,25 +34,28 @@ function init(){
 // LOAD THE MAIN VIDEO PLAYER
 function loadCam(){
 	videojs('main-video').ready(function(){
-		var video = this;
+		video = this;
 		console.log("player ready");
 		camLoaded = true;
-		video.setAttribute("poster", "../img/art/svg/blank_poster.png");		
+		video.setAttribute("poster", "../img/art/svg/blank_poster.png");
+		video = document.getElementsByTagName('video')[0];
+		addVideoListeners();
 	})
 }
 
 // LOAD THE WEBCAM VIDEO PLAYER
 function loadWebCam(){
 	$("#webcam-video").ready(function(){
-		var webvideo = this;
+		webvideo = this;
 		console.log("webcam player ready");
 		webcamLoaded = true;
+		webcamvideo = document.getElementsByTagName('video')[1];
+		addWebcamListeners();
 	})
 }
 
 // SETUP INTERFACE ELEMENTS
 function setupInterface(){
-	addListeners();
     makeSettings();
 	toggleSettings();
 	initWebcam();
@@ -106,8 +64,6 @@ function setupInterface(){
 
 // CALL WHEN VIDEO IS LOADED
 function initMainVideoStart(){
-	var video = document.getElementsByTagName('video')[0];
-	var webcamvideo = document.getElementsByTagName('video')[1];
 	video.setAttribute("poster", "../img/art/svg/blank_poster.png");	
 	document.body.requestFullscreen();	
 	mainVideoStart = true;
@@ -127,10 +83,7 @@ function initMainVideoStart(){
 //----------------------------------------------------
 
 // ADD VIDEO LISTENERS
-function addListeners(){
-// Camera DOM references
-	var video = document.getElementsByTagName('video')[0];
-	var webcamvideo = document.getElementsByTagName('video')[1];
+function addVideoListeners(){
 // Camera listeners
 	// waiting
 	video.addEventListener('waiting', function () {log('waiting');});
@@ -152,7 +105,28 @@ function addListeners(){
 	// seeked
 	video.addEventListener('seeked', function () {log('seeked');});
 	// time update	
-	video.addEventListener('timeupdate', function() { updateWebCam();});
+	//video.addEventListener('timeupdate', function() { log('time update');});
+}
+
+// ADD VIDEO LISTENERS
+function addWebcamListeners(){
+// Camera listeners
+	// waiting
+	//webcamvideo.addEventListener('waiting', function () {log('webcam waiting');});
+	// playing
+	//webcamvideo.addEventListener('playing', function () {log('webcam playing');});	
+	// pause
+	//webcamvideo.addEventListener('pause', function () {log('webcam pause');});
+	// play
+	//webcamvideo.addEventListener('play', function () { log('webcam play');});
+	// stalled
+	//webcamvideo.addEventListener('stalled', function () {log('webcam stalled');});
+	// seeking
+	//webcamvideo.addEventListener('seeking', function () {log('webcam seeking');});
+	// seeked
+	//webcamvideo.addEventListener('seeked', function () {log('webcam seeked');});
+	// time update	
+	webcamvideo.addEventListener('timeupdate', function() { updateWebCam();});
 }
 
 // WHEN WINDOW IS RESIZED
@@ -220,6 +194,54 @@ function log(msg) {
 //----------------------------------------------------
 // SOUND FX FUNCTIONS
 //----------------------------------------------------
+
+// AUDIO PRELOADER
+function preloadAudio(){
+	var audio_preload = 0;
+	function launchApp(launch){
+		audio_preload++;
+		if ( audio_preload == 3 || launch == 1) {  // set 3 to # of your files
+			startSound();  // set this function to your start function
+		}
+	}
+	var support = {};
+	function audioSupport() {
+		var a = document.createElement('audio');
+			var ogg = !!(a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, ''));
+		if (ogg) return 'ogg';
+			var mp3 = !!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, ''));
+		if (mp3) return 'mp3';
+		else return 0;
+	}
+	support.audio = audioSupport();
+	function loadAudio(url, vol){
+		var audio = new Audio();
+		audio.src = url;
+		audio.preload = "auto";
+		audio.volume = vol;
+		$(audio).on("loadeddata", launchApp);  // jQuery checking
+		return audio;
+	}
+	if (support.audio === 'ogg') {
+		var snd1 = loadAudio("../snd/music/Ice_Demon.ogg", 0.0);  // ie) the 1 is 100% volume
+		var snd2 = loadAudio("../snd/music/twinkle_twinkle.ogg", 0.0);  // ie) the 0.3 is 30%
+		var snd3 = loadAudio("../snd/music/horror_buzz.ogg", 0.0);
+        // add more sounds here
+	} else if (support.audio === 'mp3') { 
+		var snd1 = loadAudio("../snd/music/Ice_Demon.mp3", 0.0);
+		var snd2 = loadAudio("../snd/music/twinkle_twinkle.mp3", 0.0);
+		var snd3 = loadAudio("../snd/music/horror_buzz.mp3", 0.0);
+        // add more sounds here
+	} else {
+		launchApp(1);  // launch app without audio
+ }
+
+	// this is your first function you want to start after audio is preloaded:
+	function startSound(){
+		//if (support.audio) snd3.play();  // this is how you play sounds
+		log("audio preloaded");
+	}
+}
 
 // PLAY AUDIO
 function audioPlay(audio, vol) {
@@ -312,7 +334,7 @@ function toggleCamera(n){
 
 // MAIN VIDEO SKIP TO TIMESTAMP
 function vidJumpToTime(landTime){
-	var video = document.getElementsByTagName('video')[0];		
+	//var video = document.getElementsByTagName('video')[0];		
 	video.currentTime = landTime;
 	video.play();
 }
@@ -362,7 +384,9 @@ function vidJumpToTime(landTime){
 	var dMsgCount = 0;
 	var dDialogueCount = 0;
 	var dDialogueNode = 0;
-	var dPrevDialogueNode = 0;
+	var dPrevDialogueNode = 0;	
+	var dDialogueStop = 0;
+	var dDialogueEnd = false;	
 
 	var c_array = [];
 	var c_timer = 0;
@@ -386,7 +410,7 @@ function summon_dChat(array, mem, mood, mask, speed, timeout){
 	plReply = null;
 
 	// (dev mode) show the event name 
-	document.getElementById("chapter").innerHTML = array.name;
+	//document.getElementById("chapter").innerHTML = array.name;
 	
 	// find the conversation array by its 'name' property 
 	c_array = array;
@@ -413,6 +437,7 @@ function summon_dChat(array, mem, mood, mask, speed, timeout){
 	dDialogueCount = 1;
 	dDialogueNode = 0;
 	dPrevDialogueNode = 0;
+	dDialogueEnd = false;
 	dDialogueStop = c_array[dDialogueNode].length - 1;
 
 	// Is the demon listening for replies yet?
@@ -440,7 +465,7 @@ function summon_dChat(array, mem, mood, mask, speed, timeout){
 	var dChatTimer = setInterval(function() {
 		if (dChatTimeLeft > 0){
 			dChatTimeLeft = c_timer.getDuration();
-			document.getElementById("chapter-time").innerHTML = Math.round(dChatTimeLeft/1000);
+			//document.getElementById("chapter-time").innerHTML = Math.round(dChatTimeLeft/1000);
 		} else {
 			dChatTimeLeft = 0;
 			clearInterval(dChatTimer);
@@ -519,14 +544,13 @@ function dWaitsForResponse(){
 
 
 function dForceSpam(){
-	if (dDialogueCount < dDialogueStop){
-		dSpamSpeed = 0;
-		dSpamTimer = new Timer();
-		dSpamTimer.start(dSpamSpeed).on('end', function () {
+	if (dDialogueCount == dDialogueStop ){
+		dTaunt = false;
 		clearInterval(waitInterval);
 		waitInterval = null;
-		dKeepSpamming();
-		});
+		dSpamSpeed = 0.25; 			
+		dWriteMore();
+		log("parsing reply " + dSpamming);
 	}
 }
 
@@ -534,19 +558,36 @@ function dForceSpam(){
 // RECURSIVE FUNCTION THAT WRITES A MESSAGE PERIODICALLY
 function dKeepSpamming(){
     if(dSpamming){
+		// goes above dSpamming?
 		if (dChatType == "conversation"){			
 			if (dDialogueCount < dDialogueStop){
+				dSpamSpeed = dSpamBase + dSpamVar;			
+				dDialogueEnd = false;
 				writeDarkMessage();
 				dDialogueCount++;
-				dSpamSpeed = dSpamBase + dSpamVar;
-				dSpamTimer = new Timer();
-				dSpamTimer.start(dSpamSpeed).on('end', function () {
-				  clearInterval(waitInterval);
-				  waitInterval = null;
-				  dKeepSpamming();
-				});	
+				// wonky
+				if (dDialogueCount == dDialogueStop){					
+					if (!dDialogueEnd){
+						dDialogueEnd = true;
+						clearInterval(waitInterval);
+						dKeepSpamming();
+						log("keep spamming");
+					}		
+				} else {				
+					dSpamTimer = new Timer();
+					dSpamTimer.start(dSpamSpeed).on('end', function () {
+						clearInterval(waitInterval);
+						waitInterval = null;
+						dKeepSpamming();
+					});				
+				}
 			} else {
-				//
+				// if (plReply !== null){
+					// dSpamTimer.stop();
+					// clearInterval(waitInterval);
+					// dWriteMore();
+					// log("force spamming");
+				// }				
 				if (dListen){
 					dTaunt = false;
 					clearInterval(waitInterval);
@@ -594,6 +635,7 @@ function dWriteMore(){
 	if (plReply!==null){;
 		clearInterval(waitInterval);
 		dParseReply();
+		log("parse reply triggered");
 	} else {
 		dRepeatQuestion = !dRepeatQuestion
 		dTaunt = true;
@@ -795,7 +837,13 @@ function dJumpToDialogueNode(num, dlis, restart){
 	}
 	dSenseNode();
 	dSpamming = true;
-	dKeepSpamming();
+	dDialogueEnd = false; //??
+	
+	dSpamTimer.stop();
+	dSpamTimer = new Timer();
+	dSpamTimer.start(dSpamSpeed).on('end', function () {	
+		dKeepSpamming();
+	});
 }
 
 
@@ -839,7 +887,7 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 	if (wikiSex !== ""){
 		if (wikiSex == "male"){subjProunoun = "he"; subjProunounObj = "him"; subjProunounPos = "his"}
 		if (wikiSex == "female"){subjProunoun = "she"; subjProunounObj = "her"; subjProunounPos = "her"}
-		log("sex:" + wikiSex + " " + subjProunoun + "/" + subjProunounObj + "/" + subjProunounPos);		
+		//log("sex:" + wikiSex + " " + subjProunoun + "/" + subjProunounObj + "/" + subjProunounPos);		
 	}
 	
 // Instance
@@ -998,8 +1046,7 @@ async function dComposeWiki(wikiText, wikiTitle, wikiImg, wikiData)
 					wikiDialogueNode.push(["or maybe less spessific _smirk"]);
 				}
 				// Return to last node
-				wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);					
-				
+				wikiDialogueNode.push([ function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)} ]);
 			}
 		}
 		// Load key actions
@@ -1097,6 +1144,7 @@ function getDarkWiki(wikiText, wikiTitle){
 
 
 
+var dToggleWait = true;
 
 //writes a random message in the chat
 function writeDarkMessage()
@@ -1106,13 +1154,15 @@ function writeDarkMessage()
 	cutTopOfChat();
     scrollToBottom();
 	
-	if (dDialogueCount >= dDialogueStop-1){
-		dTaunt = false;
-		clearInterval(waitInterval);
-		waitInterval = null;
-		//note: this breaks the repeat question function
-		//dListen = true;;
-	}	
+	// if (dDialogueCount == dDialogueStop-1){
+		// if (!dDialogueEnd){
+			// dDialogueEnd = true;
+			// clearInterval(waitInterval);
+			// dSpamTimer.stop();
+			// dKeepSpamming()
+			// log("keep spamming");
+		// }
+	// }	
 }
 
 
@@ -1266,37 +1316,111 @@ function dApplyMsgTransforms(message){
 //--------------------------
 
 function banish_dChat(){
-	//if (dSpamming === true){	
-		dSpamming = false;
-		dTaunt = false;
-		dListen = false;
-		clearInterval(waitInterval);
-		dChatTimeLeft = 0;
-		clearInterval(dChatTimer);		
+	dSpamming = false;
+	dTaunt = false;
+	dListen = false;
+	clearInterval(waitInterval);
+	dChatTimeLeft = 0;
+	clearInterval(dChatTimer);		
 
-		var element = $("#chattext");
-		elements = document.querySelectorAll('#chatbubble.darkbubble, #chatbubble.imgbubble');
-		
-		for (i=0; i<dMsgCount; i++){
-			//var lastDMsg = dMsgCount-1; 		
-			var element = elements[i];
-			element.classList.add('scalingbubble');
-			delayedFade(i,element);
-			scrollToBottom();
-		}
-		
-		if (c_array.exit == "banishAll"){
-			banish_allLayers(dSpamSpeed);
-			banish_allSounds(dSpamSpeed);
-			banish_Apparition();
-		}
-		
-		restoreChat();
-		
-		console.log("demon is silent");
-		document.getElementById("chapter").innerHTML = "";
-		document.getElementById("chapter-time").innerHTML = "";
-	//}
+	var element = $("#chattext");
+	elements = document.querySelectorAll('#chatbubble.darkbubble, #chatbubble.imgbubble');
+	
+	for (i=0; i<dMsgCount; i++){
+		//var lastDMsg = dMsgCount-1; 		
+		var element = elements[i];
+		element.classList.add('scalingbubble');
+		delayedFade(i,element);
+		scrollToBottom();
+	}
+	
+	if (c_array.exit == "banishAll"){
+		banish_allLayers(dSpamSpeed);
+		banish_allSounds(dSpamSpeed);
+		banish_Apparition();
+	}
+	
+	restoreChat();
+	
+	console.log("demon is silent");
+	document.getElementById("chapter").innerHTML = "";
+	document.getElementById("chapter-time").innerHTML = "";
+}
+
+
+    // var element = $("#chattext");
+	// chattext.scrollTop = chattext.scrollHeight;
+    // if(element.children().length > 100){
+        // var chatMessages = element.children();
+		// chatMessages[0].remove();
+    // }
+
+function hide_dChat(){
+	dSpamming = false;
+	dTaunt = false;
+	dListen = false;
+	clearInterval(waitInterval);
+	//clearInterval(dChatTimer);		
+
+	var element = $("#chattext");
+	var el_length = element.children().length;
+	elements = document.querySelectorAll('#chatbubble');
+	
+	for (i=0; i<el_length; i++){	
+		var element = elements[i];
+		//element.classList.add('.disintegration-target');
+		element.classList.add('scalingbubble');
+		delayedHide(i,element);
+		scrollToTop();
+	}
+}
+
+
+// Disintegrator
+function dDisint($elm){
+	if ($elm.disintegrated) {return;}
+    $elm.disintegrated = true;
+    disintegrate($elm);
+}
+
+// Disintegrate delayed list
+// function delayedErase(i, el){
+	// var wait = i * 0.1;	
+	// var tl = new TimelineMax();
+	// tl.to(el, 1, {
+		  // force3D:true,
+		  // delay:wait,
+		  // onComplete:dDisint,
+		  // onCompleteParams:[el],
+		  // css: { 
+		  // }
+	// });
+// }
+
+function delayedHide(i, el){
+	var wait = i * 0.1;	
+	var tl = new TimelineMax();
+	tl.to(el, 1, {
+		  force3D:true,
+		  delay:wait,
+		  onComplete:hideDemonMsg,
+		  onCompleteParams:[el,i],
+		  css: { 
+			width: 0.0,
+			height: 0.0,
+			fontSize: 0.0,
+			padding: 0.0,
+			alpha: 0.0,
+			transformOrigin:"top right",
+		  }
+	});
+}
+
+function hideDemonMsg (el,i){	
+	//el.hide();
+	if (i === (dMsgCount-1)){
+		dSpamming = true;		
+	}		
 }
 
 
@@ -1392,15 +1516,20 @@ var pics = [
 
 var d_timer = 5000;
 
-function summon_Layer(layernum, layertype, bckcolor, bckimg, speedin, speedout, alpha, timeout){	
+//summon_Layer(layernum, layertype, bckcolor, bckimg, repeat, speedin, speedout, alpha, timeout, imgW, imgH, imgX, imgY)
+
+function summon_Layer(layernum, layertype, bckcolor, bckimg, repeat, speedin, speedout, alpha, timeout, imgW, imgH, imgX, imgY){	
 	var targetLayer = $("#overlay"+layernum);
 	
 	targetLayer.attr("class", layertype);
 	targetLayer.css("background-color", bckcolor);
-	targetLayer.css("z-index", "4");
+	targetLayer.css("background-repeat", repeat);
 	if (bckimg != null){
 		targetLayer.css("background-image", "url('"+ bckimg +"')");
-	}	
+		targetLayer.css("background-size", imgW + " " + imgH);
+		targetLayer.css("background-position", imgX + " " + imgY);		
+	}
+	targetLayer.css("z-index", "4");
 	
 	targetLayer.fadeTo( speedin, alpha, function(){
 	});
@@ -1420,7 +1549,51 @@ function banish_allLayers(speedout)
 	banish_Layer(0, speedout);
 	banish_Layer(1, speedout);
 	banish_Layer(2, speedout);
+	banish_Layer(3, speedout);
 }
+
+
+//--------------------------
+// Demon Images
+//--------------------------
+
+/* var i_timer = 5000;
+
+function summon_Image(imgNum, imgSrc, imgClass, imgH, imgW, imgX, imgY, speedin, speedout, alpha, timeout){	
+	var targetLayer = $("#images");
+	targetLayer.css("z-index", "4");
+	
+	if (imgSrc != null){
+		targetLayer.append(
+		"<img src='"+ imgSrc 
+		+ "' class='image" + imgNum + " " + imgClass
+		+ "' position='absolute' " 
+		+ "' top='" + imgY 		
+		+ "' left='" + imgX 
+		+ "' height='" + imgH 
+		+ "' width='" + imgW 
+		+ "'>");
+	}
+	
+	var targetImage = $("#image"+imgNum);
+	
+	targetLayer.fadeTo( speedin, alpha, function(){
+	});
+	
+	clearTimeout(i_timer[imgNum]);
+	i_timer[imgNum] =  window.setTimeout(function(){banish_Image(imgNum, speedout)}, timeout);
+}
+
+function banish_Image(imgNum, speedout){
+	$("#image"+imgNum).fadeTo( speedout, 0.0, function(){
+		$("#image"+imgNum).css("z-index", "-1");
+	});
+}
+
+function banish_allImages(speedout)
+{
+	$("#images").empty();
+} */
 
 
 //--------------------------
@@ -1807,6 +1980,7 @@ function chat()
 		plReply = msgBody;
 		if (chatTarget == "demon"){
 			dForceSpam();
+			//dKeepSpamming();
 		}
 		
 		if (chatTarget == "webcam"){

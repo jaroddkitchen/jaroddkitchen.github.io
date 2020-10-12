@@ -34,8 +34,10 @@
 	<script src="./js/translator.js"></script>
 	<script src="./js/controls.js"></script>
 	<script src="./js/dev_sandbox.js"></script>
+	<script src="./js/disint-script.js"></script>
+	<script src='./js/html2canvas.js'></script>
 	
-	<!-- importing third-party js files -->	
+	<!-- importing third-party js files -->
 	<script src="./js/TweenMax.min.js"></script>
 	<script src="./js/tinycolor.js"></script>
 	
@@ -56,10 +58,11 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Homemade+Apple">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Gaegu">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Chilanka">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IM Fell Great Primer SC">
 	
 	<!-- importing system css -->
     <link rel="stylesheet" type="text/css" href="./css/main.css">
-	<link rel="stylesheet" type="text/css" href="./css/notecard.css">
+	<link rel="stylesheet" type="text/css" href="./css/disint-style.css">
     <link rel="stylesheet" type="text/css" href="./css/styles.css">	
 	<link rel="stylesheet" href="./css/apparitions-style.css">
 	
@@ -86,10 +89,13 @@
 		<div id="overlay1" class="visual slave hidden"></div>
 		<div id="overlay2" class="visual slave hidden"></div>
 		<div id="overlay3" class="visual slave hidden"></div>		
-		<div id="overlay4" class="apparitions slave hidden">
+		<div id="overlay4" class="visual slave hidden"></div>	
+		<div id="overlay5" class="visual slave hidden"></div>	
+		<div id="overlay6" class="apparitions slave hidden">
 			<img id="node" src="../img/fx/dot_min.png" alt="">
 			<script  src="./js/apparitions.js"></script>			
 		</div>
+		<div id="images"></div>
 	</div>
 	
 	<div id="audio_tracks">
@@ -220,6 +226,7 @@
 					</div>						
 					</div>
 				</form>
+				<div id="loader" class="loader-graphic"></div>
 				<div id="chapter"></div>
 				<div id="chapter-time"></div>
 				<div id="debug">~</div>

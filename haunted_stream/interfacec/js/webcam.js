@@ -195,10 +195,10 @@ function loadResponse(speechBubble)
 // Return webcam to a waiting loop
 function updateWebCam()
 {
-	if ($("#webcam-video")[0].currentTime >= 43.5)
+	if (webcamvideo.currentTime >= 43.5)
 	{
 		if ($("#response").length === 0) {
-			$("#webcam-video")[0].currentTime = 36.5;
+			webcamvideo.currentTime = 36.5;
 		}
 	}
 }
