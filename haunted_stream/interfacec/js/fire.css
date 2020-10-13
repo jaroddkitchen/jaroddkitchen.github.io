@@ -1,0 +1,15 @@
+.fx-canvas {
+    position:fixed;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+}
+
+.fx-back {
+    position:fixed;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+}

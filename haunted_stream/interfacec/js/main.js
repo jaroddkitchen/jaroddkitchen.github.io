@@ -1151,18 +1151,12 @@ function writeDarkMessage()
 {
     var element = $("#chattext");
 	element.append(getDarkMessage());
+	elements = document.querySelectorAll('#chatbubble.darkbubble, #chatbubble.imgbubble');
+	if (elements[dMsgCount] == ""){
+		elements[dMsgCount].remove();
+	}
 	cutTopOfChat();
     scrollToBottom();
-	
-	// if (dDialogueCount == dDialogueStop-1){
-		// if (!dDialogueEnd){
-			// dDialogueEnd = true;
-			// clearInterval(waitInterval);
-			// dSpamTimer.stop();
-			// dKeepSpamming()
-			// log("keep spamming");
-		// }
-	// }	
 }
 
 
@@ -1241,12 +1235,16 @@ function getDarkMessage()
 		message.attr("class", "fly-in-element darkbubble imgbubble");
 		message.css("padding", "0vw");	
 	}
-	
-	message.append(msgBody);
-	
-	dMsgCount++;
-    
-	return message;
+
+	if (msgBody !== ""){
+		message.append(msgBody);
+		dMsgCount++;
+		return message;		
+	} else {
+		log("empty message");
+		message = msgBody;
+		return message;	
+	}
 }
 
 
@@ -1330,7 +1328,7 @@ function banish_dChat(){
 		//var lastDMsg = dMsgCount-1; 		
 		var element = elements[i];
 		element.classList.add('scalingbubble');
-		delayedFade(i,element);
+		delayedErase(i,element);
 		scrollToBottom();
 	}
 	
@@ -1371,7 +1369,7 @@ function hide_dChat(){
 		//element.classList.add('.disintegration-target');
 		element.classList.add('scalingbubble');
 		delayedHide(i,element);
-		scrollToTop();
+		scrollToBottom();
 	}
 }
 
@@ -1384,7 +1382,7 @@ function dDisint($elm){
 }
 
 // Disintegrate delayed list
-// function delayedErase(i, el){
+// function delayedDisint(i, el){
 	// var wait = i * 0.1;	
 	// var tl = new TimelineMax();
 	// tl.to(el, 1, {
@@ -1417,15 +1415,16 @@ function delayedHide(i, el){
 }
 
 function hideDemonMsg (el,i){	
-	//el.hide();
-	if (i === (dMsgCount-1)){
-		dSpamming = true;		
+	el.remove();
+	if (i === (dMsgCount)){
+		dSpamming = true;
+		dMsgCount = 0;
 	}		
 }
 
 
 // erase all demon messages 
-function delayedFade(i, el){
+function delayedErase(i, el){
 	var wait = i * 0.1;	
 	var tl = new TimelineMax();
 	tl.to(el, 1, {
