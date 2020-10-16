@@ -581,13 +581,7 @@ function dKeepSpamming(){
 						dKeepSpamming();
 					});				
 				}
-			} else {
-				// if (plReply !== null){
-					// dSpamTimer.stop();
-					// clearInterval(waitInterval);
-					// dWriteMore();
-					// log("force spamming");
-				// }				
+			} else {			
 				if (dListen){
 					dTaunt = false;
 					clearInterval(waitInterval);
@@ -606,9 +600,6 @@ function dKeepSpamming(){
 						log("no exit function exists");
 						dListen = true;
 						dTaunt = false;
-						//dJumpToDialogueNode(dPrevDialogueNode, true, false)
-						//clearInterval(waitInterval);
-						//waitInterval = null;
 						dWaitsForResponse();						
 					}
 				}
@@ -664,6 +655,7 @@ function dWriteMore(){
 	var non_words = [];
 	
 	var keywords = [];
+	var keystrings = [];
 	var keyactions = [];	
 	var triggerWords = [];
 	var pos;
@@ -719,14 +711,36 @@ function dGetWiki(wiki)
 
 function dStrToArray(str)
 {
-	var newStr = str;
 	
+	keywords = [];
+	keystrings = [];
+	keyactions = [];
+
+	dAnswerNode = c_array[dDialogueNode].length-1;
+	dKeyNode = c_array[dDialogueNode][dAnswerNode];
+	
+	for (var i = 0; i < dKeyNode.length; i++){
+		keywords.push(dKeyNode[i][0]);
+		keystrings.push(dKeyNode[i][1]);
+		keyactions.push(dKeyNode[i][2]);
+		log(keystrings[i])
+	}
+	
+	// replace similars with keywords
+	var newStr = str;
 	newStr = newStr.replace(/[.*+\-!^${}()|[\]\\]/gi, "");
 	newStr = newStr.replace(/\?/gi, " ? ");
 	newStr = newStr.replace(/'/gi, "");
-	newStr = newStr.replace(/\by\b|yes|yeah|okay|ok|yup|yep|agree|affirmative|always/gi, "ACCEPT");
-	newStr = newStr.replace(/\bn\b|noop|nope|no|nay|nah|naw|negative|disagree|never/gi, "DECLINE");
-	newStr = newStr.replace(/maybe|dont know|not sure|depends/gi, "MAYBE");
+	// newStr = newStr.replace(/\by\b|yes|yeah|okay|ok|yup|yep|agree|affirmative|always/gi, "ACCEPT");
+	// newStr = newStr.replace(/\bn\b|noop|nope|no|nay|nah|naw|negative|disagree|never/gi, "DECLINE");
+	// newStr = newStr.replace(/maybe|dont know|not sure|depends/gi, "MAYBE");	
+	
+	for (var i = 0; i < dKeyNode.length; i++){
+		for (var n = 0; n < keystrings[i].length; n++){
+			newStr = newStr.replace(new RegExp(keystrings[i][n], 'gi'), keywords[i]);
+			log(newStr);
+		}
+	}
 
     // Get an array of all the words	
     playerwords = newStr.split( " " );
@@ -750,17 +764,6 @@ function dStrToArray(str)
 // Search for keyword triggers
 function dSearchCommands(word)
 {
-	keywords = [];
-	keyactions = [];
-
-	dAnswerNode = c_array[dDialogueNode].length-1;
-	dKeyNode = c_array[dDialogueNode][dAnswerNode];
-	
-	for (var i = 0; i < dKeyNode.length; i++){
-		keywords.push(dKeyNode[i][0]);
-		keyactions.push(dKeyNode[i][1]);
-	}
-	
 	// validate english
 	findWord(word);
 	

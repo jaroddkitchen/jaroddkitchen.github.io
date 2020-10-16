@@ -17,7 +17,16 @@ var timedEvents = [
 		function(){summon_dChat(HelloWorld, null, "vicious", null, 1, 2)}
 		]
 	],
-	[true, 2, "DungeonAndDragon",
+	[false,  2,	"LetsBeFriends",
+		[
+		function(){summon_Layer(0, "colorbox hidden", "black", null, "no-repeat", 3000, 3000, 0.5, 900000)},
+		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", "repeat", 3000, 3000, 0.5, 900000)},			
+		function(){summon_Sound('../snd/music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.025, 0.5, 900000)},
+		function(){summon_Sound('../snd/fx/static.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
+		function(){summon_dChat(LetsBeFriends, null, "vicious", "kiddiebubble", 2, 900)}
+		]
+	],	
+	[true, 3, "DungeonAndDragon",
 		[
 		function(){summon_Layer(0, "colorbox hidden", "black", null, "no-repeat", 3000, 3000, 0.5, 900000)},
 		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", "repeat", 3000, 3000, 0.5, 900000)},	
@@ -26,16 +35,6 @@ var timedEvents = [
 		function(){summon_dChat(DungeonAndDragon, null, "vicious", "kiddiebubble", 5, 2000)}
 		]
 	],	
-	[false,  3,	"LetsBeFriends",
-		[
-		function(){summon_Layer(0, "colorbox hidden", "black", null, "no-repeat", 3000, 3000, 0.5, 900000)},
-		function(){summon_Layer(1, "background-pattern hidden", "transparent", "../img/fx/static.gif", "repeat", 3000, 3000, 0.5, 900000)},			
-		function(){summon_Sound('../snd/music/twinkle_twinkle.mp3', 0, 4000, 2000, 0.025, 0.5, 900000)},
-		function(){summon_Sound('../snd/fx/static.mp3', 1, 4000, 2000, 0.025, 1.0, 90000)},
-		function(){summon_dChat(LetsBeFriends, null, "vicious", "kiddiebubble", 2, 900)}
-		]
-	],
-	
 	[false,	10, "JarodSucks",
 		[
 		function(){summon_Layer(0, "colorbox hidden", "black", null, "no-repeat", 3000, 3000, 0.5, 900000)},
@@ -91,18 +90,21 @@ var LetsBeFriends =
 			[ 
 				// Response Nodes
 				// [action word (after translation)],[result functions]
+				["DECLINE",
+					["\\bn\\b", "noop", "nope", "no", "nay", "nah", "naw", "negative", "disagree", "never"],
+					[function(){dJumpToDialogueNode(2, false, true)}]
+				],				
 				["ACCEPT",
+					["\\by\\b", "yes", "yeah", "okay", "ok", "yup", "yep", "agree", "affirmative", "always"],
 					[function(){dJumpToDialogueNode(3, false, true)}]
 				],
-				["DECLINE",
-					[function(){dJumpToDialogueNode(2, false, true)}]
-				],
 				["MAYBE",
+					["maybe", "dont know", "not sure", "depends"],
 					[function(){dJumpToDialogueNode(1, false, true)}]
 				]
 			]
 		],
-		// Node 1		
+		// Node 1
 		[
 			["multiple choice", "", "", true],
 			["thats not a grate answer"], ["in fact that answers a peace of crap, just like u r _lol_face_lol_face_lol_face"], ["lets try this aggen shall we?"],
@@ -129,7 +131,7 @@ var LetsBeFriends =
 			["multiple choice", "", "", true],	
 			["fantastik"], ["were gonna be GRATE 2gether, me and u",
 				function(){summon_Sound('../snd/fx/car_meow_funny.mp3', 2, 250, 2500, 0.25, 0.75, 3000)},
-				function(){summon_Layer(2, "background-image hidden", "transparent", "../img/pics/cool_cat.gif", "round", 750, 750, 0.75, 1250)} ],
+				function(){summon_Layer(2, "background-pattern hidden", "transparent", "../img/pics/cool_cat.gif", "round", 750, 750, 0.75, 1250)} ],
 			["jus like batman n robbin"],
 			["ham n eggs",
 				function(){dReMask(null)}],
@@ -144,10 +146,10 @@ var LetsBeFriends =
 				["GOODSEARCH",
 					[function(){dJumpToDialogueNode(5, false, true)}]
 				],
-				["BADSEARCH",
+				["BADSEARCH",		
 					[function(){dJumpToDialogueNode(8, false, true)}]
 				],
-				["",
+				["",			
 					[]
 				]				
 			]
@@ -169,7 +171,7 @@ var LetsBeFriends =
 				["BADSEARCH",
 					[function(){dJumpToDialogueNode(8, false, true)}]
 				],
-				["",
+				["",		
 					[]
 				]	
 			]
@@ -223,15 +225,16 @@ var JarodSucks =
 			["multiple choice", "", "", true],
 			["hello, aggen!","im back an i look byootifull _smile_big_smile_big_smile_big"], ["gotta say im not a big fan of u-know-who"], ["he is 2 arrigant for my tayste"], ["im sure hes been braggin abowt me 4 weeks now. lik he wuz sum big creativ jeenius. gettin 2 big for his britchez, u ask me"], ["hay, did he evr tell u his hole virus theory?"],
 			[ 
+				["DECLINE",
+					["\\bn\\b", "noop", "nope", "no", "nay", "nah", "naw", "negative", "disagree", "never"],
+					[function(){dJumpToDialogueNode(2, false, true)}]
+				],				
 				["ACCEPT",
+					["\\by\\b", "yes", "yeah", "okay", "ok", "yup", "yep", "agree", "affirmative", "always"],
 					[function(){dJumpToDialogueNode(3, false, true)}]
 				],
-				["DECLINE",
-					[function(){dJumpToDialogueNode(2, false, true)},
-					//function(){summon_Apparition(10, 1, 90000)},
-					]
-				],
 				["MAYBE",
+					["maybe", "dont know", "not sure", "depends"],
 					[function(){dJumpToDialogueNode(1, false, true)}]
 				]
 			]
@@ -352,54 +355,79 @@ var DungeonAndDragon =
 			function(){ banish_allSounds(2000)} ],
 			["ok, here we go", function(){dReMask("dungeonbubble")}],
 			["You are in a dungeon.",
-			//summon_Layer(layernum, layertype, bckcolor, bckimg, repeat, speedin, speedout, alpha, timeout, imgW, imgH, imgX, imgY)
+			function(){banish_Layer(1, 1500)},
 			function(){summon_Layer(0, "colorbox hidden", "black", null, "no-repeat", 3000, 3000, 1.0, 90000)},
-			function(){summon_Layer(2, "background-image hidden", "transparent", "../img/pics/dungeon_px.gif", "no-repeat", 2500, 1500, 0.5, 90000, "100vw", "135vh", "0vw", "0vw")}, function(){banish_Layer(1, 1500)} ],
-			["You see a dragon.",
-			function(){summon_Layer(3, "background-image hidden", "transparent", "../img/pics/dragon_shadow_px.gif", "no-repeat", 2500, 1500, 0.35, 90000, "40vw", "65vh", "30vw", "bottom")} ],
+			function(){summon_Layer(2, "background-image hidden", "transparent", "../img/pics/dungeon_px.gif", "no-repeat", 2500, 1500, 0.5, 90000, "100vw", "135vh", "0vw", "0vw")},
+			function(){summon_Layer(3, "background-image hidden", "transparent", "../img/pics/dragon_shadow_px.gif", "no-repeat", 2500, 1500, 0.35, 90000, "40vw", "65vh", "30vw", "bottom")},
+			function(){summon_Sound('../snd/music/fantasy_music.mp3', 0, 2000, 2000, 0.25, 2.0, 90000)} ],
+			["You see a dragon.",],
 			["What will you do?"],
 			[ 
-				// Response Nodes
-				// [action word (after translation)],[result functions]
-				["ACCEPT",
-					[function(){dJumpToDialogueNode(3, false, true)}]
-				],
-				["DECLINE",
-					[function(){dJumpToDialogueNode(2, false, true)},
-					//function(){summon_Apparition(10, 1, 90000)},
-					]
-				],
-				["MAYBE",
+				["FIGHT",
+					["fight", "attack", "hurt", "wound", "damage", "battle", "charge", "assail", "duel", "rush", "blitz", "strike", "slash", "stab", "assault", 
+					"hit", "defeat"],
 					[function(){dJumpToDialogueNode(1, false, true)}]
+				],				
+				["KILL",
+					["obliterate", "eradicate", "slay", "destroy", "assassinate", "exterminate", "annihalate", "eliminate", "murder"],
+					[function(){dJumpToDialogueNode(2, false, true)}]
+				],
+				["TALK",
+					["parlay", "converse", "beg", "plead", "petition", "chat", "say", "speak", "tell", "persuade", "convince", "debate", "ask", 
+					"address", "discuss", "greet", "hail"],
+					[function(){dJumpToDialogueNode(3, false, true)}]
+				],				
+				["FLEE",
+					["run", "retreat", "scram", "escape", "get away", "evade", "elude", "leave", "exit", "abscond"],
+					[function(){dJumpToDialogueNode(4, false, true)}]
 				]
 			]
 		],
 		// Node 1		
 		[
-			["multiple choice", "", "", true],
-			["thats not a grate answer"], ["in fact that answers a peace of crap, just like u r ha ha ha"], ["lets try this aggen shall we?"],
-			[		
-				function(){dJumpToDialogueNode(dPrevDialogueNode, true, false)},			
-			]
+			["multiple choice", "", "", true],		
+			["You unsheath Origanus, your clan's ancestral blade.",
+				function(){summon_Layer(6, "background-image hidden", "transparent", "../img/pics/sword.gif", "no-repeat", 500, 500, 1.0, 90000,)},
+				function(){summon_Sound('../snd/fx/unsheath.mp3', 2, 250, 1500, 0.25, 2.0, 2500)} ],
+			["As you advance upon the serpent, you feel a gust of ancient wind swirl around you.",
+				function(){summon_Sound('../snd/fx/dragon_breath.mp3', 2, 250, 1500, 0.25, 2.0, 5000)} ],
+			[function(){dJumpToDialogueNode(5, true, true)}]
 		],
 		// Node 2		
 		[
 			["multiple choice", "", "", true],		
-			["that sux _frown_face", function(){dReMask(null)}],
-			["im a grate one to b frends with",
-				function(){summon_Sound('../snd/music/horror_buzz.mp3', 2, 250, 1500, 0.25, 2.0, 2500)},
-				function(){summon_Layer(2, "background-image hidden", "transparent", "../img/pics/girlcry2.gif", "no-repeat", 500, 1000, 0.4, 1200)}, 
-				function(){dReMask(dInitMask)} ],	
-			["a troo blew american hero!"], ["maybe i can make u change ur mind Sum Day _tongue_winking"],
-			[ function(){dJumpToDialogueNode(4, true, true)} ]
+			["You close in for the kill.",
+				function(){summon_Layer(6, "background-image hidden", "transparent", "../img/pics/sword.gif", "no-repeat", 500, 500, 1.0, 90000,)},
+				function(){summon_Sound('../snd/fx/unsheath.mp3', 2, 250, 1500, 0.25, 2.0, 2500)} ],
+			["As you advance upon the serpent, you feel a gust of ancient wind swirl around you.",
+				function(){summon_Sound('../snd/fx/dragon_breath.mp3', 2, 250, 1500, 0.25, 2.0, 5000)} ],	
+			["", function(){dJumpToDialogueNode(5, false, true)} ]
 		],
 		// Node 3		
 		[
+			["multiple choice", "", "", true],		
+			["You attempt to parlay with the beast."],
+			["As if in reply, you feel a gust of ancient wind swirl around you.",
+				function(){summon_Sound('../snd/fx/dragon_breath.mp3', 2, 250, 1500, 0.25, 2.0, 5000)} ],	
+			["", function(){dJumpToDialogueNode(5, false, true)} ]
+		],
+		// Node 4		
+		[
+			["multiple choice", "", "", true],		
+			["You run for your life."],
+			["You are on the verge of escaping the dungeon when you feel a gust of ancient wind swirl around you.",
+				function(){summon_Sound('../snd/fx/dragon_breath.mp3', 3, 250, 1500, 0.25, 2.0, 5000)} ],				
+			["", function(){dJumpToDialogueNode(5, false, true)} ]
+		],	
+		// Node 5		
+		[
 			["multiple choice", "", "", true],	
 			["The dragon showers you in flames.",
+				function(){ banish_Sound(0, 500)},
 				function(){summon_Sound('../snd/fx/dragon_growl_flame.mp3', 2, 0, 500, 0.45, 0.75, 3000)},
 				function(){summon_Layer(4, "background-image hidden", "transparent", "../img/pics/dragon_fire_px.gif", "no-repeat", 500, 1500, 0.35, 90000, "40vw", "65vh", "30vw", "bottom")}, 
 				function(){banish_Layer(3, 500)},
+				function(){banish_Layer(6, 500)},
 				function(){summon_Layer(5, "colorbox hidden", "orange", null, "no-repeat", 250, 1000, 1.0, 500)} ],
 			["You try to shield your eyes from the furnace of the monster's throat.",
 				function(){banish_Layer(2, 1000)}, function(){banish_Layer(4, 1000)} ],
@@ -435,15 +463,15 @@ var DungeonAndDragon =
 			["The End", function(){dReMask(dInitMask)}],
 			["i guess that didn't go so well 4 u! _tongue_winking", function(){banish_Layer(0, 2000)}],
 			["o well. maybe u can try aggen sum day."],
-			[ function(){dJumpToDialogueNode(4, false, true)} ]
+			[ function(){dJumpToDialogueNode(6, false, true)} ]
 		],		
-		// Node 4
+		// Node 6
 		[
 			["wikiSearch", "", "", false],
 			["well I gotta be going now, chosen one"], ["ill check you ltr"], ["bye 4 now"],
 			[ function(){banish_dChat()} ]
 		],		
-		// Node 5
+		// Node 7
 		[
 			["multiple choice", "", "", false],
 			["so thats how you wanna play it"], ["the strong silent type"], ["ok kiddo. be that way"], ["you will regret this"],
