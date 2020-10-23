@@ -350,31 +350,29 @@ var DungeonAndDragon =
 [
 		// Node 0
 		[		
-			["multiple choice", "", "", true],
-			["games r fun! lets play a game!!!"], ["lets play Dunjuns and Dragons"], ["you can be the brave hero, and ill be the all-knowing dunjun master"], ["ru reddy?",
-			function(){ banish_allSounds(2000)} ],
-			["ok, here we go", function(){dReMask("dungeonbubble")}],
+			["multiple choice", "", "", false],
+			["games r fun! lets play a game!!!"], ["lets play Dunjuns and Draggins"], ["you can be the brave hero, and ill be the all-knowing dunjun master"], ["ru reddy?",
+			function(){banish_allSounds(2000)},
+			function(){freezeVideo()} ],
+			["ok, here we go",
+			function(){dReMask("dungeonbubble")}],
 			["You are in a dungeon.",
 			function(){banish_Layer(1, 1500)},
 			function(){summon_Layer(0, "colorbox hidden", "black", null, "no-repeat", 3000, 3000, 1.0, 90000)},
 			function(){summon_Layer(2, "background-image hidden", "transparent", "../img/pics/dungeon_px.gif", "no-repeat", 2500, 1500, 0.5, 90000, "100vw", "135vh", "0vw", "0vw")},
-			function(){summon_Layer(3, "background-image hidden", "transparent", "../img/pics/dragon_shadow_px.gif", "no-repeat", 2500, 1500, 0.35, 90000, "40vw", "65vh", "30vw", "bottom")},
 			function(){summon_Sound('../snd/music/fantasy_music.mp3', 0, 2000, 2000, 0.25, 2.0, 90000)} ],
-			["You see a dragon.",],
+			["You see a dragon.",
+			function(){summon_Layer(3, "background-image hidden", "transparent", "../img/pics/dragon_shadow_px.gif", "no-repeat", 2500, 1500, 0.35, 90000, "40vw", "65vh", "30vw", "bottom")}, ],
 			["What will you do?"],
 			[ 
 				["FIGHT",
 					["fight", "attack", "hurt", "wound", "damage", "battle", "charge", "assail", "duel", "rush", "blitz", "strike", "slash", "stab", "assault", 
-					"hit", "defeat"],
+					"hit", "defeat", "kill", "obliterate", "eradicate", "slay", "destroy", "assassinate", "exterminate", "annihalate", "eliminate", "murder"],
 					[function(){dJumpToDialogueNode(1, false, true)}]
-				],				
-				["KILL",
-					["obliterate", "eradicate", "slay", "destroy", "assassinate", "exterminate", "annihalate", "eliminate", "murder"],
-					[function(){dJumpToDialogueNode(2, false, true)}]
 				],
 				["TALK",
-					["parlay", "converse", "beg", "plead", "petition", "chat", "say", "speak", "tell", "persuade", "convince", "debate", "ask", 
-					"address", "discuss", "greet", "hail"],
+					["talk", "parlay", "converse", "beg", "plead", "petition", "chat", "say", "speak", "tell", "persuade", "convince", "debate", "ask", 
+					"address", "discuss", "greet", "hail", "train", "befriend", "seduce"],
 					[function(){dJumpToDialogueNode(3, false, true)}]
 				],				
 				["FLEE",
@@ -389,7 +387,7 @@ var DungeonAndDragon =
 			["You unsheath Origanus, your clan's ancestral blade.",
 				function(){summon_Layer(6, "background-image hidden", "transparent", "../img/pics/sword.gif", "no-repeat", 500, 500, 1.0, 90000,)},
 				function(){summon_Sound('../snd/fx/unsheath.mp3', 2, 250, 1500, 0.25, 2.0, 2500)} ],
-			["As you advance upon the serpent, you feel a gust of ancient wind swirl around you.",
+			["As you advance upon the serpent, you feel a gust of ancient wind.",
 				function(){summon_Sound('../snd/fx/dragon_breath.mp3', 2, 250, 1500, 0.25, 2.0, 5000)} ],
 			[function(){dJumpToDialogueNode(5, true, true)}]
 		],
@@ -399,25 +397,25 @@ var DungeonAndDragon =
 			["You close in for the kill.",
 				function(){summon_Layer(6, "background-image hidden", "transparent", "../img/pics/sword.gif", "no-repeat", 500, 500, 1.0, 90000,)},
 				function(){summon_Sound('../snd/fx/unsheath.mp3', 2, 250, 1500, 0.25, 2.0, 2500)} ],
-			["As you advance upon the serpent, you feel a gust of ancient wind swirl around you.",
+			["As you advance upon the serpent, you feel a gust of ancient wind.",
 				function(){summon_Sound('../snd/fx/dragon_breath.mp3', 2, 250, 1500, 0.25, 2.0, 5000)} ],	
-			["", function(){dJumpToDialogueNode(5, false, true)} ]
+			[function(){dJumpToDialogueNode(5, false, true)} ]
 		],
 		// Node 3		
 		[
 			["multiple choice", "", "", true],		
 			["You attempt to parlay with the beast."],
-			["As if in reply, you feel a gust of ancient wind swirl around you.",
+			["As if in reply, you feel a gust of ancient wind.",
 				function(){summon_Sound('../snd/fx/dragon_breath.mp3', 2, 250, 1500, 0.25, 2.0, 5000)} ],	
-			["", function(){dJumpToDialogueNode(5, false, true)} ]
+			[function(){dJumpToDialogueNode(5, false, true)} ]
 		],
-		// Node 4		
+		// Node 4
 		[
 			["multiple choice", "", "", true],		
 			["You run for your life."],
-			["You are on the verge of escaping the dungeon when you feel a gust of ancient wind swirl around you.",
+			["You are on the verge of escaping the dungeon when you feel a gust of ancient wind.",
 				function(){summon_Sound('../snd/fx/dragon_breath.mp3', 3, 250, 1500, 0.25, 2.0, 5000)} ],				
-			["", function(){dJumpToDialogueNode(5, false, true)} ]
+			[function(){dJumpToDialogueNode(5, false, true)} ]
 		],	
 		// Node 5		
 		[
@@ -442,8 +440,8 @@ var DungeonAndDragon =
 			["Somewhere in the darkness, the dragon unleashes a second fireball upon you.",
 				function(){summon_Layer(5, "colorbox hidden", "red", null, "no-repeat", 250, 1000, 0.75, 500)},
 				function(){summon_Sound('../snd/fx/dragon_growl_flame.mp3', 2, 500, 500, 0.25, 0.5, 3000)} ],
-			["You can't see it, of course.<p>But you can feel it.<p>And you smell it."],
-			["Blending with the ash and sulfur is the scent of your own ruin.<p>You can smell all of God's tender gifts cook inside your armored shell. As the flesh blisters and sizzles, you can feel their functions slip away forever."],
+			// ["You can't see it, of course.<p>But you can feel it.<p>And you smell it."],
+			// ["Blending with the ash and sulfur is the scent of your own ruin.<p>You can smell all of God's tender gifts cook inside your armored shell. As the flesh blisters and sizzles, you can feel their functions slip away forever."],
 			// ["Your fingers become the dead branches of scorched trees.<p>You know you will never hold a thing again."],
 			// ["Your genitals and bowels fuse into a shapeless glob of grease and sludge.<p>You know you will never love or loathe a thing again."],
 			// ["Your brains bubble within the saucepan of your skull.<p>You begin to stop knowing things about yourself and your world."],
@@ -456,12 +454,14 @@ var DungeonAndDragon =
 			// ["There is a word etched upon its surface, too small to read."],
 			// ["But the Thing That Was You is also getting smaller. Shrinking and shriveling like the body that once held it."],
 			// ["And so the word appears to loom ever larger, dangling in the black, eternal miles ahead."],
-			["And then..."],
-			["like all else that has ever been or will ever be..."],
-			["like all that never was and won't be..."],
-			["it disappears."], 
+			// ["And then..."],
+			// ["like all else that has ever been or will ever be..."],
+			// ["like all that never was and won't be..."],
+			// ["it disappears."], 
 			["The End", function(){dReMask(dInitMask)}],
-			["i guess that didn't go so well 4 u! _tongue_winking", function(){banish_Layer(0, 2000)}],
+			["i guess that didn't go so well 4 u! _tongue_winking",
+			function(){banish_Layer(0, 2000)},
+			function(){unfreezeVideo()} ],
 			["o well. maybe u can try aggen sum day."],
 			[ function(){dJumpToDialogueNode(6, false, true)} ]
 		],		

@@ -271,8 +271,8 @@ function audioFadeIn(audio, dur, vol){
 
 // MAIN VIDEO URLS
 var videoplaylist = [
-	["chapel", "https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4"],
 	["pennhurst", "https://video.wixstatic.com/video/bde2cd_29fc09fb61cd469fa5e1de604ddd8be6/720p/mp4/file.mp4"],
+	["chapel", "https://video.wixstatic.com/video/bde2cd_fb6fbe2bce7249969ee1ea57b2288668/720p/mp4/file.mp4"],
 	["desert", "https://video.wixstatic.com/video/bde2cd_0b465ccc294f4786bd45df5fa6edee4d/720p/mp4/file.mp4"]
 ];
 
@@ -337,6 +337,36 @@ function vidJumpToTime(landTime){
 	//var video = document.getElementsByTagName('video')[0];		
 	video.currentTime = landTime;
 	video.play();
+}
+
+	var videoCurVolume = 1.0;
+	var videoNewVolume;
+	
+	var videoCurPlaybackRate;
+	var videoNewPlaybackRate;
+
+function freezeVideo(){
+	freezeAudio();
+}	
+
+function freezeAudio(){	
+	videoCurVolume = $('video')[0].volume;
+	log("volume " + videoCurVolume);
+	$('video').stop(true, false).animate({volume: 0.0}, 2000, freezePicture);	
+	log("freezing audio");
+}
+
+function freezePicture(){
+	videoCurPlaybackRate = $('video')[0].playbackRate;
+	log("pbr " + videoCurPlaybackRate)
+	$('video').stop(true, false).animate({playbackRate: 0.1}, 2000, video.pause());
+}
+
+function unfreezeVideo(){
+	//$('video').stop(true, false).animate({volume: 1.0}, 2000, function(){ $('video')[0].volume = videoCurVolume });
+	//$('video')[0].volume = videoCurVolume;
+	video.play();
+	$('video').stop(true, false).animate({playbackRate: videoCurPlaybackRate}, 2000, function(){ $('video')[0].volume = videoCurVolume });
 }
 
 
@@ -723,7 +753,7 @@ function dStrToArray(str)
 		keywords.push(dKeyNode[i][0]);
 		keystrings.push(dKeyNode[i][1]);
 		keyactions.push(dKeyNode[i][2]);
-		log(keystrings[i])
+		//log(keystrings[i])
 	}
 	
 	// replace similars with keywords
@@ -734,7 +764,6 @@ function dStrToArray(str)
 	// newStr = newStr.replace(/\by\b|yes|yeah|okay|ok|yup|yep|agree|affirmative|always/gi, "ACCEPT");
 	// newStr = newStr.replace(/\bn\b|noop|nope|no|nay|nah|naw|negative|disagree|never/gi, "DECLINE");
 	// newStr = newStr.replace(/maybe|dont know|not sure|depends/gi, "MAYBE");	
-	
 	for (var i = 0; i < dKeyNode.length; i++){
 		for (var n = 0; n < keystrings[i].length; n++){
 			newStr = newStr.replace(new RegExp(keystrings[i][n], 'gi'), keywords[i]);
@@ -753,7 +782,7 @@ function dStrToArray(str)
 	for (var i = 0; i < playerwords.length; i++){	
 		dSearchCommands(playerwords[i]);
 	}
-	var lastValidWord = triggerWords.length - 1;	
+	var lastValidWord = triggerWords.length - 1;
 	
 	// form a response based on the last validated word
 	dAssembleResponse(triggerWords[lastValidWord]);
@@ -769,10 +798,11 @@ function dSearchCommands(word)
 	
 	//check for relevance
 	const result = keywords.includes(word);
-	pos = keywords.indexOf(word);
+
 	if (result){
-		curResponse = pos;
+		pos = keywords.indexOf(word);
 		triggerWords.push(word);
+		log("triggerWords: " + triggerWords);
     }
 }
 
@@ -815,6 +845,7 @@ function dAssembleResponse(word)
 	if (triggerWords.length > 0) {		
 		console.log('"' + word + '" will trigger a game action.');
 		for (i=0; i < keyactions[pos].length; i++){
+			log("keyaction" + i + ": " + keyactions[pos][i]);
 			keyactions[pos][i]();
 		}
 	// search wiki
