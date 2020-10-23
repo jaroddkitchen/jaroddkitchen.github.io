@@ -352,21 +352,28 @@ function freezeVideo(){
 function freezeAudio(){	
 	videoCurVolume = $('video')[0].volume;
 	log("volume " + videoCurVolume);
-	$('video').stop(true, false).animate({volume: 0.0}, 2000, freezePicture);	
+	$('video').stop(true, false).animate({volume: 0.0}, 3000, freezePicture);	
 	log("freezing audio");
 }
 
 function freezePicture(){
 	videoCurPlaybackRate = $('video')[0].playbackRate;
 	log("pbr " + videoCurPlaybackRate)
-	$('video').stop(true, false).animate({playbackRate: 0.1}, 2000, video.pause());
+	$('video').stop(true, false).animate({playbackRate: 0.1}, 3000, video.pause());
 }
 
 function unfreezeVideo(){
-	//$('video').stop(true, false).animate({volume: 1.0}, 2000, function(){ $('video')[0].volume = videoCurVolume });
-	//$('video')[0].volume = videoCurVolume;
+	unfreezePicture();
+}
+
+function unfreezePicture(){
 	video.play();
-	$('video').stop(true, false).animate({playbackRate: videoCurPlaybackRate}, 2000, function(){ $('video')[0].volume = videoCurVolume });
+	$('video').stop(true, false).animate({playbackRate: videoCurPlaybackRate}, 3000, unfreezeAudio );
+}
+
+function unfreezeAudio(){
+	//$('video')[0].volume = videoCurVolume;
+	$('video').stop(true, false).animate({volume: 1.0}, 3000);
 }
 
 
